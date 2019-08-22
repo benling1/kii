@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsMobile">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsMobile" id="smsMobile">
+		<result column="USERID" property="userId"/>
+		<result column="MOBILE" property="mobile"/>
+		<result column="CTIME" property="ctime"/>
+		<result column="BLICKLISTID" property="blicklistId"/>
+		<result column="ISDELETE" property="isDelete"/>
+		<result column="REMARK" property="remark"/>
+		<result column="TYPE" property="type"/>
+		<result column="BUYER_NICK" property="buyerNick"/>
+	</resultMap>
+	<!-- 客户管理 移除手机黑名单 -->
+	<!-- <update id="updateisDelete">
+		update CRM_SMS_MOBILE set ISDELETE = 0
+		<where>
+			<if test="id != null">
+				id=#{id}
+			</if>
+		</where>
+	</update> -->
+	<delete id="updateisDelete">
+	   DELETE FROM CRM_SMS_MOBILE
+	   <where>
+	     <if test="id != null">
+	        id=#{id}
+	     </if>
+	   </where>
+	</delete>
+
+	<!-- 分页查询总条数 -->
+	<select id="findSmsMolieCount" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM CRM_SMS_MOBILE s
+		WHERE s.`ISDELETE`=1 AND s.`TYPE`=1
+		<if test="mobile !=null and mobile!='' ">
+			AND mobile like CONCAT('%',#{mobile},'%')
+		</if>
+		<if test="bTime !=null  ">
+			and DATE_FORMAT(ctime,'%Y-%m-%d') >=
+			DATE_FORMAT(#{bTime},'%Y-%m-%d')
+		</if>
+		<if test="eTime !=null ">
+			and DATE_FORMAT(#{eTime}, '%Y-%m-%d') >=
+			DATE_FORMAT(ctime, '%Y-%m-%d')
+		</if>
+		<if test="remark != null and remark!=''">
+			and remark like CONCAT('%',#{remark},'%')
+		</if>
+		and userId = #{userId}
+	</select>
+
+	<!-- 分页条件查询 -->
+	<select id="findSmsMobileBlack" resultType="s2jh.biz.shop.crm.message.entity.SmsMobile">
+		SELECT s.`id` id,s.`MOBILE` mobile,s.`CTIME` ctime,s.`REMARK` remark
+		,s.`USERID` userId
+		FROM CRM_SMS_MOBILE s
+		WHERE s.`ISDELETE`=1  AND s.`TYPE`=1
+		<if test="mobile !=null and  mobile!=''">
+			and mobile like CONCAT('%',#{mobile},'%')
+		</if>
+		<if test="bTime !=null ">
+			and DATE_FORMAT(ctime,'%Y-%m-%d') >=
+			DATE_FORMAT(#{bTime},'%Y-%m-%d')
+		</if>
+		<if test="eTime !=null ">
+			and DATE_FORMAT(#{eTime}, '%Y-%m-%d') >=
+			DATE_FORMAT(ctime, '%Y-%m-%d')
+		</if>
+		<if test="remark != null and remark!=''">
+			and remark like CONCAT('%',#{remark},'%')
+		</if>
+		and s.`USERID`= #{userId}
+
+		ORDER BY s.`CTIME` DESC
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 更改手机号状态  营销中心 -->
+	
+	<delete id="updateMobile">
+	  DELETE FROM crm_sms_mobile 
+	  <where>
+	    <if test="blicklistId !=null">
+	       BlICKLISTID =#{blicklistId}
+	    </if>
+	  </where>
+	  
+	</delete>
+	<!--  <update id="updateMobile">
+		UPDATE crm_sms_mobile s SET s.`ISDELETE`=0 
+	 	WHERE s.`BlICKLISTID`=#{blicklistId}
+	 </update> -->
+
+<!--根据卖家条件查询黑名单信息(返回一个对象) -->
+	<select id="findBlackList" resultType="s2jh.biz.shop.crm.message.entity.SmsMobile">
+		SELECT id,createdBy,createdDate,lastModifiedBy,lastModifiedDate,CTIME,MOBILE,USERID,BlICKLISTID,ISDELETE,REMARK
+		FROM crm_sms_mobile 
+		<where>
+			
+				USERID =#{userId}
+		
+			<if test="phone != null">
+				and MOBILE in 
+				<foreach item="item" index="index" collection="phone" open="("
+		            separator="," close=")">
+		            #{item}  
+		        </foreach>
+			</if>
+			and ISDELETE = '1'
+		</where>
+	</select>
+	
+	<!--根据卖家条件查询黑名单信息(返回一个对象) -->
+	<select id="findNickBlackList" resultMap="smsMobile">
+		SELECT id,createdBy,createdDate,lastModifiedBy,lastModifiedDate,CTIME,MOBILE,USERID,BlICKLISTID,ISDELETE,REMARK,BUYER_NICK
+		FROM crm_sms_mobile 
+		<where>
+				USERID =#{userId}
+			<if test="nickList != null">
+				and BUYER_NICK IN 
+				<foreach item="nickList" collection="nickList" open="("
+		            separator="," close=")">
+		            #{nickList}  
+		        </foreach>
+			</if>
+			and ISDELETE = '1'
+		</where>
+	</select>
+	
+	<!--根据用户信息查询出手机号列表 -->
+	<select id="queryBlackPhoneNumList" resultType="java.lang.String">
+		SELECT MOBILE
+		FROM crm_sms_mobile 
+		<where>
+				USERID =#{userId}
+				and ISDELETE = '1'
+		</where>
+		group by MOBILE
+	</select>
+	
+	<!--根据用户信息查询出短信黑明单CRM_SMS_BLACKLIST -->
+	<select id="querySmsBlacklistNumList" resultType="java.lang.String">
+		SELECT phone
+		FROM CRM_SMS_BLACKLIST
+		<where>
+				USERID =#{userId}
+			    and IS_DELETE = '1'
+			    AND phone IS NOT NULL
+		</where>
+		group by phone
+	</select>
+	
+	<!-- 根据买家查询黑名单昵称(返回昵称字符串)ZTK -->
+	<select id="findBlackNickStr" resultType="String">
+		select BUYER_NICK from crm_sms_mobile
+		<where>
+			USERID = #{userId}
+			and ISDELETE = '1'
+		</where>
+	</select>
+	
+</mapper>

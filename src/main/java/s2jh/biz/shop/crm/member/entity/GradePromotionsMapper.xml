@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.member.entity.GradePromotions">
+	<resultMap type="s2jh.biz.shop.crm.member.entity.GradePromotions" id="gradePromotions">
+		<result column="id" property="id"/>
+		<result column="cur_grade" property="curGrade"/>
+		<result column="cur_grade_name" property="curGradeName"/>
+		<result column="discount" property="discount"/>
+		<result column="next_upgrade_amount" property="nextUpgradeAmount"/>
+		<result column="next_upgrade_count" property="nextUpgradeCount"/>
+		<result column="next_grade_name" property="nextGradeName"/>
+		<result column="next_grade" property="nextGrade"/>
+		<result column="status" property="status"/>
+		<result column="user_id" property="userId"/>
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+	</resultMap>
+	
+	<!--根据所有的优秀催付款案例 -->
+	<select id="findAllGradePromotions" resultMap="gradePromotions">
+		SELECT id,cur_grade,cur_grade_name,discount,next_upgrade_amount,next_upgrade_count,next_grade_name,next_grade,status,
+		user_id,createdBy,createdDate,lastModifiedBy,lastModifiedDate
+		FROM CRM_GRADE_PROMOTIONS
+		where user_id=#{userId}
+	</select>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.RechargeMenu">
+
+	<!-- 查询user表的所有userID -->
+	<select id="queryMidList" resultType="String">
+		SELECT mid
+		FROM crm_recharge_menu
+	</select>
+
+
+	<!-- 根据mid查询出 单个RechargeMenu对象-->
+	<select id="queryRechargeMenu" resultType="s2jh.biz.shop.crm.user.entity.RechargeMenu">
+		SELECT
+		mid,
+		super_mid as superMid,
+		name,
+		money,
+		num,
+		is_probational as isProbational,
+		status
+		FROM crm_recharge_menu
+		<where>
+			<if test="mid !=null and mid !='' ">
+				mid = #{mid}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 查询出所有的RechargeMenu兑现,不包括父级别Mid -->
+	<select id="queryRechargeMenuList" resultType="s2jh.biz.shop.crm.user.entity.RechargeMenu">
+	   SELECT 
+	    mid,
+        super_mid as superMid,
+        name,
+       	money,
+       	ROUND(money/num,3) as unitPrice,
+  		num,
+  		is_probational as isProbational,
+  		status
+	    FROM crm_recharge_menu  
+	   <where>
+		   super_mid IS NOT null
+	   </where>
+	   		ORDER BY money ASC
+	</select>
+	
+	
+</mapper>

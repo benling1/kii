@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.goods.dao.GroupedGoodsDao">
+	<resultMap 	type="s2jh.biz.shop.crm.goods.entity.GroupedGoods" id="groupedGoods_Map">
+		<result column="USERID" property="userId"/>
+		<result column="GROUP_ID" property="groupId"/>
+		<result column="num_iid" property="numIid"/>
+		<result column="url" property="url"/>
+		<result column="title" property="title"/>
+		<result column="price" property="price"/>
+		<result column="approve_status" property="approveStatus"/>
+		<result column="CTIME" property="cTime"/>
+	</resultMap>
+	
+	<!-- 已经分组的商品查询 -->
+	<select id="findGroupedGoods" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact" resultMap="groupedGoods_Map">
+	  SELECT * FROM crm_grouped_goods 
+	  <where>
+	       USERID=#{userId}
+	       <if test="groupId!=null and groupId!=''">
+	        and GROUP_ID=#{groupId}
+	       </if>
+	      <if test="queryNumIid!=null and queryNumIid!=''">
+	         and num_iid=#{queryNumIid}
+	      </if>
+	      <if test="title!=null and title!=''">
+	        and  title like '%${title}%'
+	      </if>
+	      <if test="queryIshow!=null and queryIshow!=''">
+	        and approve_status=#{queryIshow}
+	      </if>
+	  </where>
+	</select>
+	
+	<!-- 批量删除分组商品 -->
+	<!-- <delete id="deleteGroupCommodity" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityGroupVo">
+	  DELETE FROM crm_grouped_goods
+	  <where>
+	      USERID=#{userId}
+	      and GROUP_ID = #{groupId}
+	      and num_iid in
+	   <foreach collection="numIidList" item="numIid" index="index"
+	      open="(" separator="," close=")">  
+	        #{numIid} 
+	   </foreach>
+	  </where>
+	</delete> -->
+	
+	<!-- 删除分组的商品 -->
+	<delete id="deleteGroupedGoods" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact">
+		DELETE FROM crm_grouped_goods
+		  <where>
+		      USERID=#{userId}
+		      and GROUP_ID = #{groupId}
+		     <!--  and num_iid in
+		   <foreach collection="numIidList" item="numIid" index="index"
+		      open="(" separator="," close=")">  
+		        #{numIid} 
+		   </foreach> -->
+		  </where>
+	</delete>
+	
+	<!-- 批量保存商品 --><!-- useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List" -->
+	 <insert id="saveGroupedGoodsBatch" parameterType="java.util.List">
+	   INSERT INTO crm_Grouped_Goods(createdDate,lastModifiedBy,lastModifiedDate,optlock,CTIME,
+	   GROUP_ID,num_iid,USERID,approve_status,price,title,url)VALUES
+	   <foreach collection="list" item="groupedGoods" index="index"  
+			separator=",">  
+			(NOW(),NOW(),NOW(),0,NOW(),#{groupedGoods.groupId},#{groupedGoods.numIid},
+			#{groupedGoods.userId},#{groupedGoods.approveStatus},#{groupedGoods.price},
+			#{groupedGoods.title},#{groupedGoods.url})  
+		</foreach> 
+	 </insert> 
+	 
+	 <!-- 查询修改分组回显的NuIid --> 
+	 <select id="updateGroupEchoNumIid" resultType="String" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact">
+	   SELECT num_iid FROM crm_grouped_goods 
+		   <where>
+		     USERID=#{userId}
+			 and GROUP_ID = #{groupId}
+		  </where> 
+	 </select>
+</mapper>

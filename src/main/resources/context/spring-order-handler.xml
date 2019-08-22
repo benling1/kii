@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	
+	<!-- 拉取sysInfo订单 -->
+	<bean id="orderHandlerChain" class="lab.s2jh.core.handler.impl.DefaultHandlerChain">
+		<property name="handlerList">
+			<list>
+				<ref bean="synchronousTradeDataHandler" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="importTradeHandlerChain" class="lab.s2jh.core.handler.impl.DefaultHandlerChain">
+		<property name="handlerList">
+			<list>
+				<ref bean="synchronousImportTradeDataHandler" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="memberHandlerChain" class="lab.s2jh.core.handler.impl.DefaultHandlerChain">
+		<property name="handlerList">
+			<list>
+				<ref bean="separateMemberHandler" />
+			</list>
+		</property>
+	</bean>
+	<bean id="smsRecordHandlerChain" class="lab.s2jh.core.handler.impl.DefaultHandlerChain">
+		<property name="handlerList">
+			<list>
+				<ref bean="syncSmsRecordHandler" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="encrptTradeHandlerChain" class="lab.s2jh.core.handler.impl.DefaultHandlerChain">
+		<property name="handlerList">
+			<list>
+				<ref bean="syncEncrptTradeDataHandler" />
+			</list>
+		</property>
+	</bean>
+		
+	
+	<bean id="syncEffectHandlerChain" class="lab.s2jh.core.handler.impl.DefaultHandlerChain">
+		<property name="handlerList">
+			<list>
+				<ref bean="syncEffectDataHandler" />
+			</list>
+		</property>
+	</bean>
+		
+	
+</beans>               

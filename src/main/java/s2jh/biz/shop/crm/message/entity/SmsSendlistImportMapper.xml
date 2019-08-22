@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsSendlistImport">
+ 	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsSendlistImport" id="SmsSendlist_Import">
+		<result column="file_name" property="fileName"/>
+		<result column="send_number" property="sendNumber"/>
+		<result column="success_number" property="successNumber"/>
+		<result column="error_number" property="errorNumber"/>
+		<result column="state" property="state"/>
+		<result column="import_time" property="importTime"/>
+		<result column="import_phone" property="importPhone"/>
+		<result column="user_id" property="userId"/>
+	</resultMap>
+
+ 	<!-- 根据条件查询出分页数据 -->
+	<select id="findLimitListBySendlist" resultMap="SmsSendlist_Import">
+		SELECT 
+				id,
+				file_name,
+				send_number,
+				success_number,
+				error_number,
+				state,
+				import_time
+		FROM crm_sms_sendlist_import 
+		<where>
+			user_id  = #{userId} and TYPE IS null
+			<if test="bTime !=null">
+				and DATE_FORMAT(import_time,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime !=null">
+				and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(import_time, '%Y-%m-%d')   
+			</if>
+			<if test="fileName !=null and fileName !='' ">
+				and file_name  = #{fileName}
+			</if>
+		</where>
+		order by createdDate DESC
+	</select>
+	
+	
+    <!-- 根据条件查询总条数 -->
+	<select id="findTotalCountBySendlist" resultType="java.lang.Long">
+		SELECT COUNT(1) From crm_sms_sendlist_import
+		<where>
+			user_id  = #{userId}
+			<if test="bTime !=null">
+				and DATE_FORMAT(import_time,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime !=null">
+				and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(import_time, '%Y-%m-%d')   
+			</if>
+			<if test="fileName !=null and fileName !='' ">
+				and file_name = #{fileName}   
+			</if>
+		</where>
+	 </select>
+
+ <!-- 删除导入发送记录 -->
+	<delete id="deleteSmsSendlistById" parameterType="java.lang.Integer">
+	 	DELETE FROM crm_sms_sendlist_import WHERE id=#{id}
+	 </delete>
+	 
+ <!-- 通过id查询出导入的电话号码数据 -->
+	 <select id="findImportPhoneById" parameterType="java.lang.String" resultMap="SmsSendlist_Import">
+	 	SELECT 
+				state,
+				import_phone,
+				file_name
+		FROM crm_sms_sendlist_import 
+		WHERE id = #{id}
+	 </select>
+	 
+	 <!-- 通过id查询出导入的状态 -->
+	 <select id="findImportPhoneByIdIsState" parameterType="java.lang.String" resultMap="SmsSendlist_Import">
+	 	SELECT 
+				state,
+				file_name
+		FROM crm_sms_sendlist_import 
+		WHERE id = #{id}
+	 </select>
+	 
+	 <!-- 添加数据 -->
+	 <insert id="insertSmsSendlistImport" parameterType="s2jh.biz.shop.crm.message.entity.SmsSendlistImport" useGeneratedKeys="true" keyProperty="id">
+	 	INSERT INTO crm_sms_sendlist_import(file_name,state,user_id,send_number,success_number,error_number,import_phone,import_time,createdDate,optlock) 
+		VALUE(#{fileName},#{state},#{userId},#{sendNumber},#{successNumber},#{errorNumber},#{importPhone},now(),now(),0);
+	 </insert>
+	 
+	 <!-- 更新电话号码上传数据 -->
+	<update id="updateSmsSendlistImportById">
+		update crm_sms_sendlist_import
+		<set>
+			<if test="successNumber != null">
+				success_number = success_number+#{successNumber},
+			</if>
+			<if test="errorNumber != null">
+				error_number = error_number+#{errorNumber},
+			</if>
+			<if test="importPhone != null and importPhone !=''">
+				import_phone = #{importPhone},
+			</if>
+			lastModifiedDate = now()
+		</set>
+		where id = #{id}
+	</update>
+	
+	<!-- 更新电话号码上传数据-->
+	<update id="updateSmsSendlistImportToStateOne">
+		UPDATE crm_sms_sendlist_import SET state = '0'
+				WHERE id = #{id} AND success_number != 0
+	</update>
+	<!-- 更新电话号码上传数据-->
+	<update id="updateSmsSendlistImportToStateTwo">
+		UPDATE crm_sms_sendlist_import SET state = '1'
+				WHERE id = #{id} AND success_number = 0	
+	</update>
+	
+	<!-- 导入出现错误时修改错误状态-->
+	<update id="updateSmsSendlistImportByError">
+		UPDATE crm_sms_sendlist_import SET state = '1',success_number = 0,error_number=send_number
+				WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 黑名单导入查询 -->
+	<select id="findimportBlack" resultMap="SmsSendlist_Import">
+	  SELECT id,file_name,import_time,send_number,state,success_number
+	   FROM CRM_SMS_SENDLIST_IMPORT 
+	  <where>
+	    TYPE=1
+	   <if test="userId!=null">
+	     and  user_id=#{userId}
+	   </if>
+	  </where>
+	</select>
+	
+	<!-- 黑名单导入 删除 -->
+	<delete id="deleteSmsImport">
+	  DELETE FROM CRM_SMS_SENDLIST_IMPORT 
+	  <where>
+	    <if test="userId!=null">
+	      user_id=#{userId}
+	    </if>
+	   <if test="id !=null">
+	    and id=#{id}
+	   </if>
+	  </where>
+	</delete>
+	
+	
+	
+	
+	
+	
+	<!-- 将指定号码群发导入的电话号码加密数据查询 -->
+	<select id="findImportPhoneGoEncrypt" resultMap="SmsSendlist_Import">
+		SELECT id,user_id,import_phone 
+		FROM crm_sms_sendlist_import 
+		<where>
+			TYPE IS null
+		   <if test="id !=null and id !=''">
+		    and id=#{id}
+		   </if>
+		   <if test="userId !=null and userId !=''">
+		    and user_id=#{userId}
+		   </if>
+		</where>
+		LIMIT #{pageNum},#{pageSize}
+	</select>
+	
+	
+	
+	<update id="updateImportPhoneGoEncrypt">
+		UPDATE crm_sms_sendlist_import 
+		SET import_phone = #{importPhone} 
+		WHERE  id = #{id}
+	</update>
+	
+	
+	<insert id="insertExceptionMap">
+		insert into crm_tid
+		 (tid,taobao_user_nick,creat_time,message,type) values(#{tid},#{userNick},NOW(),#{message},'SmsSendlistImport')
+	</insert>
+	
+	
+	
+	
+</mapper>

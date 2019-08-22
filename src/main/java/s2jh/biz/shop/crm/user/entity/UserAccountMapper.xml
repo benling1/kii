@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.UserAccount">
+	<resultMap type="s2jh.biz.shop.crm.user.entity.UserAccount" id="userAccount">
+		<result column="user_id" property="userId" />
+		<result column="sms_num" property="smsNum" />
+	</resultMap>
+	<!-- 保存用户的账户短信余额 -->
+	<insert id="doCreateUserAccount" parameterType="s2jh.biz.shop.crm.user.entity.UserAccount" >
+	   INSERT INTO crm_user_account(id,user_id,sms_num,createdBy,createdDate,lastModifiedBy,lastModifiedDate)
+	   VALUE(#{id},#{userId},#{smsNum},#{userId},now(),#{userId},now())
+	</insert>
+	<!-- 查询用户的余额 -->
+	<select id="findSms" parameterType="java.lang.String" resultType="java.lang.Long" flushCache="true" useCache="false">
+	   SELECT  sms_num
+	   FROM    crm_user_account
+	   WHERE   user_id = #{sellerName}
+	</select>
+	<!-- 扣除用户的余额 -->
+	<update id="doDeleteUserSms" parameterType="java.util.Map">
+	   UPDATE  crm_user_account
+	   SET     sms_num=sms_num-#{smsNum},lastModifiedDate=now()
+	   WHERE   user_id = #{sellerName}
+	</update>
+	<!-- 增加用户的余额 -->
+    <update id="doAddUserSms" parameterType="java.util.Map">
+       UPDATE  crm_user_account
+       SET     sms_num=sms_num+#{smsNum},lastModifiedDate=now()
+       WHERE   user_id = #{sellerName}
+    </update>
+    <!-- 查询是否存在 -->
+    <select id="findExistsUser" parameterType="java.lang.String" resultType="java.lang.Integer">
+       SELECT   COUNT(1)
+       FROM     crm_user_account
+       WHERE    user_id = #{sellerName}
+    </select>
+     <!-- 查询短信条数大于0的用户 -->
+    <select id="findSmsNumNotEmpty" resultType="java.lang.String">
+    	select user_id from crm_user_account where sms_num > 0
+    </select>
+</mapper>

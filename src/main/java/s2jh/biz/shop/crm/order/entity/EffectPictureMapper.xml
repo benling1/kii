@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.EffectPicture">
+	<resultMap type="s2jh.biz.shop.crm.order.entity.EffectPicture" id="EffectPicture">
+		<result column="user_id" property="userId"/>
+		<result column="msg_id" property="msgId"/>
+		<result column="send_time" property="sendTime"/>
+		<result column="order_source" property="orderSource"/>
+		<result column="total_fee" property="totalFee"/>
+		<result column="total_buyer" property="totalBuyer"/>
+		<result column="total_buyer_real" property="totalBuyerReal"/>
+		<result column="total_order" property="totalOrder"/>
+		<result column="total_item" property="totalItem"/>
+		<result column="pay_fee" property="payFee"/>
+		<result column="pay_buyer" property="payBuyer"/>
+		<result column="pay_buyer_real" property="payBuyerReal"/>
+		<result column="pay_order" property="payOrder"/>
+		<result column="pay_item" property="payItem"/>
+		<result column="wait_pay_fee" property="waitPayFee"/>
+		<result column="wait_pay_buyer" property="waitPayBuyer"/>
+		<result column="wait_pay_buyer_real" property="waitPayBuyerReal"/>
+		<result column="wait_pay_order" property="waitPayOrder"/>
+		<result column="wait_pay_item" property="waitPayItem"/>
+		<result column="refund_fee" property="refundFee"/>
+		<result column="refund_buyer" property="refundBuyer"/>
+		<result column="refund_buyer_real" property="refundBuyerReal"/>
+		<result column="refund_order" property="refundOrder"/>
+		<result column="refund_item" property="refundItem"/>
+		<result column="effect_time" property="effectTime"/>
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+		<result column="days" property="days"/>
+	</resultMap>
+	
+	<!-- insert -->
+	<insert id="insertEffectPicture">
+		insert into crm_effect_picture (optlock,createdBy,createdDate,lastModifiedBy,lastModifiedDate,
+				user_id,msg_id,send_time,order_source,effect_time,days,
+				total_fee,total_buyer,total_order,total_item,total_buyer_real,
+				pay_fee,pay_buyer,pay_order,pay_item,pay_buyer_real,
+				wait_pay_fee,wait_pay_buyer,wait_pay_order,wait_pay_item,wait_pay_buyer_real,
+				refund_fee,refund_buyer,refund_order,refund_item,refund_buyer_real
+		) 
+		values (0,#{createdBy},#{createdDate},#{lastModifiedBy},#{lastModifiedDate},
+				#{userId},#{msgId},#{sendTime},#{orderSource},#{effectTime},#{days},
+				#{totalFee},#{totalBuyer},#{totalOrder},#{totalItem},#{totalBuyerReal},
+				#{payFee},#{payBuyer},#{payOrder},#{payItem},#{payBuyerReal},
+				#{waitPayFee},#{waitPayBuyer},#{waitPayOrder},#{waitPayItem},#{waitPayBuyerReal},
+				#{refundFee},#{refundBuyer},#{refundOrder},#{refundItem},#{refundBuyerReal}
+		)
+	</insert>
+	
+	<!-- 根据userId和msgId查询统计分析数据 (效果分析页面的分析数据) -->
+	<select id="findTotalEffectByMsgId" resultMap="EffectPicture">
+		select 
+			sum(total_fee) total_fee,sum(total_order) total_order,sum(total_item) total_item,
+			sum(pay_fee) pay_fee,sum(pay_order) pay_order,sum(pay_item) pay_item,
+			sum(wait_pay_fee) wait_pay_fee,sum(wait_pay_order) wait_pay_order,sum(wait_pay_item) wait_pay_item,
+			sum(refund_fee) refund_fee,sum(refund_order) refund_order,sum(refund_item) refund_item
+		from crm_effect_picture
+		<where>
+			user_id = #{userId} and msg_id = #{msgId}
+			<if test="orderSource != null and orderSource != ''">
+				and order_source = #{orderSource}
+			</if>
+			<if test="days != null">
+				and #{days} > days
+			</if>
+		</where>
+	</select>
+	<!-- 根据userId和msgId查询统计分析数据 (效果分析页面的分析数据) -->
+	<select id="findEffectByParam" resultMap="EffectPicture">
+		select  * from crm_effect_picture where	1=1 and msg_id = #{msgId} and days = #{days}  and order_source = #{ordersource}
+	</select>
+	
+	<!-- 效果分析每日数据  -->
+	<select id="findEffectByDays" resultMap="EffectPicture">
+		select 
+			pay_fee,pay_buyer,pay_order,pay_item,effect_time
+		from crm_effect_picture
+		<where>
+			user_id = #{userId} and msg_id = #{msgId}
+			<if test="orderSource != null and orderSource != ''">
+				and order_source = #{orderSource}
+			</if>
+			<if test="days != null">
+				and #{days} > days
+			</if>
+			order by effect_time ASC
+		</where>
+	</select>
+	
+	<!-- 根据msgId查询一个对象 -->
+	<select id="findEffectByMsgId" resultMap="EffectPicture">
+		select max(days) days from crm_effect_picture
+		<where>
+			<if test="msgId != null">
+				msg_id = #{msgId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 首页计算会员营销数据 -->
+	<select id="findSuccessPayFeeByTime" resultType="java.lang.Double">
+		select MAX(pay_fee) from crm_effect_picture
+		<where>
+			user_id = #{userId} and order_source = 'TOTAL'
+			<if test="msgId != null">
+				and msg_id = #{msgId}
+			</if>
+			<if test="bTime != null and eTime != null">
+				and effect_time between #{bTime} and #{eTime}
+			</if>
+		</where>
+	</select>
+	
+   <update id="updateEffectByParam">
+    UPDATE crm_effect_picture s SET
+     <if test="totalBuyer !=null">
+       s.`total_buyer`= #{totalBuyer} ,
+     </if>
+     <if test="totalOrder !=null">
+       s.`total_order`= #{totalOrder} ,
+     </if>
+     <if test="totalItem !=null">
+       s.`total_item`= #{totalItem} ,
+     </if>
+     <if test="payFee !=null">
+       s.`pay_fee`= #{payFee} ,
+     </if>
+     <if test="payBuyer !=null">
+       s.`pay_buyer`= #{payBuyer} ,
+     </if>
+     <if test="payOrder !=null">
+       s.`pay_order`= #{payOrder} ,
+     </if>
+     
+     <if test="payItem !=null">
+       s.`pay_item`= #{payItem} ,
+     </if>
+     
+     <if test="refundBuyer !=null">
+       s.`refund_buyer`= #{refundBuyer} ,
+     </if>
+     <if test="refundOrder !=null">
+       s.`refund_order`= #{refundOrder} ,
+     </if>
+     <if test="refundItem !=null">
+       s.`refund_item`= #{refundItem} ,
+     </if>
+     
+      <if test="waitPayBuyer !=null">
+       s.`wait_pay_buyer`= #{waitPayBuyer} ,
+     </if>
+     <if test="waitPayOrder !=null">
+       s.`wait_pay_order`= #{waitPayOrder} ,
+     </if>
+     <if test="waitPayItem !=null">
+       s.`wait_pay_item`= #{waitPayItem} ,
+     </if>
+      <if test="waitPayFee !=null">
+       s.`wait_pay_fee`= #{waitPayFee} ,
+     </if>
+     <if test="refundFee !=null">
+       s.`refund_fee`= #{refundFee} ,
+     </if>
+     <if test="totalFee !=null">
+       s.`total_fee`= #{totalFee} ,
+     </if>
+     <if test="totalBuyerReal != null">
+     	s.`total_buyer_real` = #{totalBuyerReal},
+     </if>
+     <if test="payBuyerReal != null">
+     	s.`pay_buyer_real` = #{payBuyerReal},
+     </if>
+     <if test="waitPayBuyerReal != null">
+     	s.`wait_pay_buyer_real`= #{waitPayBuyerReal} ,
+     </if>
+     <if test="refundBuyerReal != null">
+     	 s.`refund_buyer_real`= #{refundBuyerReal} ,
+     </if>
+     <if test="effectTime != null ">
+     	 s.`effect_time`= #{effectTime} ,
+     </if>
+     <if test="lastModifiedDate != null">
+     	s.`lastModifiedDate`= #{lastModifiedDate} ,
+     </if>
+     <if test="lastModifiedBy != null">
+     	s.`lastModifiedBy`= #{lastModifiedBy} ,
+     </if>
+     s.id=#{id} 
+	 where  1=1   and   id=#{id}  
+  </update>
+	
+	
+	<!-- 查询满足条件的真实客户数 -->
+	<select id="findRealBuyerNum" resultMap="EffectPicture">
+		select
+			MAX(total_buyer_real) total_buyer_real,
+			MAX(pay_buyer_real) pay_buyer_real,
+			MAX(wait_pay_buyer_real) wait_pay_buyer_real,
+			MAX(refund_buyer_real) refund_buyer_real
+		from
+			crm_effect_picture
+		<where>
+			msg_id = #{msgId} and 
+			#{days} > days and order_source = #{orderSource}
+			
+		</where>	
+	</select>
+	
+	<!-- findTodayMemberMoney -->
+	<select id="findTodayMemberMoney" resultMap="EffectPicture">
+		select sum(pay_fee) pay_fee from crm_effect_picture where user_id = #{userId} and effect_time between #{startTime} and #{endTime} and order_source = #{orderSource}
+	</select>
+</mapper>

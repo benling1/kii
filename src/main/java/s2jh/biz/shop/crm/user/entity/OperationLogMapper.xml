@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.UserOperationLog">
+
+	<!-- 查询所有用户的操作日志 -->
+	<select id="operationLog" resultType="s2jh.biz.shop.crm.user.entity.UserOperationLog">
+		SELECT *
+		FROM
+		CRM_OPERATION_LOG
+	</select>
+
+	<!-- 分页相关 -->
+	<select id="findoperationLog" resultType="s2jh.biz.shop.crm.user.entity.UserOperationLog">
+		SELECT o.`id` id,o.`OPERATOR` operator,o.`FUNCTIONS` functions,o.`TYPE`
+		type,o.`REMARK` remark,o.`DATE` date,o.`STATE` state,o.`IP_ADD`
+		ipAdd,o.`USER_ID` userId,
+		CASE o.`FUNCTIONGENS`
+		WHEN 1 THEN '下单关怀'
+		WHEN 2 THEN '常规催付'
+		WHEN 3 THEN '二次催付'
+		WHEN 4 THEN '聚划算催付'
+		WHEN 5 THEN '预收催付'
+		WHEN 6 THEN '发货提醒'
+		WHEN 7 THEN '到达同城提醒'
+		WHEN 8 THEN '派件提醒'
+		WHEN 9 THEN	'签收提醒'
+		WHEN 10 THEN '疑难件提醒'
+		WHEN 11 THEN '延时发货提醒'
+		WHEN 12 THEN '宝贝关怀'
+		WHEN 13 THEN '付款提醒'
+		WHEN 14 THEN '回款提醒'
+		WHEN 15 THEN '退款关怀'
+		WHEN 16 THEN '自动评价'
+		WHEN 17 THEN '批量评价'
+		WHEN 18 THEN '评价记录'
+		WHEN 19 THEN '中差管理'
+		WHEN 20	THEN '中差评监控'
+		WHEN 21 THEN '中差评安抚'
+		WHEN 22 THEN '中差评统计'
+		WHEN 23 THEN '中差评原因'
+		WHEN 24 THEN '中差评原因设置'
+		WHEN 25 THEN '中差评原因分析'
+		WHEN 26 THEN '手动订单提醒'
+		WHEN 27 THEN '优秀催付案例'
+		WHEN 28 THEN '效果统计'
+		WHEN 29 THEN '买家申请退款'
+		WHEN 30 THEN '退款成功'
+		WHEN 31 THEN '等待退货'
+		WHEN 32 THEN '拒绝退款'
+		WHEN 33 THEN '黑名单管理'
+		END
+		AS FUNCTIONGENS
+		FROM CRM_OPERATION_LOG o
+		WHERE 1=1
+		<if test="bTime !=null and bTime!='' ">
+			and DATE_FORMAT(o.`DATE`,'%Y-%m-%d') >=
+			DATE_FORMAT(#{bTime},'%Y-%m-%d')
+		</if>
+		<if test="eTime !=null and eTime!='' ">
+			and DATE_FORMAT(#{eTime}, '%Y-%m-%d') >=
+			DATE_FORMAT(o.`DATE`, '%Y-%m-%d')
+		</if>
+		<if test="functionGens != null and functionGens !='' ">
+			and o.`FUNCTIONGENS` like #{functionGens}
+		</if>
+		<if test="userId !=null">
+			and o.`user_id` = #{userId}
+		</if>
+		ORDER BY o.`DATE` DESC
+		limit #{startRows},#{currentRows}
+	</select>
+
+	<!-- 查询总条数 -->
+	<select id="findTotalCountRz" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM CRM_OPERATION_LOG
+		WHERE 1=1
+		<if test="bTime !=null and bTime!='' ">
+			and DATE_FORMAT(date,'%Y-%m-%d') >=
+			DATE_FORMAT(#{bTime},'%Y-%m-%d')
+		</if>
+		<if test="eTime !=null and eTime!='' ">
+			and DATE_FORMAT(#{eTime}, '%Y-%m-%d') >= DATE_FORMAT(date,
+			'%Y-%m-%d')
+		</if>
+		<if test="functionGens != null and functionGens !='' ">
+			and FUNCTIONGENS like #{functionGens}
+		</if>
+		<if test="userId !=null">
+			and user_id = #{userId}
+		</if>
+	</select>
+</mapper>

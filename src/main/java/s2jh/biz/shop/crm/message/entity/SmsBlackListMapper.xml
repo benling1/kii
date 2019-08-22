@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+
+	<!--根据卖家ID查询黑名单信息 -->
+	<select id="findAllSmsBlacklist" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+		SELECT
+		c.id,c.nick,c.phone,c.type,c.createdate,c.add_source,c.remarks,
+		c.add_userid,c.createdBy,c.createdDate,c.lastModifiedBy,c.lastModifiedDate,c.optlock
+		FROM CRM_SMS_BLACKLIST c
+		where c.add_userid=#{addUserid}
+	</select>
+	
+	<!-- 查询卖家所有黑名单的手机号 -->
+	<select id="findAllPhones" parameterType="String" resultType="String">
+		select phone from CRM_SMS_BLACKLIST where USERID = #{_parameter} and IS_DELETE = '1' and phone is NOT NULL group by phone
+	</select>
+
+	<!--根据卖家条件查询黑名单信息 -->
+	<select id="conditionQuery" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+		SELECT c.id,c.nick,c.phone,c.type,c.createdate,c.add_source,c.remarks,
+		c.add_userid,c.createdBy,c.createdDate,c.lastModifiedBy,c.lastModifiedDate,c.optlock
+		FROM CRM_SMS_BLACKLIST c
+		<where>
+			1=1
+			<if test="userId !=null">
+				and c.add_userid =#{userId}
+			</if>
+			<if test="phone != null">
+				and c.phone= #{phone}
+			</if>
+			<if test="remarks != null">
+				and c.remarks like #{remarks}
+			</if>
+			<if test="startDate != null">
+				and DATE_FORMAT(c.createdate,'%Y/%m/%d') >=
+				DATE_FORMAT(#{startDate},'%Y/%m/%d')
+			</if>
+			<if test="endDate != null">
+				and DATE_FORMAT(#{endDate},'%Y/%m/%d') >=
+				DATE_FORMAT(c.createdate,'%Y/%m/%d')
+			</if>
+
+		</where>
+	</select>
+	
+	<!--根据卖家条件查询黑名单信息 -->
+	<select id="findBlackList" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+		SELECT c.id,c.nick,c.phone,c.type,c.createdate,c.add_source,c.remarks,
+		c.add_userid,c.createdBy,c.createdDate,c.lastModifiedBy,c.lastModifiedDate,c.optlock
+		FROM CRM_SMS_BLACKLIST c
+		<where>
+			1=1
+			<if test="userId !=null">
+				and c.userId =#{userId}
+			</if>
+			<if test="phone != null">
+				and c.content in 
+				<foreach item="item" index="index" collection="phone" open="("
+		            separator="," close=")">
+		            #{item}  
+		        </foreach>
+			</if>
+				and is_delete = '1'
+		</where>
+	</select>
+
+	<!-- 查询黑名单信息 -->
+	<select id="findSmsList" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		s.`nick`,s.`phone`,s.`type`,s.`createdate`,s.`add_source`,s.`CONTENT`
+		FROM CRM_SMS_BLACKLIST s
+	</select>
+
+	<!-- 查询黑名单信息 -->
+	<select id="findSmsList2" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+		SELECT s.`id`, s.`createdate`,s.`add_source` addSource,s.`CONTENT`
+		content,s.`IS_DELETE` isDelete,s.`USERID` userId,
+		CASE s.`TYPE`
+		WHEN 1 THEN '手机号'
+		WHEN 2 THEN '客户昵称'
+		END
+		AS type
+		FROM CRM_SMS_BLACKLIST s
+		WHERE s.`IS_DELETE` = 1
+		AND s.`USERID`=#{userId}
+		<if test="content != null">
+			AND s.`CONTENT` like CONCAT('%',#{content},'%')
+		</if>
+		ORDER BY s.`createdate` DESC
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	<select id="querySmsList" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+		SELECT s.`id`, s.`createdate`,s.`add_source` addSource,s.`CONTENT`
+		content,s.`IS_DELETE` isDelete,s.`USERID` userId,s.`TYPE` type
+		FROM CRM_SMS_BLACKLIST s
+		WHERE s.`IS_DELETE` = 1
+		AND s.`USERID`=#{userId}
+		<if test="content != null">
+			AND s.`CONTENT` like CONCAT('%',#{content},'%')
+		</if>
+		ORDER BY s.`createdate` DESC
+		limit #{startRows},#{currentRows}
+	</select>
+
+
+	<!-- 根据条件查询总条数 -->
+	<!-- 根据时间查询会员短信群发记录的总条数 -->
+	<select id="findTotalCountByContent" resultType="java.lang.Long">
+		SELECT COUNT(1) From CRM_SMS_BLACKLIST s
+		WHERE s.`IS_DELETE` = 1
+		AND USERID =#{userId}
+		<if test="content != null">
+			AND content like CONCAT('%',#{content},'%')
+		</if>
+		
+			
+		
+
+	</select>
+     
+    <!-- 删除营销中心黑名单数据 -->
+    <delete id="updateIsdelete">
+    
+       DELETE FROM CRM_SMS_BLACKLIST
+       <where>
+        <if test="nick!=null">
+          NICK = #{nick}
+        </if>
+        <if test="phone!=null">
+          and PHONE =#{phone}
+        </if>
+        <if test="userId!=null">
+         and USERID = #{userId}
+        </if>
+       </where>
+    </delete>
+	<!-- <update id="updateIsdelete">
+		UPDATE CRM_SMS_BLACKLIST s SET IS_DELETE=0
+		<where>
+			<if test="id != null">
+				id=#{id}
+			</if>
+
+
+		</where>
+	</update> -->
+
+	<!-- 查询手机号是否存在 -->
+    <select id="findContents" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+       SELECT * FROM crm_sms_blacklist s 
+       <where>
+         <if test="userId!=null">
+           s.`USERID`=#{userId}
+         </if>
+         <if test="content != null">
+				and s.`CONTENT` in 
+				<foreach item="item" index="index" collection="content" open="("
+		            separator="," close=")">
+		            #{item}  
+		        </foreach>
+			</if>
+         and s.`IS_DELETE`=1
+       </where>
+    </select>
+    
+    <!-- 根据id查询手机号 -->
+    <select id="findByNick" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+      SELECT * FROM crm_sms_blacklist 
+      <where>
+        <if test="id!=null">
+          id=#{id}
+        </if>
+      </where>
+    </select>
+    
+    <!-- 黑名单导入 -->
+    <insert id="insertDataBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">  
+   		insert into CRM_SMS_BLACKLIST (NICK,PHONE,TYPE,CREATEDATE,ADD_SOURCE,REMARKS,USERID,CONTENT,
+		IS_DELETE,lastModifiedBy,lastModifiedDate,optlock) values  
+		<foreach collection="list" item="smsBlack" index="index"  
+			separator=",">  
+			(#{smsBlack.nick},#{smsBlack.phone},#{smsBlack.type},#{smsBlack.createdate},#{smsBlack.addSource},
+			#{smsBlack.remarks},#{smsBlack.userId},#{smsBlack.content},#{smsBlack.isDelete},now(),now(),1)  
+		</foreach> 
+		<!--  insert into CRM_SMS_BLACKLIST 
+		(PHONE,TYPE,CONTENT,
+		    USERID,createdDate,lastModifiedBy,lastModifiedDate,optlock
+		) 
+		values  
+	    <foreach collection="list" item="smsBlack" index="index"  
+	        separator=",">  
+	        ( #{smsBlack.phone},#{smsBlack.type},#{smsBlack.content},
+	        #{smsBlack.userId},now(),now(),now(),1)  
+	    </foreach>   -->
+    </insert>  
+    
+    <!-- 清空黑名单 -->
+    <delete id="deleteSmsBlack">
+     DELETE FROM crm_sms_blacklist 
+     <where>
+      <if test="userId!=null">
+        USERID=#{userId}
+      </if>
+     </where>
+    </delete>
+    
+    <!-- 批量删除黑名单数据 -->
+    <delete id="deleteBeachSmsBlack" parameterType="java.util.Map">
+       DELETE FROM crm_sms_blacklist 
+       <where>
+          USERID=#{userId}
+       	  and CONTENT in
+           <foreach collection="data" item="content" index="index"  
+	        open="(" separator="," close=")">  
+	        #{content} 
+	    	</foreach>
+       </where>
+    </delete>
+    
+    <!-- 加密 -->
+    <select id="findPhoneType" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+       SELECT content FROM crm_sms_blacklist
+       <where>
+         <if test="userId!=null">
+           USERID=#{userId}
+         </if>
+         and TYPE=1
+       </where>
+    </select>
+    
+    <!-- 通过 content 查询 type类型(移出黑名单) -->
+    <select id="findContentType" resultType="String">
+      SELECT TYPE FROM crm_sms_blacklist 
+      <where>
+        <if test="userId!=null">
+          USERID=#{userId}
+        </if>
+        <if test="content!=null">
+          and CONTENT like CONCAT('%',#{content},'%')
+        </if>
+      </where>
+    </select>
+    
+    <!-- 定时任务 加密 -->
+    <select id="findSmsBlackListTiming" resultType="s2jh.biz.shop.crm.message.entity.SmsBlacklist">
+       select * from crm_sms_blacklist
+    </select>
+    
+    <!-- 定时任务 加密 更新内容 -->
+    <update id="updateSmsBlackEncryption">
+     UPDATE CRM_SMS_BLACKLIST
+     <set>
+	    NICK = #{nick},
+	    PHONE = #{phone},
+	    CONTENT = #{content}
+     </set> 
+     <where>
+       <if test="id!=null">
+          id =#{id}
+       </if>
+     </where>
+    </update>
+    
+    <!-- 查询用户是否在黑名单 -->
+    <select id="findExistsByNick" parameterType="java.util.Map" resultType="java.lang.Integer">
+    	SELECT count(*)
+    	FROM CRM_SMS_BLACKLIST
+    	WHERE NICK = #{buyerNick} OR PHONE=#{buyerPhone} AND USERID=#{sellerNick}
+    </select>
+    
+     <!-- 通过手机号查询用户是否在黑名单 -->
+    <select id="findExistsByPhone" parameterType="java.util.Map" resultType="java.lang.Integer">
+    	SELECT count(*)
+    	FROM CRM_SMS_BLACKLIST
+    	WHERE CONTENT = #{mobile} AND USERID=#{userId}
+    </select>
+</mapper>

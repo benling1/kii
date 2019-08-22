@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.item.pojo.TbItem">
+	<resultMap 	type="s2jh.biz.shop.crm.item.pojo.TbItem" id="tbItem">
+		<result column="num_iid" property="num_iid"/>
+		<result column="nick" property="nick"/>
+		<result column="title" property="title"/>
+		<result column="approve_status" property="approvestatus"/>
+		<result column="has_showcase" property="hasshowcase"/>
+		<result column="created" property="created"/>
+		<result column="modified" property="modified"/>
+		<result column="cid" property="cid"/>
+		<result column="has_discount" property="hasdiscount"/>
+		<result column="jdp_hashcode" property="jdphashcode"/>
+		<result column="jdp_response" property="jdpresponse"/>
+		<result column="jdp_delete" property="jdpdelete"/>
+		<result column="jdp_created" property="jdpcreated"/>
+		<result column="jdp_modified" property="jdpmodified"/>
+	</resultMap>
+	
+	<!-- 查询淘宝商品 -->
+	<select id="findTbItem" resultMap="tbItem">
+		SELECT * FROM jdp_tb_item i  
+		WHERE i.`jdp_modified` between DATE_SUB(now(), interval 5 minute) and now()
+	</select>
+	
+	<!-- 临时任务 -->
+	<select id="findTbItemNumIid" resultMap="tbItem">
+	  SELECT * FROM jdp_tb_item 
+	</select>
+	
+	<!-- 新  -->
+	<select id="findTbItemNumIids" resultType="String">
+	   SELECT num_iid FROM jdp_tb_item
+	</select>
+	
+	<!--  新2 -->
+	<select id="findNumIidss" resultMap="tbItem">
+	   SELECT * FROM jdp_tb_item
+	   <where>
+	     <if test="num_iid!=null">
+	       num_iid=#{num_iid}
+	     </if>
+	   </where>
+	  <!--  SELECT * FROM jdp_tb_item
+	   <where>
+	    <if test="num_iid!=null">
+			and num_iid in 
+			<foreach collection="num_iid" item="id" open="(" separator="," close=")" index="index">
+				 #{id}
+			</foreach>			
+		</if>
+	   </where> -->
+	</select>
+	
+	<!-- 多线程 查询 查询需要更新的总条数-->
+	<select id="findFivememinute" resultType="java.lang.Long">
+	  SELECT COUNT(num_iid) FROM jdp_tb_item
+	  <where>
+		jdp_modified BETWEEN #{beginTime} AND #{endTime} 
+      </where>
+	</select> 
+	
+	
+	<!-- 根据分页查询 -->
+	<!-- <select id="findTbFivememinute" resultMap="tbItem">
+	  SELECT `num_iid` ,`jdp_response` , `nick` , `approve_status`  FROM jdp_tb_item
+	  <where>
+			jdp_modified BETWEEN #{beginTime} AND #{endTime} 
+			Order by num_iid+0 ASC 
+			limit #{startRows},#{pageSize}
+        </where>
+	</select> -->
+	
+	<select id="findTbFivememinute" resultMap="tbItem">
+	  select t1. *  from `jdp_tb_item`  t1,
+		(SELECT `num_iid` FROM jdp_tb_item
+ 		where jdp_modified BETWEEN  #{beginTime} AND #{endTime} 
+		Order by num_iid+0 ASC 
+		limit #{startRows},#{pageSize}) t2 
+		where t1.`num_iid`  = t2.`num_iid`
+	</select>
+	
+	<!-- 查询出tbItem的数据总数 -->
+	<select id="findTbitemSum" resultType="java.lang.Long">
+	  SELECT COUNT(num_iid) FROM jdp_tb_item
+	</select>
+	
+	<!-- 按分页查询 -->
+	<select id="findTbItemDValue" resultMap="tbItem">
+       select t1. *  from `jdp_tb_item`  t1,
+		(SELECT `num_iid` FROM jdp_tb_item
+		Order by `jdp_modified` ASC 
+		limit #{taskCount},#{pageSize}) t2 
+		where t1.`num_iid`  = t2.`num_iid`
+      
+	</select>
+	
+	<!-- 查询正在出售中的商品数量 -->
+	<select id="getItemOnsaleNumber" parameterType="java.lang.Integer">
+		SELECT * FROM jdp_tb_item
+		WHERE nick =#{userId} and  now()> jdp_modified and  approve_status='onsale' 
+	</select>
+</mapper>

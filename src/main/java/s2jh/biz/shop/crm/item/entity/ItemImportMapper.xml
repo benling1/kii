@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.item.entity.ItemImport">
+	<resultMap 	type="s2jh.biz.shop.crm.item.entity.ItemImport" id="itemImport_Map">
+		<result column="nick" property="nick"/>
+		<result column="num_iid" property="numIid"/>
+		<result column="title" property="title"/>
+		<result column="price" property="price"/>
+		<result column="approve_status" property="approveStatus"/>
+		<result column="url" property="url"/>
+		<result column="itemId" property="itemId"/>
+	</resultMap>
+	
+	<insert id="insertItemImportList" parameterType="java.util.List">  
+		    insert into crm_item_import ( num_iid,nick,title,price,approve_status,url,createdDate) values  
+	    <foreach collection="list" item="item" index="index"  
+	        separator=",">  
+	        ( #{item.numIid},#{item.nick},#{item.title},#{item.price},#{item.approveStatus},#{item.url},now())  
+	    </foreach>  
+    </insert> 
+    
+    <!-- 通过userId查询所以的商品 -->
+	<select id="findItemTitleAndItemid" resultMap="itemImport_Map" parameterType="java.lang.String">
+	  SELECT * FROM (SELECT num_iid,title FROM crm_item
+		WHERE nick = #{userId}
+		UNION ALL
+		SELECT num_iid,title FROM crm_item_import
+		WHERE nick = #{userId}
+		)item
+	</select>
+	
+	<!-- 通过条件查询item数据 -->
+	<select id="findListToItemImport" resultMap="itemImport_Map">
+		SELECT num_iid,title,price,url
+		FROM crm_item_import
+		WHERE nick = #{userNick}
+		AND title LIKE '%${name}%'
+		limit #{startRows},#{currentRows} 
+	</select>
+	
+	<!-- 通过条件查询item数据 -->
+	<select id="findListToItemImportCount" resultType="java.lang.Integer">
+		SELECT count(*)
+		FROM crm_item_import
+		WHERE nick = #{userNick}
+		AND title LIKE '%${name}%'
+	</select>
+	
+	<!-- 通过条件查询Count数据 -->
+	<select id="findItemDatasCount" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM (SELECT num_iid FROM crm_item
+		<where>
+			nick = #{userNick}
+			<if test="numIid !=null">
+			 AND num_iid IN 
+				<foreach collection="numIid" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+			</if>
+			<if test="title !=null and title !='' ">
+			AND title LIKE '%${title}%'
+			</if>
+			<if test="status !=null">
+			AND approve_status IN 
+				<foreach collection="status" item="item" index="index"
+		     	 open="(" separator="," close=")">  
+		      	  #{item} 
+		   		</foreach>
+			</if>
+		</where>
+		UNION ALL
+		SELECT num_iid FROM crm_item_import
+		<where>
+			nick = #{userNick}
+			<if test="numIid !=null">
+			 AND num_iid IN 
+				<foreach collection="numIid" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+			</if>
+			<if test="title !=null and title !='' ">
+			AND title LIKE '%${title}%'
+			</if>
+			<if test="status !=null">
+			AND approve_status IN 
+				<foreach collection="status" item="item" index="index"
+		     	 open="(" separator="," close=")">  
+		      	  #{item} 
+		   		</foreach>
+			</if>
+		</where>
+		)item
+	</select>
+	<!-- 通过条件查询List数据 -->
+	<select id="findItemDatas" resultMap="itemImport_Map">
+		SELECT * FROM (SELECT num_iid itemId,title,price,url FROM crm_item
+		<where>
+			nick = #{userNick}
+			<if test="numIid !=null">
+			 AND num_iid IN 
+				<foreach collection="numIid" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+			</if>
+			<if test="title !=null and title !='' ">
+			AND title LIKE '%${title}%'
+			</if>
+			<if test="status !=null">
+			AND approve_status IN 
+				<foreach collection="status" item="item" index="index"
+		     	 open="(" separator="," close=")">  
+		      	  #{item} 
+		   		</foreach>
+			</if>
+		</where>
+		UNION ALL
+		SELECT num_iid itemId,title,price,url FROM crm_item_import
+		<where>
+			nick = #{userNick}
+			<if test="numIid !=null">
+			 AND num_iid IN 
+				<foreach collection="numIid" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+			</if>
+			<if test="title !=null and title !='' ">
+			AND title LIKE '%${title}%'
+			</if>
+			<if test="status !=null">
+			AND approve_status IN 
+				<foreach collection="status" item="item" index="index"
+		     	 open="(" separator="," close=")">  
+		      	  #{item} 
+		   		</foreach>
+			</if>
+		</where>
+		)item
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	
+	<!-- 通过条件查询List数据 -->
+	<select id="findItemDatasList" resultMap="itemImport_Map">
+		SELECT * FROM (SELECT num_iid itemId,title,price,url FROM crm_item
+		<where>
+			nick = #{userNick}
+			<if test="numIid !=null">
+			 AND num_iid IN 
+				<foreach collection="numIid" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+			</if>
+		</where>
+		UNION ALL
+		SELECT num_iid itemId,title,price,url FROM crm_item_import
+		<where>
+			nick = #{userNick}
+			<if test="numIid !=null">
+			 AND num_iid IN 
+				<foreach collection="numIid" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+			</if>
+		</where>
+		)item
+	</select>
+	
+	<delete id="batchDeleteImportItems" parameterType="java.util.List">
+		DELETE FROM crm_item_import WHERE num_iid IN
+			<foreach collection="list" item="item" index="index"
+			      open="(" separator="," close=")">  
+			        #{item} 
+			   </foreach>
+	</delete>
+</mapper>

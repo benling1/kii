@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.item.entity.Skus">
+	<resultMap 	type="s2jh.biz.shop.crm.item.entity.Skus" id="skus_Map">
+		<result column="barcode" property="barcode"/>
+		<result column="change_prop" property="changeProp"/>
+		<result column="created" property="created"/>
+		<result column="extra_id" property="extraId"/>
+		<result column="gmt_modified" property="gmtModified"/>
+		<result column="iid" property="iid"/>
+		<result column="memo" property="memo"/>
+		<result column="modified" property="modified"/>
+		<result column="num_iid" property="numIid"/>
+		<result column="outer_id" property="outerId"/>
+		<result column="price" property="price"/>
+		<result column="properties" property="properties"/>
+		<result column="quantity" property="quantity"/>
+		<result column="sku_delivery_time" property="skuDeliveryTime"/>
+		<result column="sku_id" property="skuId"/>
+		<result column="sku_spec_id" property="skuSpecId"/>
+		<result column="status" property="status"/>
+		<result column="with_hold_quantity" property="withHoldQuantity"/>
+	</resultMap>
+	
+	<!-- 更新Skus信息 -->
+	<update id="updateSkus">
+	 update crm_Sku
+	 <set>
+	   <if test="barcode!=null and barcode!=''">
+	     barcode=#{barcode},
+	   </if>
+	   
+	   <if test="changeProp!=null and changeProp!=''">
+	     change_prop=#{changeProp},
+	   </if>
+	   
+	   <if test="created!=null and created!=''">
+	     created=#{created},
+	   </if>
+	   
+	   <if test="extraId!=null and extraId!=''">
+	     extra_id=#{extraId},
+	   </if>
+	   
+	   <if test="gmtModified!=null and gmtModified!=''">
+	     gmt_modified=#{gmtModified},
+	   </if>
+	   
+	   <if test="iid!=null and iid!=''">
+	     iid=#{iid},
+	   </if>
+	   
+	   <if test="memo!=null and memo!=''">
+	    memo=#{memo},
+	   </if>
+	   
+	   <if test="modified!=null and modified!=''">
+	     modified=#{modified},
+	   </if>
+	   
+	   <if test="numIid!=null and numIid!=''">
+	    num_iid=#{numIid},
+	   </if>
+	   
+	   <if test="outerId!=null and outerId!=''">
+	     outer_id =#{outerId},
+	   </if>
+	   
+	   <if test="price!=null and price!=''">
+	     price= #{price},
+	   </if>
+	   
+	   <if test="properties!=null and properties!=''">
+	     properties=#{properties},
+	   </if>
+	   
+	   <if test="quantity!=null and quantity!=''">
+	     quantity=#{quantity},
+	   </if>
+	   
+	   <if test="skuDeliveryTime!=null ">
+	      sku_delivery_time=#{skuDeliveryTime},
+	   </if>
+	   
+	   <if test="skuId!=null and skuId!=''">
+	    sku_id=#{sku_id},
+	   </if>
+	   
+	   <if test="skuSpecId!=null and skuSpecId!=''">
+	     sku_spec_id=#{skuSpecId},
+	   </if>
+	   
+	   <if test="status!=null and status!=''">
+	     status=#{status},
+	   </if>
+	   
+	   <if test="withHoldQuantity!=null and withHoldQuantity!=''">
+	     with_hold_quantity=#{withHoldQuantity},
+	   </if>
+	 </set> 
+	 <where>
+	  <if test="iid !=null and iid!=''">
+	     iid=#{numiid}
+	  </if>
+	   <!-- <if test="numIid !=null and numIid!=''">
+	     num_iid =#{numIid}
+	   </if> -->
+	 </where>
+	</update>
+	
+	
+	<!-- 查询所有的 iid -->
+	<select id="findSkuIid" resultMap="skus_Map">
+	 SELECT iid FROM  crm_Sku
+	 <where>
+	  <if test="iid !=null and iid !=''">
+	    iid =#{iid}
+	  </if>
+	 </where>
+	</select>
+	
+	<!-- 通过消息推送的numiid 是否和skus的 iid 相同 -->
+	<select id="findiid" resultMap="skus_Map">
+	  SELECT * FROM crm_sku s WHERE s.`iid`=#{numiid}
+	</select>
+	
+	<!-- 通过淘宝推送的 numId 删除 相关商品 的 Skus 信息 -->
+	<delete id="delSkus">
+	  DELETE FROM crm_sku WHERE iid=#{numIid}
+	</delete>
+</mapper>

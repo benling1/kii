@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.item.entity.Item">
+	<resultMap 	type="s2jh.biz.shop.crm.item.entity.Item" id="item_Map">
+		<result column="num_iid" property="numIid"/>
+		<result column="nick" property="nick"/>
+		<result column="approve_status" property="approveStatus"/>
+		<result column="cid" property="cid"/>
+		<result column="has_showcase" property="hasShowcase"/>
+		<result column="has_discount" property="hasDiscount"/>
+		<result column="created" property="created"/>
+		<result column="modified" property="modified"/>
+		<result column="seller_cids" property="sellerCids"/>
+		<result column="props" property="props"/>
+		<result column="input_pids" property="inputPids"/>
+		<result column="input_str" property="inputStr"/>
+		<result column="num" property="num"/>
+		<result column="list_time" property="listTime"/>
+		<result column="delist_time" property="delistTime"/>
+		<result column="stuff_status" property="stuffStatus"/>
+		<result column="zip" property="zip"/>
+		<result column="address" property="address"/>
+		<result column="city" property="city"/>
+		<result column="state" property="state"/>
+		<result column="country" property="country"/>
+		<result column="district" property="district"/>
+		<result column="freight_payer" property="freightPayer"/>
+		<result column="url" property="url"/>
+		<result column="is_3D" property="is3D"/>
+		<result column="score" property="score"/>
+		<result column="sell_promise" property="sellPromise"/>
+		<result column="title" property="title"/>
+		<result column="type" property="type"/>
+		<result column="item_desc" property="itemDesc"/>
+		<result column="sku_id" property="sku_id"/>
+		<result column="properties" property="properties"/>
+		<result column="quantity" property="quantity"/>
+		<result column="sku_price" property="sku_price"/>
+		<result column="sku_created" property="sku_created"/>
+		<result column="sku_modified" property="sku_modified"/>
+		<result column="sku_status" property="sku_status"/>
+		<result column="sku_properties_name" property="sku_properties_name"/>
+		<result column="sku_spec_id" property="sku_spec_id"/>
+		<result column="sku_with_hold_quantity" property="withHoldQuantity"/>
+		<result column="sku_delivery_time" property="sku_delivery_time"/>
+		<result column="change_prop" property="changeProp"/>
+		<result column="props_name" property="propsName"/>
+		<result column="promoted_service" property="promotedService"/>
+		<result column="is_lightning_consignment" property="isLightningConsignment"/>
+		<result column="is_fenxiao" property="isFenxiao"/>
+		<result column="auction_point" property="auctionPoint"/>
+		<result column="property_alias" property="propertyAlias"/>
+		<result column="template_id" property="templateId"/>
+		<result column="after_sale_id" property="afterSaleId"/>
+		<result column="is_xinpin" property="isXinpin"/>
+		<result column="sub_stock" property="subStock"/>
+		<result column="features" property="features"/>
+		<result column="item_weight" property="itemWeight"/>
+		<result column="item_size" property="itemSize"/>
+		<result column="with_hold_quantity" property="with_hold_quantity"/>
+		<result column="sell_point" property="sellPoint"/>
+		<result column="valid_thru" property="validThru"/>
+		<result column="outer_id" property="outerId"/>
+		<result column="auto_fill" property="autofill"/>
+		<result column="desc_modules" property="descModules"/>
+		<result column="custom_made_type_id" property="customMadeTypeId"/>
+		<result column="wireless_desc" property="wirelessDesc"/>
+		<result column="barcode" property="barcode"/>
+		<result column="newprepay" property="newprepay"/>
+		<result column="price" property="price"/>
+		<result column="post_fee" property="postFee"/>
+		<result column="express_fee" property="expressFee"/>
+		<result column="ems_fee" property="emsFee"/>
+		<result column="global_stock_type" property="globalStockType"/>
+		<result column="global_stock_country" property="globalStockCountry"/>
+		<result column="large_screen_image_url" property="largeScreenImageUrl"/>
+		<result column="itemCount" property="itemCount"/>
+		<result column="subtitle" property="subtitle"/>
+	</resultMap>
+	<!-- 统计正在售货中的商品数量 -->
+	<select id="findCountOnsaleByManual" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM crm_item
+		WHERE approve_status='onsale' AND nick=#{sellerName} 
+	</select>
+	<!-- 统计正在售货中的商品数量 -->
+	<select id="findCountByOnsale" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT nick sellerNick,COUNT(*) count
+		FROM crm_item
+		WHERE approve_status='onsale'
+		GROUP BY nick
+	</select>
+	<!-- 通过条件查询item数据 -->
+	<select id="findListToItem" resultMap="item_Map">
+		SELECT num_iid,title,price,url
+		FROM crm_item
+		<where>
+				and nick = #{userNick}
+			<if test="name !=null and name !='' ">
+				and title LIKE '%${name}%'
+			</if>
+			<if test="commodityId !=null and commodityId !='' ">
+				and num_iid = #{commodityId}
+			</if>
+			<if test="status !=null and status !='' ">
+				and approve_status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 更新商品信息 -->
+	<update id="updateItem">
+	  update crm_item
+	  <set>
+	   <if test="numIid!=null and numIid !=''">
+	     num_iid=#{numIid},
+	   </if>
+	   
+	   <if test="nick!=null and nick !=''">
+	    nick=#{nick},
+	   </if>
+	   
+	   <if test="approveStatus!=null and approveStatus!=''">
+	     approve_status=#{approveStatus},
+	   </if>
+	   
+	   <if test="cid !=null and cid !=''">
+	     cid=#{cid},
+	   </if>
+	   
+	   <if test="hasShowcase !=null and hasShowcase!=''">
+	    has_showcase=#{hasShowcase},
+	   </if>
+	   
+	   <if test="hasDiscount !=null and hasDiscount!=''">
+	    has_discount=#{hasDiscount},
+	   </if>
+	   
+	   <if test="created != null">
+	    created=#{created},
+	   </if>
+	   
+	   <if test="modified !=null ">
+	    modified=#{modified},
+	   </if>
+	   
+	   <if test="sellerCids !=null and sellerCids!=''">
+	     seller_cids=#{sellerCids},
+	   </if>
+	   
+	   <if test="props !=null and props!=''">
+	    props=#{props},
+	   </if>
+	   
+	   <if test="inputPids!=null and inputPids!=''">
+	    input_pids =#{inputPids},
+	   </if>
+	   
+	   <if test="price!=null and price!=''">
+	    price =#{price},
+	   </if>
+	   
+	   <if test="inputStr!=null and inputStr!=''">
+	     input_str =#{inputStr},
+	   </if>
+	   
+	   <if test="num!=null and num!=''">
+	     num= #{num},
+	   </if>
+	   
+	   <if test="listTime !=null">
+	     list_time=#{listTime},
+	   </if>
+	   
+	   <if test="delistTime!=null">
+	    delist_time=#{delistTime},
+	   </if>
+	   
+	   <if test="stuffStatus!=null and stuffStatus!=''">
+	    stuff_status=#{stuffStatus},
+	   </if>
+	   
+	   <if test="zip!=null and zip!=''">
+	     zip=#{zip},
+	   </if>
+	   
+	   <if test="address!=null and address!=''">
+	    address=#{address},
+	   </if>
+	   
+	   <if test="city!=null and city!=''">
+	    city=#{city},
+	   </if>
+	   
+	   <if test="state!=null and state!=''">
+	    state=#{state},
+	   </if>
+	   
+	   <if test="country!=null and country!=''">
+	    country=#{country},
+	   </if>
+	   
+	   <if test="district!=null and district!=''">
+	    district=#{district},
+	   </if>
+	   
+	   <if test="freightPayer!=null and freightPayer!=''">
+	    freight_payer= #{freightPayer},
+	   </if>
+	   
+	   <if test="url!=null and url!=''">
+	    url=#{url},
+	   </if>
+	   
+	   <if test="is3D!=null and is3D!=''">
+	     is_3D=#{is3D},
+	   </if>
+	   
+	   <if test="score!=null and score!=''">
+	    score=#{score},
+	   </if>
+	   
+	   <if test="sellPromise!=null and sellPromise!=''">
+	     sell_promise=#{sellPromise},
+	   </if>
+	   
+	   <if test="title!=null and title!=''">
+	    title=#{title},
+	   </if>
+	   
+	   <if test="type!=null and type!=''">
+	    type=#{type},
+	   </if>
+	   
+	   <if test="itemDesc!=null and itemDesc!=''">
+	     item_desc=#{itemDesc},
+	   </if>
+	   
+	   <if test="sku_id!=null and sku_id!=''">
+	     sku_id=#{sku_id},
+	   </if>
+	   
+	   <if test="properties!=null and properties!=''">
+	    properties=#{properties},
+	   </if>
+	   
+	   <if test="quantity!=null and quantity!=''">
+	     quantity=#{quantity},
+	   </if>
+	   
+	   <if test="sku_price!=null and sku_price!=''">
+	     sku_price=#{sku_price},
+	   </if>
+	   
+	   <if test="sku_created!=null and sku_created!=''">
+	    sku_created=#{sku_created},
+	   </if>
+	   
+	   <if test="sku_modified!=null and sku_modified!=''">
+	    sku_modified=#{sku_modified},
+	   </if>
+	   
+	   <if test="sku_status!=null and sku_status!=''">
+	    sku_status=#{sku_status},
+	   </if>
+	   
+	   <if test="sku_properties_name!=null and sku_properties_name!=''">
+	    sku_properties_name=#{sku_properties_name},
+	   </if>
+	   
+	   <if test="sku_spec_id!=null and sku_spec_id!=''">
+	    sku_spec_id=#{sku_spec_id},
+	   </if>
+	   
+	   <if test="withHoldQuantity!=null and withHoldQuantity!=''">
+	     sku_with_hold_quantity=#{withHoldQuantity},
+	   </if>
+	   
+	   <if test="sku_delivery_time!=null and sku_delivery_time!=''">
+	    sku_delivery_time=#{sku_delivery_time},
+	   </if>
+	   
+	   <if test="changeProp!=null and changeProp!=''">
+	    change_prop=#{changeProp},
+	   </if>
+	   
+	   <if test="propsName!=null and propsName!=''">
+	    props_name=#{propsName},
+	   </if>
+	   
+	   <if test="promotedService!=null and promotedService!=''">
+	    promoted_service=#{promotedService},
+	   </if>
+	   
+	   <if test="isLightningConsignment!=null and isLightningConsignment!=''">
+	     is_lightning_consignment=#{isLightningConsignment},
+	   </if>
+	   
+	   <if test="isFenxiao!=null and isFenxiao!=''">
+	     is_fenxiao=#{isFenxiao},
+	   </if>
+	  </set>
+	  <where>
+	    num_iid = #{numIid}
+	   <!-- num_iid = #{numiid} -->
+	  </where>
+	</update>
+	
+	<!--查询所有的numIid -->
+	<select id="findNumIid" resultMap="item_Map">
+	  SELECT num_iid FROM crm_item
+	  <where>
+	   <if test="numIid!=null and numIid!=''">
+	     num_iid= #{numIid}
+	   </if>
+	  </where>
+	</select>
+	
+	<!-- 查询所有item -->
+	<select id="findAllItemByNick" resultMap="item_Map">
+		select num_iid from crm_item where nick = #{nick}
+	</select>
+	
+	<!-- 订单短信群发中查找所有商品 - Ajax分页 -->
+	<select id="queryItemByCondition" resultMap="item_Map">
+		select title,price,num_iid,url 
+			from crm_item 
+			<where>
+				nick = #{userNick}
+				<if test="name !=null and name !='' ">
+					and title LIKE '%${name}%'
+				</if>
+				<if test="approveStatus != null and approveStatus != ''">
+					and approve_status = #{approveStatus}
+				</if>
+			</where>
+			limit #{pageIndex},#{pageSize}
+	</select>
+	
+	<!-- 订单短信群发中查找所有商品的个数 - Ajax分页 -->
+	<select id="queryItemByConditionCount" resultType="int">
+		select count(*)
+			from crm_item 
+			<where>
+				nick = #{userNick}
+				<if test="approveStatus != null and approveStatus != ''">
+					and approve_status = #{approveStatus}
+				</if>
+				<if test="name !=null and name !='' ">
+					and title LIKE '%${name}%'
+				</if>
+			</where>
+	</select>
+	
+	<!-- 查询 淘宝推送的 numiid 是否 存在Item表中 -->
+	<select id="findItemNumIid" resultMap="item_Map">
+	  SELECT * FROM crm_item i WHERE i.`num_iid`=#{numiid} AND i.`nick`=#{taobaoUserNick}
+	</select>
+	
+	<!-- 根据淘宝推送的 numIid 和 nick 删除 这个商品 -->
+	<delete id="delItem">
+	   DELETE FROM crm_item 
+	   <where>
+	    <if test="numIid!=null and numIid!=''">
+	      num_iid=#{numIid}
+	    </if>
+	    <if test="nick!=null and nick!=''">
+	      and nick=#{nick}
+	    </if>
+	   </where>
+	</delete>
+	
+	
+	<!--临时任务 查询 淘宝表 中的 numIid是否在 Item表中 -->
+	<select id="findIsNumIid" resultType="java.lang.Long" >
+	  SELECT COUNT(*) FROM  crm_item
+	  <where>
+	   <if test="numIid!=null and numIid!=''">
+	     num_iid=#{numIid}
+	   </if>
+	  </where>
+	</select>
+	
+	
+	<!-- 新 -->
+	 <select id="findItemNumIids" resultType="String">
+	   SELECT num_iid FROM crm_item
+	</select> 
+	
+	<!-- 定時 記錄節點 -->
+	<select id="findTaskCounts" resultType="java.lang.Long">
+	  SELECT task_node FROM CRM_TASKNODE
+		WHERE TYPE = 'items'
+	</select>
+	
+	<!--  修改定時  保存数据库的节点 CRM_TASKNODE 表-->
+	<update id="updateTaskCounts">
+	    UPDATE CRM_TASKNODE
+		SET task_node = #{taskCounts},
+		task_endTime = #{endTime}
+		WHERE TYPE = 'items'
+	</update>
+	
+	<!-- 全局找回丢失数据 -->
+	<select id="findTaskCount" resultType="java.lang.Long" >
+	   SELECT task_node FROM CRM_TASKNODE
+		WHERE TYPE = 'item'
+	</select>
+	
+	<!-- 修改保存数据库的节点 CRM_TASKNODE 表 -->
+	<update id="updateTaskCount">
+	    UPDATE CRM_TASKNODE
+		SET task_node = #{taskCount},
+		task_endTime = #{endTime}
+		WHERE TYPE = 'item'
+	</update>
+	
+	<!-- 统计正在售货中的商品数量 @author:jackstraw_yu-->
+	<select id="findCountOnsale" parameterType="java.util.Map" resultType="java.lang.Long">
+		SELECT COUNT(1)
+		FROM crm_item
+		WHERE approve_status='onsale' 
+		AND delist_time   &gt;= #{maxTime}
+		AND nick=#{userId} 
+	</select>
+	
+	<!-- 商品分组 查询商品 resultType="s2jh.biz.shop.crm.item.entity.Item"-->
+	<select id="findItem" resultMap="item_Map">
+	  SELECT num_iid,title,nick,approve_status,price,url FROM crm_item
+	  <where>
+	     nick = #{nick}
+	   <if test="title!=null and title!=''">
+	     and title like '%${title}%'
+	   </if>
+	   <if test="approveStatus!=null and approveStatus!=''">
+	     and approve_status='onsale' 
+	   </if>
+	   <if test="numIid!=null and numIid!=''">
+	     and num_iid=#{numIid}
+	    </if>
+	  </where>
+	  ORDER BY modified DESC
+	  limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 商品分组，创建分组查询商品信息,resultType="s2jh.biz.shop.crm.item.entity.Item" -->
+	<select id="findGroupItem" resultMap="item_Map">
+	   SELECT num_iid,title,price,approve_status,url FROM crm_item 
+	   <where>
+	     <if test="nick!=null and nick!=''">
+	       nick = #{nick}
+	     </if>
+	     
+	     <if test="numIid!=null and numIid!=''">
+	       and num_iid =#{numIid}
+	    </if>
+	   </where>
+	</select> 
+	
+	<!--商品分组 ，查询店铺商品总数据 -->
+	<select id="findItemCount" resultType="java.lang.Long">
+	  SELECT COUNT(1) FROM crm_item
+	  <where>
+	     nick = #{nick}
+	   <if test="title!=null and title!=''">
+	     and title like '%${title}%'
+	   </if>
+	   <if test="approveStatus!=null and approveStatus!=''">
+	     and approve_status='onsale' 
+	   </if>
+	   <if test="numIid!=null and numIid!=''">
+	     and num_iid=#{numIid}
+	    </if>
+	  </where>
+	</select>
+	
+	<!-- 设置页商品查询 -->
+	<select id="findsetupCommodity" resultMap="item_Map">
+	  SELECT num_iid,title,price,approve_status,url FROM crm_item 
+	  <where>
+	    nick = #{nick}
+	    and num_iid in
+		   <foreach collection="numIid" item="numIid" index="index"
+		      open="(" separator="," close=")">  
+		        #{numIid} 
+		   </foreach>
+	  </where>
+	</select>
+	
+	
+	
+	
+	<insert id="insertbatchItemList" parameterType="java.util.List">  
+		    insert into crm_item ( num_iid,nick,title,price,num,approve_status,item_desc,createdDate) values  
+	    <foreach collection="list" item="item" index="index"  
+	        separator=",">  
+	        ( #{item.numIid},#{item.nick},#{item.title},#{item.price},#{item.num}, #{item.approveStatus},#{item.itemDesc},#{item.createdDate}
+	        )  
+	    </foreach>  
+    </insert>  
+    
+	<!-- 通过userId查询所以的商品 -->
+	<select id="findItemTitleAndItemid" resultMap="item_Map" parameterType="java.lang.String">
+	  SELECT num_iid,title FROM crm_item WHERE nick = #{userId}
+	</select>
+	
+	<!-- 根据商品名称查询商品（订单中心商品缩写） -->
+	<select id="listItemByTitle" resultMap="item_Map">
+		select id,num_iid,title,price,num,url,subtitle
+		from crm_item
+		<where>
+			nick = #{userId}
+			<if test="title != null and title != ''">
+				and title like '%${title}%'
+			</if>
+			<if test="numIid != null">
+				and num_iid = #{numIid}
+			</if>
+			<if test="groupId != null">
+				and num_iid in (select num_iid from crm_grouped_goods where group_id = #{groupId})
+			</if>
+			<if test="approveStatus != null and approveStatus != ''">
+				and approve_status = #{approveStatus}
+			</if>
+		</where>
+		limit #{startRows},#{pageSize}
+	</select>
+	
+	<!-- 根据商品名称查询商品总数（订单中心商品缩写） -->
+	<select id="countItemByTitle" resultType="java.lang.Integer">
+		select count(id)
+		from crm_item
+		<where>
+			nick = #{userId}
+			<if test="title != null and title != ''">
+				and title like '%${title}%'
+			</if>
+			<if test="numIid != null">
+				and num_iid = #{numIid}
+			</if>
+			<if test="groupId != null">
+				and num_iid in (select num_iid from crm_grouped_goods where group_id = #{groupId})
+			</if>
+			<if test="approveStatus != null and approveStatus != ''">
+				and approve_status = #{approveStatus}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 更改缩写 -->
+	<update id="updateItemSubtitle">
+		update crm_item
+		<set>
+			subtitle = #{subtitle}
+		</set>
+		<where>
+			id = #{itemId}
+		</where>
+	</update>
+	
+	<!-- 根据商品id查询商品缩写 -->
+	<select id="findSubtitleById" parameterType="java.lang.Long" resultMap="item_Map">
+		select subtitle,title
+		from crm_item
+		where num_iid = #{numId}
+	</select>
+</mapper>

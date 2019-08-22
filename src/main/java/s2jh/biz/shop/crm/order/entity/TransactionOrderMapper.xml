@@ -1,0 +1,1357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.TransactionOrder">
+	<resultMap type="s2jh.biz.shop.crm.order.entity.TransactionOrder" id="transactionOrder">
+		<result column="TID" property="tid"/>
+		<result column="SELLER_NICK" property="sellerNick"/>
+		<result column="PIC_PATH" property="picPath"/>
+		<result column="PAYMENT" property="payment"/>
+		<result column="SELLER_RATE" property="sellerRate"/>
+		<result column="POST_FEE" property="postFee"/>
+		<result column="RECEIVER_NAME" property="receiverName"/>
+		<result column="RECEIVER_STATE" property="receiverState"/>
+		<result column="RECEIVER_ADDRESS" property="receiverAddress"/>
+		<result column="RECEIVER_ZIP" property="receiverZip"/>
+		<result column="RECEIVER_MOBILE" property="receiverMobile"/>
+		<result column="RECEIVER_PHONE" property="receiverPhone"/>
+		<result column="CONSIGN_TIME" property="consignTime"/>
+		<result column="RECEIVED_PAYMENT" property="receivedPayment"/>
+		<result column="EST_CON_TIME" property="estConTime"/>
+		<result column="INVOICE_KIND" property="invoiceKind"/>
+		<result column="RECEIVER_COUNTRY" property="receiverCountry"/>
+		<result column="RECEIVER_TOWN" property="receiverTown"/>
+		<result column="ORDER_TAX_FEE" property="orderTaxFee"/>
+		<result column="PAID_COUPON_FEE" property="paidCouponFee"/>
+		<result column="SHOP_PICK" property="shopPick"/>
+		<result column="NUM" property="num"/>
+		<result column="STATUS" property="status"/>
+		<result column="TITLE" property="title"/>
+		<result column="TYPE" property="type"/>
+		<result column="PRICE" property="price"/>
+		<result column="DISCOUNT_FEE" property="discountFee"/>
+		<result column="HAS_POST_FEE" property="hasPostFee"/>
+		<result column="TOTAL_FEE" property="totalFee"/>
+		<result column="CREATED" property="created"/>
+		<result column="PAY_TIME" property="payTime"/>
+		<result column="MODIFIED" property="modified"/>
+		<result column="END_TIME" property="endTime"/>
+		<result column="BUYER_MESSAGE" property="buyerMessage"/>
+		<result column="BUYER_MEMO" property="buyerMemo"/>
+		<result column="BUYER_FLAG" property="buyerFlag"/>
+		<result column="SELLER_MEMO" property="sellerMemo"/>
+		<result column="SELLER_FLAG" property="sellerFlag"/>
+		<result column="INVOICE_NAME" property="invoiceName"/>
+		<result column="INVOICE_TYPE" property="invoiceType"/>
+		<result column="BUYER_NICK" property="buyerNick"/>
+		<result column="TRADE_ATTR" property="tradeAttr"/>
+		<result column="CREDIT_CARD_FEE" property="creditCardFee"/>
+		<result column="STEP_TRADE_STATUS" property="stepTradeStatus"/>
+		<result column="STEP_PAID_FEE" property="stepPaidFee"/>
+		<result column="MARK_DESC" property="markDesc"/>
+		<result column="SHIPPING_TYPE" property="shippingType"/>
+		<result column="BUYER_COD_FEE" property="buyerCodFee"/>
+		<result column="ADJUST_FEE" property="adjustFee"/>
+		<result column="TRADE_FROM" property="tradeFrom"/>
+		<result column="BUYER_RATE" property="buyerRate"/>
+		<result column="RECEIVER_CITY" property="receiverCity"/>
+		<result column="RECEIVER_DISTRICT" property="receiverDistrict"/>
+		<result column="O2O" property="o2o"/>
+		<result column="O2O_GUIDE_ID" property="o2oGuideId"/>
+		<result column="O2O_SHOP_ID" property="o2oShopId"/>
+		<result column="O2O_GUIDE_NAME" property="o2oGuideName"/>
+		<result column="O2O_SHOP_NAME" property="o2oShopName"/>
+		<result column="O2O_DELIVERY" property="o2oDelivery"/>
+		<result column="ETICKET_SERVICE_ADDR" property="eticketServiceAddr"/>
+		<result column="RX_AUDIT_STATUS" property="rxAuditStatus"/>
+		<result column="ES_RANGE" property="esRange"/>
+		<result column="ES_DATE" property="esDate"/>
+		<result column="OS_DATE" property="osDate"/>
+		<result column="OS_RANGE" property="osRange"/>
+		<result column="COUPON_FEE" property="couponFee"/>
+		<result column="POST_GATE_DECLARE" property="postGateDeclare"/>
+		<result column="CROSS_BONDED_DECLARE" property="crossBondedDeclare"/>
+		<result column="OMNICHANNEL_PARAM" property="omnichannelParam"/>
+		<result column="ASSEMBLY" property="assembly"/>
+		<result column="TOP_HOLD" property="topHold"/>
+		<result column="OMNI_ATTR" property="omniAttr"/>
+		<result column="OMNI_PARAM" property="omniParam"/>
+		<result column="IS_SH_SHIP" property="isShShip"/>
+		<result column="O2O_SNATCH_STATUS" property="o2oSnatchStatus"/>
+		<result column="MARKET" property="market"/>
+		<result column="ET_TYPE" property="etType"/>
+		<result column="ET_SHOP_ID" property="etShopId"/>
+		<result column="OBS" property="obs"/>
+		<collection property="orderList" ofType="s2jh.biz.shop.crm.order.entity.Orders"  column="tid">
+			<result column="tid" property="tid"/>
+			<result column="oid" property="oid"/>
+			<result column="pic_o_path" property="picPath"/>
+			<result column="o_title" property="title"/>
+			<result column="o_price" property="price"/>
+			<result column="o_num" property="num"/>
+			<result column="order_o_from" property="orderFrom"/>
+			<result column="refund_o_status" property="refundStatus"/>
+		</collection>
+	</resultMap>
+	
+	
+	
+	<resultMap type="s2jh.biz.shop.crm.manage.entity.TradeDTO" id="tradeToMongo">
+			<result column="t_tid" property="tid"/>
+			<result column="t_BUYER_NICK" property="buyerNick"/>
+			<result column="t_PRICE" property="priceMoney"/>
+			<result column="t_POST_FEE" property="postFee"/>
+			<result column="t_TOTAL_FEE" property="totalFeeMoney"/>
+			<result column="t_PAYMENT" property="paymentMoney"/>
+			<result column="t_STATUS" property="status"/>
+			<result column="t_BUYER_MESSAGE" property="buyerMessage"/>
+			<result column="t_RECEIVER_NAME" property="receiverName"/>
+			<result column="t_RECEIVER_ADDRESS" property="receiverAddress"/>
+			<result column="t_RECEIVER_CITY" property="receiverCity"/>
+			<result column="t_RECEIVER_PHONE" property="receiverPhone"/>
+			<result column="t_RECEIVER_MOBILE" property="receiverMobile"/>
+			<result column="t_CREATED" property="createdUTC"/>
+			<result column="t_PAY_TIME" property="payTimeUTC"/>
+			<result column="t_NUM" property="numGoods"/>
+			<result column="t_TITLE" property="title"/>
+			<result column="t_SELLER_NICK" property="sellerNick"/>
+			<result column="t_TYPE" property="type"/>
+			<result column="t_TRADE_FROM" property="tradeFrom"/>
+			<result column="O_TITLE" property="buyerMemo"/>
+	</resultMap>
+	<!-- 手动统计卖家 根据订单的类型来统计订单数   无线 pc 聚划算和成交额-->
+	<select id="findAllUserTradeCountTypeByManual" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT  trade_from tradeFrom,COUNT(*) count,ROUND(SUM(payment),2) total
+		FROM CRM_TRADE
+		WHERE pay_time BETWEEN #{startDate} AND #{endDate}  AND seller_nick=#{sellerName}
+		GROUP BY trade_from
+	</select>
+	<!-- 手动统计卖家 统计各个状态的订单数 -->
+	<select id="findAllTradeCountOrderFromByManual" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT trade_from tradeFrom,COUNT(*) count
+		FROM CRM_TRADE	
+		WHERE created BETWEEN #{startDate} AND #{endDate} AND seller_nick=#{sellerName}
+		GROUP BY trade_from
+	</select>
+	<!-- 手动统计卖家 统计商铺待付款的订单数 -->
+	<select id="findAllTradeWaitPayByManual" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT COUNT(status) count
+		FROM CRM_TRADE
+		WHERE modified BETWEEN #{startDate} AND #{endDate} AND status='WAIT_BUYER_PAY' AND seller_nick=#{sellerName}
+	</select>
+	<!-- 手动统计卖家 查询订单支付交易成功额 -->
+	<select id="findTradePaymentSuccessByManual" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT COUNT(*) count,SUM(payment) total
+		FROM CRM_TRADE
+		WHERE pay_time BETWEEN #{startDate} AND #{endDate} AND seller_nick=#{sellerName}
+	</select>
+	<!-- 手动统计卖家的全部订单数 -->
+	<select id="findAllTradeCountByManual" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM CRM_TRADE	
+		WHERE created BETWEEN #{startDate} AND #{endDate} AND seller_nick=#{sellerName} 
+	</select>
+	<!-- 查询买家最后一次付款时间 -->
+	<select id="findBuyerEndPaymentTime" parameterType="java.util.Map" resultType="java.util.Date">
+		SELECT pay_time
+		FROM CRM_TRADE
+		WHERE buyer_nick=#{buyerName} AND seller_nick=#{sellerName} 
+		ORDER BY pay_time DESC LIMIT 0,1
+	</select>
+	<!-- 查询用户最后一次交易时间 -->
+	<select id="findBuyerLastTradeTime" parameterType="java.util.Map" resultType="java.util.Date">
+		SELECT created
+		FROM CRM_TRADE
+		WHERE buyer_nick=#{buyerName} AND seller_nick=#{sellerName} 
+		ORDER BY created DESC LIMIT 0,1
+	</select>
+	<!-- 自动更新用户的最新数据的统计 -->
+	<select id="findByMemberInfoByTrade" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT status,COUNT(status) count,SUM(payment) total,AVG(payment) avg,SUM(num) cowry
+		FROM CRM_TRADE
+		WHERE buyer_nick=#{buyerName} AND seller_nick=#{sellerName}  
+		GROUP BY status
+	</select>
+	<!-- 统计各个状态的订单数 -->
+	<select id="findAllTradeCountOrderFrom" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT seller_nick sellerNick,trade_from tradeFrom,COUNT(*) count
+		FROM CRM_TRADE	
+		WHERE created &gt; #{startDate} AND created &lt; #{endDate}
+		GROUP BY seller_nick,trade_from
+	</select>
+	<!-- 根据订单的类型来统计订单数   无线 pc 聚划算和成交额     大于 &gt;   小于 &lt;-->
+	<select id="findAllUserTradeCountType" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT  seller_nick sellerNick,trade_from tradeFrom,SUM(payment) total
+		FROM CRM_TRADE
+		WHERE pay_time &gt; #{startDate} AND pay_time &lt; #{endDate}
+		GROUP BY seller_nick,trade_from
+	</select>
+	<!-- 统计商铺待付款的订单数 -->
+	<select id="findAllTradeWaitPay" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT seller_nick sellerNick,COUNT(status) count
+		FROM CRM_TRADE
+		WHERE modified BETWEEN #{startDate} AND #{endDate} AND status='WAIT_BUYER_PAY'
+		GROUP BY seller_nick
+	</select>
+	<!-- 查询订单支付交易成功额 -->
+	<select id="findTradePaymentSuccess" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT seller_nick sellerNick,COUNT(*) count,SUM(payment) total
+		FROM CRM_TRADE
+		WHERE pay_time BETWEEN #{startDate} AND #{endDate}
+		GROUP BY seller_nick
+	</select>
+	<!-- 统计全部订单数 -->
+	<select id="findAllTradeCounts" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT seller_nick sellerNick,COUNT(*) count
+		FROM CRM_TRADE	
+		WHERE created BETWEEN #{startDate} AND #{endDate} 
+		GROUP BY seller_nick
+	</select>
+	
+	<!-- 通过tid查询orders-->
+	<select id="isExistTransactionOrder" resultMap="transactionOrder">
+		select * from CRM_TRADE where tid = #{tid}
+	</select>
+	
+	
+
+	<select id="findByTid" parameterType="java.lang.Integer" resultMap="transactionOrder">
+		SELECT
+		  tid,seller_nick,pic_path,payment,seller_rate,post_fee,receiver_name,receiver_state,receiver_address,receiver_zip,receiver_mobile,receiver_phone,consign_time,received_payment,est_con_time,invoice_kind,receiver_country,receiver_town,order_tax_fee,paid_coupon_fee,shop_pick,num,num_iid,status,title,type,price,discount_fee,has_post_fee,total_fee,created,pay_time,modified,end_time,buyer_message,buyer_memo,buyer_flag,seller_memo,seller_flag,invoice_name,invoice_type,buyer_nick,trade_attr,credit_card_fee,step_trade_status,step_paid_fee,mark_desc,shipping_type,buyer_cod_fee,adjust_fee,trade_from,buyer_rate,receiver_city,receiver_district,o2o,o2o_guide_id,o2o_shop_id,o2o_guide_name,o2o_shop_name,o2o_delivery,eticket_service_addr,rx_audit_status,es_range,es_date,os_date,os_range,coupon_fee,post_gate_declare,cross_bonded_declare,omnichannel_param,assembly,top_hold,omni_attr,omni_param,is_sh_ship,o2o_snatch_status,market,et_type,et_shop_id,obs,id,createdBy,createdDate,lastModifiedBy,lastModifiedDate,optlock
+		FROM crm_trade
+		WHERE tid = #{tid}
+	</select>
+	<select id="findByTidSendMessage" parameterType="java.lang.Integer" resultMap="transactionOrder">
+		SELECT *
+		FROM crm_trade
+		WHERE tid = #{tid}
+	</select>
+	
+	<!-- 通过tid查询是否有数据 -->
+	<select id="queryTransactionOrderCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) From crm_trade
+		WHERE tid = #{tid}
+	 </select>
+	 
+	 <!-- 订单短信群发-按条件查找trade -->
+	 <sql id="findTradeListByQuery">
+		<where>
+			<!-- 订单状态为订单关闭状态包括TRADE_CLOSED，TRADE_CLOSED_BY_TAOBAO -->
+			<if test="status1 != null and status1 != '' and status2 != null and status2 != ''">
+				and (status = #{status1} or status = #{status2})
+			</if>
+				and seller_nick = #{sellerNick} 
+			<!-- 子订单id -->
+			<if test="tid != null and tid != ''">
+				and tid = #{tid}
+			</if>
+			<!-- 买家昵称 -->
+			<if test="buyerNick != null">
+				and buyer_nick = #{buyerNick}
+			</if>
+			<!-- 订单状态 -->
+			<if test="status != null">
+				and status = #{status}
+			</if>
+			<!-- 买家是否已评价 -->
+			<if test="buyerRate != null">
+				and buyer_rate = #{buyerRate}
+			</if>
+			<!-- 卖家是否评价 -->
+			<if test="sellerRate != null">
+				and seller_rate = #{sellerRate}
+			</if>
+			<!-- 下单时间 -->
+			<if test="startOrderDate != null  ">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{startOrderDate},'%Y-%m-%d') 
+			</if>
+			<!-- 下单时间 -->
+			<if test="endOrderDate != null ">
+				and DATE_FORMAT(#{endOrderDate},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeBefore != null ">
+				and DATE_FORMAT(consign_time,'%Y-%m-%d') >= DATE_FORMAT(#{consignTimeBefore},'%Y-%m-%d')
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeAfter != null  ">
+				and DATE_FORMAT(#{consignTimeAfter},'%Y-%m-%d') >= DATE_FORMAT(consign_time,'%Y-%m-%d')
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentBefore != null">
+				and payment >= #{paymentBefore}
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentAfter != null">
+				and #{paymentAfter} >= payment
+			</if>
+			<!-- 所属地区 -->
+			<if test="receiverDistrict != null">
+				and receiver_district = #{receiverDistrict}
+			</if>
+			<!-- 确认时间（交易结束时间） -->
+			<if test="endTimeBefore != null ">
+				and DATE_FORMAT(end_time,'%Y-%m-%d') >= DATE_FORMAT(#{endTimeBefore},'%Y-%m-%d')
+			</if>
+			<!-- 确认时间 -->
+			<if test="endTimeAfter != null ">
+				and DATE_FORMAT(#{endTimeAfter},'%Y-%m-%d') >= DATE_FORMAT(end_time,'%Y-%m-%d')
+			</if>
+			<!-- 订单类型（分段付款） -->
+			<if test="stepTradeStatus != null">
+				and step_trade_status = #{stepTradeStatus}
+			</if>
+			<if test="sellerFlagList != null">
+				and seller_flag IN
+				<foreach collection="sellerFlagList" item="sellerFlagList" open="(" separator="," close=")">
+					#{sellerFlagList}
+				</foreach>
+			</if>
+			<if test="orderList != null">
+				and tid NOT IN
+				<foreach collection="orderList" item="orderList" open="(" separator="," close=")">  
+        			#{orderList}  
+     			</foreach> 
+			</if>
+			<if test="stateList != null">
+				and receiver_state IN
+				<foreach collection="stateList" item="stateList" open="(" separator="," close=")">
+					#{stateList}
+				</foreach>
+			</if>
+			<!-- 商品id -->
+			<if test="numIidList != null">
+				and num_iid IN
+				<foreach collection="numIidList" item="numIidList" open="(" separator="," close=")">
+					#{numIidList}
+				</foreach>
+			</if>
+			order by created DESC
+			</where>
+			<if test="startRows != null and currentRows != null">
+				limit #{startRows},#{currentRows}
+			</if>
+	</sql>
+	<sql id="trade_column">
+		tid,seller_nick,pic_path,payment,seller_rate,receiver_name,receiver_state,receiver_address,
+		receiver_mobile,receiver_phone,consign_time,received_payment,receiver_country,num,num_iid,
+		status,title,type,price,total_fee,created,pay_time,end_time,buyer_message,buyer_flag,seller_flag,
+		buyer_nick,buyer_rate,receiver_city,receiver_district,trade_from,step_trade_status
+	</sql>
+	 <!-- 订单短信群发根据卖家查询条件查询 （赵天奎 2017/2/22） -->
+	<!-- <select id="findOrdersBycondition" parameterType="s2jh.biz.shop.crm.vo.OrdersVo" resultMap="transactionOrder">
+		select  o.order_from order_o_from,t.tid,t.created,o.pic_path pic_o_path,
+				o.title o_title,o.price o_price,o.num o_num,t.buyer_nick,t.receiver_name,
+				t.status,t.receiver_mobile,o.refund_status refund_o_status,t.num,t.total_fee,o.oid oid
+		from 	CRM_ORDERS o,(select 
+			<include refid="trade_column"></include>
+				 from CRM_TRADE 
+			<include refid="findTradeListByQuery"></include>) t
+		<where>
+			o.tid = t.tid
+			订单来源
+			<if test="orderFrom != null and orderFrom != ''">
+				and o.order_from = #{orderFrom}
+			</if>
+			退款状态
+			<if test="refundStatus != null and refundStatus != ''">
+				and o.refund_status = #{refundStatus}
+			</if>
+		</where>
+		order by t.created DESC
+	</select> -->
+	
+	<!-- 根据卖家查询条件查询订单列表的总条数 -->
+	<!-- <select id="findOrdersByconditionCount" resultType="int">
+		select count(*) from CRM_ORDERS o,(select 
+			<include refid="trade_column"></include>
+				from CRM_TRADE 
+			<include refid="findTradeListByQuery"></include>) t
+		<where>
+			o.tid = t.tid
+			订单来源
+			<if test="orderFrom != null and orderFrom != ''">
+				and o.order_from = #{orderFrom}
+			</if>
+			退款状态
+			<if test="refundStatus != null and refundStatus != ''">
+				and o.refund_status = #{refundStatus}
+			</if>
+		</where>
+	</select> -->
+	 
+	<!--  通过id查询trade -->
+	 <select id="findTradeById" resultMap="transactionOrder">
+	 	select TID,SELLER_NICK,TID,RECEIVER_NAME,RECEIVER_MOBILE,CONSIGN_TIME,STATUS,TITLE,CREATED,TOTAL_FEE,BUYER_NICK,PAYMENT
+	 	from crm_trade
+	 	<where>
+	 		<if test="tid != null and tid != ''">
+	 			TID = #{tid}
+	 		</if>
+	 	</where>
+	 </select>
+	<!-- ====================================================================ZTK测试============================================== -->
+	 
+	  <!-- 订单短信群发根据卖家查询条件查询 （赵天奎 2017/2/22） -->
+	<select id="findOrdersBycondition" resultMap="transactionOrder">
+		select  o.order_from order_o_from,t.tid,t.created,o.pic_path pic_o_path,
+				o.title o_title,o.price o_price,o.num o_num,t.buyer_nick,t.receiver_name,
+				t.status,t.receiver_mobile,o.refund_status refund_o_status,t.num,t.payment,o.oid oid
+		from 	CRM_ORDERS o,CRM_TRADE t
+		<where>
+			o.tid = t.tid
+			<!-- 订单状态为订单关闭状态包括TRADE_CLOSED，TRADE_CLOSED_BY_TAOBAO -->
+			<if test="status1 != null and status1 != '' and status2 != null and status2 != ''">
+				and (t.status = #{status1} or t.status = #{status2})
+			</if>
+				and t.seller_nick = #{sellerNick} 
+			<!-- 子订单id -->
+			<if test="tid != null and tid != ''">
+				and t.tid = #{tid}
+			</if>
+			<!-- 买家昵称 -->
+			<if test="buyerNick != null">
+				and t.buyer_nick = #{buyerNick}
+			</if>
+			<!-- 订单状态 -->
+			<if test="status != null">
+				and t.status = #{status}
+			</if>
+			<!-- 买家是否已评价 -->
+			<if test="buyerRate != null">
+				and t.buyer_rate = #{buyerRate}
+			</if>
+			<!-- 卖家是否评价 -->
+			<if test="sellerRate != null">
+				and t.seller_rate = #{sellerRate}
+			</if>
+			<!-- 下单时间 -->
+			<if test="startOrderDate != null  ">
+				and t.created >= #{startOrderDate}
+			</if>
+			<!-- 下单时间 -->
+			<if test="endOrderDate != null ">
+				and #{endOrderDate} >= t.created
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeBefore != null ">
+				and t.consign_time >= #{consignTimeBefore}
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeAfter != null  ">
+				and #{consignTimeAfter} >= t.consign_time
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentBefore != null">
+				and t.payment >= #{paymentBefore}
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentAfter != null">
+				and #{paymentAfter} >= t.payment
+			</if>
+			<!-- 所属地区 -->
+			<if test="receiverDistrict != null">
+				and t.receiver_district = #{receiverDistrict}
+			</if>
+			<!-- 确认时间（交易结束时间） -->
+			<if test="endTimeBefore != null ">
+				and t.end_time >= #{endTimeBefore}
+			</if>
+			<!-- 确认时间 -->
+			<if test="endTimeAfter != null ">
+				and #{endTimeAfter} >= t.end_time
+			</if>
+			<!-- 订单类型（分段付款） -->
+			<if test="stepTradeStatus != null">
+				and t.step_trade_status = #{stepTradeStatus}
+			</if>
+			<if test="sellerFlagList != null">
+				and t.seller_flag IN
+				<foreach collection="sellerFlagList" item="sellerFlagList" open="(" separator="," close=")">
+					#{sellerFlagList}
+				</foreach>
+			</if>
+			<if test="orderList != null">
+				and t.tid NOT IN
+				<foreach collection="orderList" item="orderList" open="(" separator="," close=")">  
+        			#{orderList}  
+     			</foreach> 
+			</if>
+			<if test="stateList != null">
+				and t.receiver_state IN
+				<foreach collection="stateList" item="stateList" open="(" separator="," close=")">
+					#{stateList}
+				</foreach>
+			</if>
+			<!-- 商品id -->
+			<if test="numIidList != null">
+				and t.num_iid IN
+				<foreach collection="numIidList" item="numIidList" open="(" separator="," close=")">
+					#{numIidList}
+				</foreach>
+			</if>
+			<!-- 订单来源 -->
+			<if test="orderFrom != null and orderFrom != ''">
+				and o.order_from = #{orderFrom}
+			</if>
+			<!-- 退款状态 -->
+			<if test="refundStatus != null and refundStatus != ''">
+				and o.refund_status = #{refundStatus}
+			</if>
+		</where>
+			order by t.created DESC
+		<!-- <if test="startRows != null and currentRows != null">
+				limit #{startRows},#{currentRows}
+			</if> -->
+	</select>
+	
+	<!-- 根据卖家查询条件查询订单列表的总条数 -->
+	<select id="findOrdersByconditionCount" resultType="int">
+		select count(*) from CRM_ORDERS o,CRM_TRADE t
+		<where>
+			o.tid = t.tid
+			<!-- 订单状态为订单关闭状态包括TRADE_CLOSED，TRADE_CLOSED_BY_TAOBAO -->
+			<if test="status1 != null and status1 != '' and status2 != null and status2 != ''">
+				and (t.status = #{status1} or t.status = #{status2})
+			</if>
+				and t.seller_nick = #{sellerNick} 
+			<!-- 子订单id -->
+			<if test="tid != null and tid != ''">
+				and t.tid = #{tid}
+			</if>
+			<!-- 买家昵称 -->
+			<if test="buyerNick != null">
+				and t.buyer_nick = #{buyerNick}
+			</if>
+			<!-- 订单状态 -->
+			<if test="status != null">
+				and t.status = #{status}
+			</if>
+			<!-- 买家是否已评价 -->
+			<if test="buyerRate != null">
+				and t.buyer_rate = #{buyerRate}
+			</if>
+			<!-- 卖家是否评价 -->
+			<if test="sellerRate != null">
+				and t.seller_rate = #{sellerRate}
+			</if>
+			<!-- 下单时间 -->
+			<if test="startOrderDate != null  ">
+				and t.created >= #{startOrderDate}
+			</if>
+			<!-- 下单时间 -->
+			<if test="endOrderDate != null ">
+				and #{endOrderDate} >= t.created
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeBefore != null ">
+				and t.consign_time >= #{consignTimeBefore}
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeAfter != null  ">
+				and #{consignTimeAfter} >=t.consign_time
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentBefore != null">
+				and t.payment >= #{paymentBefore}
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentAfter != null">
+				and #{paymentAfter} >= t.payment
+			</if>
+			<!-- 所属地区 -->
+			<if test="receiverDistrict != null">
+				and t.receiver_district = #{receiverDistrict}
+			</if>
+			<!-- 确认时间（交易结束时间） -->
+			<if test="endTimeBefore != null ">
+				and t.end_time >= #{endTimeBefore}
+			</if>
+			<!-- 确认时间 -->
+			<if test="endTimeAfter != null ">
+				and #{endTimeAfter} >= t.end_time
+			</if>
+			<!-- 订单类型（分段付款） -->
+			<if test="stepTradeStatus != null">
+				and t.step_trade_status = #{stepTradeStatus}
+			</if>
+			<if test="sellerFlagList != null">
+				and t.seller_flag IN
+				<foreach collection="sellerFlagList" item="sellerFlagList" open="(" separator="," close=")">
+					#{sellerFlagList}
+				</foreach>
+			</if>
+			<if test="orderList != null">
+				and t.tid NOT IN
+				<foreach collection="orderList" item="orderList" open="(" separator="," close=")">  
+        			#{orderList}  
+     			</foreach> 
+			</if>
+			<if test="stateList != null">
+				and t.receiver_state IN
+				<foreach collection="stateList" item="stateList" open="(" separator="," close=")">
+					#{stateList}
+				</foreach>
+			</if>
+			<!-- 商品id -->
+			<if test="numIidList != null">
+				and t.num_iid IN
+				<foreach collection="numIidList" item="numIidList" open="(" separator="," close=")">
+					#{numIidList}
+				</foreach>
+			</if>
+			<!-- 订单来源 -->
+			<if test="orderFrom != null and orderFrom != ''">
+				and o.order_from = #{orderFrom}
+			</if>
+			<!-- 退款状态 -->
+			<if test="refundStatus != null and refundStatus != ''">
+				and o.refund_status = #{refundStatus}
+			</if>
+		</where>
+	</select>
+	
+	 
+	 
+<!-- ===============================================================ZTK测试================================================ --> 	 
+
+	<!-- 	卖家交易成功次数统计 -->
+	<select id="findSuccessByBuyerToSeller" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM crm_trade
+		WHERE seller_nick=#{sellerName} AND buyer_nick=#{buyerName} AND status='TRADE_FINISHED'
+	</select>
+	 
+	 <!-- 	根据手动订单查询的设置查询条件来判断	-->
+	<select id="findAllByManualOrderSetup" parameterType="java.util.Map" resultMap="transactionOrder">
+		SELECT * 
+		FROM CRM_TRADE	
+		<where> 
+			<!-- <if test="refundSuccess!=null ">
+				refund_status = '6' and
+			</if> -->
+			<!-- 订单状态 -->
+			<if test="userOrderStatus!= null">
+				status = #{userOrderStatus} and
+			</if>
+			<!-- 订单金额   居中 -->
+			<if test="minOrderPrice !=null and  maxOrderPice !=null">
+				payment BETWEEN #{minOrderPrice} and  #{maxOrderPice} and 
+			</if>
+			<!-- 订单金额   大于最小值 -->
+			<if test="minOrderPrice !=null and  maxOrderPice ==null">
+				payment &gt; #{minOrderPrice} and 
+			</if>
+			<!-- 订单金额 小于最大值 -->
+			<if test="minOrderPrice ==null and  maxOrderPice !=null">
+				payment &lt; #{maxOrderPice} and 
+			</if>
+			<!-- 订单来源 -->
+			<if test="orderSource!=null">
+				TRADE_FROM = #{orderSource} and 
+			</if>
+			 <!-- 买家已评价	0代表false 1代表true -->
+			<if test="buyerRate != null">
+				buyer_rate = 1  and 
+			</if>
+			<!--  买家未评价	0代表false 1代表true -->
+			<if test="buyerNoRate != null">
+				buyer_rate = 0 and  
+			</if>
+			 <!-- 买家未评价，卖家已评价	0代表false 1代表true -->
+			<if test="buyerNoRateSellerRate != null">
+				buyer_rate = 0 and  seller_rate=1 and 
+			</if>
+			<!-- 支付时间查询 -->
+			<if test="paymentTime != null and date == null">
+			 	tid in (
+			 		SELECT TID FROM CRM_TRADE
+			 		<where>
+			 			<if test="endTime != null and  startTime != null"> <!-- 开始结束时间都有 -->
+							PAY_TIME BETWEEN #{startTime} and  #{endTime} and 
+						</if>
+						<if test="endTime != null and  startTime == null"> <!-- 开始没有，结束时间有，所以从1970年开始到结束时间 -->
+							PAY_TIME BETWEEN '1970-01-01' and  #{endTime} and 
+						</if>
+						<if test="endTime == null and  startTime != null"> <!-- 结束没有，开始时间有，所以从开始到今天截止 -->
+							PAY_TIME BETWEEN #{startTime} and  now() and 
+						</if>
+			 		</where>
+			 	) and 
+			 </if>
+			 <if test="date != null and paymentTime == null">
+				<if test="endTime != null and  startTime != null"> <!-- 开始结束时间都有 -->
+					${date} BETWEEN #{startTime} and  #{endTime} and 
+				</if>
+				<if test="endTime != null and  startTime == null"> <!-- 开始没有，结束时间有，所以从1970年开始到结束时间 -->
+					${date} BETWEEN '1970-01-01' and  #{endTime} and 
+				</if>
+				<if test="endTime == null and  startTime != null"> <!-- 结束没有，开始时间有，所以从开始到今天截止 -->
+					${date} BETWEEN #{startTime} and  now() and 
+				</if>
+			</if>
+			seller_nick = #{userId}
+		</where>
+	</select>
+	
+	<!-- 营销中心效果分析，根据买家昵称查询trade -->
+	<select id="findTradeByBuyer" resultMap="transactionOrder">
+		select num,TID,SELLER_NICK,TID,RECEIVER_NAME,RECEIVER_MOBILE,CONSIGN_TIME,STATUS,TITLE,CREATED,TOTAL_FEE,BUYER_NICK,PAYMENT,END_TIME,RECEIVER_ADDRESS,MODIFIED
+		from CRM_TRADE
+		<where>
+			seller_nick = #{userId} 
+			and receiver_mobile = #{phone}
+			<if test="bTime != null">
+				and CREATED >= #{bTime}
+			</if>
+			<if test="eTime != null">
+				and #{eTime} >= CREATED
+			</if>
+			<if test="orderSource != null and orderSource != ''">
+				and TRADE_FROM like '%${orderSource}%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- 会员短信群发效果分析查询下单总客户数，总金额，订单总数，商品总数 -->
+	<select id="findTotalOrderNum" resultType="java.util.Map">
+		select sum(o.num) orderItemNum,sum(t.payment) orderMoney,count(t.*) orderNum,count(distinct t.receiver_mobile) orderCustomer from crm_trade t,(
+			select num from crm_orders where tid = t.tid
+		) o
+		<where>
+			seller_nick = #{userId} and receiver_mobile in 
+				<foreach collection="phoneList" open="(" separator="," close=")">
+					#{phoneList}
+				</foreach>
+			<if test="statusList != null">
+				and status in 
+				<foreach collection="statusList" open="(" separator="," close=")">
+					#{statusList}
+				</foreach>
+			</if>
+			<if test="bTime != null">
+				and CREATED >= #{bTime}
+			</if>
+			<if test="eTime != null">
+				and #{eTime} >= CREATED
+			</if>
+			<if test="orderSource != null and orderSource != ''">
+				and TRADE_FROM like '%${orderSource}%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- ===========================================手动订单提醒============================================================== --> 
+	 
+	 <!-- ======================================其他方法请写在此线上面,谢谢合作!@author:jackstraw_yu================================================= -->
+	 
+	  <!-- 通过tid查询orders-->
+	<select id="isExistTransactionOrderEnhance" resultType="java.lang.String">
+		select tid from CRM_TRADE where tid = #{tid}
+	</select>
+	 
+	 
+	 <!-- 增强方法:批量更新Trade @author:jackstraw_yu  s2jh.biz.shop.crm.order.entity.TransactionOrder-->
+	<update id="updateTransactionOrderEnhance" parameterType="Map">
+	  	update CRM_TRADE 
+		<set>
+			<if test="trade.sellerNick != null and trade.sellerNick != ''">
+				SELLER_NICK = #{trade.sellerNick},
+			</if>
+			<if test="trade.picPath != null and trade.picPath != ''">
+				PIC_PATH = #{trade.picPath},
+			</if>
+			<if test="trade.payment != null and trade.payment != ''">
+				payment = #{trade.payment},
+			</if>
+			<if test="trade.sellerRate != null ">
+				SELLER_RATE = #{trade.sellerRate},
+			</if>
+			<if test="trade.postFee != null and trade.postFee != ''">
+				POST_FEE = #{trade.postFee},
+			</if>
+			<if test="trade.receiverName != null and trade.receiverName != ''">
+				RECEIVER_NAME = #{trade.receiverName},
+			</if>
+			<if test="trade.receiverState != null and trade.receiverState != ''">
+				RECEIVER_STATE = #{trade.receiverState},
+			</if>
+			<if test="trade.receiverAddress != null and trade.receiverAddress != ''">
+				RECEIVER_ADDRESS = #{trade.receiverAddress},
+			</if>
+			<if test="trade.receiverZip != null and trade.receiverZip != ''">
+				RECEIVER_ZIP = #{trade.receiverZip},
+			</if>
+			<if test="trade.receiverMobile != null and trade.receiverMobile != ''">
+				RECEIVER_MOBILE = #{trade.receiverMobile},
+			</if>
+			<if test="trade.receiverPhone != null and trade.receiverPhone != ''">
+				RECEIVER_PHONE = #{trade.receiverPhone},
+			</if>
+			<if test="trade.consignTime != null ">
+				CONSIGN_TIME = #{trade.consignTime},
+			</if>
+			<if test="trade.receivedPayment != null and trade.receivedPayment != ''">
+				RECEIVED_PAYMENT = #{trade.receivedPayment},
+			</if>
+			<if test="trade.estConTime != null ">
+				EST_CON_TIME = #{trade.estConTime},
+			</if>
+			<if test="trade.invoiceKind != null and trade.invoiceKind != ''">
+				INVOICE_KIND = #{trade.invoiceKind},
+			</if>
+			<if test="trade.receiverCountry != null and trade.receiverCountry != ''">
+				RECEIVER_COUNTRY = #{trade.receiverCountry},
+			</if>
+			<if test="trade.receiverTown != null and trade.receiverTown != ''">
+				RECEIVER_TOWN = #{trade.receiverTown},
+			</if>
+			<if test="trade.orderTaxFee != null and trade.orderTaxFee != ''">
+				ORDER_TAX_FEE = #{trade.orderTaxFee},
+			</if>
+			<if test="trade.paidCouponFee != null and trade.paidCouponFee != ''">
+				PAID_COUPON_FEE = #{trade.paidCouponFee},
+			</if>
+			<if test="trade.shopPick != null and trade.shopPick != ''">
+				SHOP_PICK = #{trade.shopPick},
+			</if>
+			<if test="trade.num != null and trade.num != ''">
+				num = #{trade.num},
+			</if>
+			<if test="trade.status != null and trade.status != ''">
+				status = #{trade.status},
+			</if>
+			<if test="trade.title != null and trade.title != ''">
+				title = #{trade.title},
+			</if>
+			<if test="trade.type != null and trade.type != ''">
+				type = #{trade.type},
+			</if>
+			<if test="trade.price != null and trade.price != ''">
+				price = #{trade.price},
+			</if>
+			<if test="trade.discountFee != null and trade.discountFee != ''">
+				DISCOUNT_FEE = #{trade.discountFee},
+			</if>
+			<if test="trade.hasPostFee != null ">
+				HAS_POST_FEE = #{trade.hasPostFee},
+			</if>
+			<if test="trade.totalFee != null and trade.totalFee != ''">
+				TOTAL_FEE = #{trade.totalFee},
+			</if>
+			<if test="trade.created != null ">
+				created = #{trade.created},
+			</if>
+			<if test="trade.payTime != null ">
+				PAY_TIME = #{trade.payTime},
+			</if>
+			<if test="trade.modified != null ">
+				modified = #{trade.modified},
+			</if>
+			<if test="trade.endTime != null ">
+				END_TIME = #{trade.endTime},
+			</if>
+			<if test="trade.buyerMessage != null and trade.buyerMessage != ''">
+				BUYER_MESSAGE = #{trade.buyerMessage},
+			</if>
+			<if test="trade.buyerMemo != null and trade.buyerMemo != ''">
+				BUYER_MEMO = #{trade.buyerMemo},
+			</if>
+			<if test="trade.buyerFlag != null and trade.buyerFlag != ''">
+				BUYER_FLAG = #{trade.buyerFlag},
+			</if>
+			<if test="trade.sellerMemo != null and trade.sellerMemo != ''">
+				SELLER_MEMO = #{trade.sellerMemo},
+			</if>
+			<if test="trade.sellerFlag != null and trade.sellerFlag != ''">
+				SELLER_FLAG = #{trade.sellerFlag},
+			</if>
+			<if test="trade.invoiceName != null and trade.invoiceName != ''">
+				INVOICE_NAME = #{trade.invoiceName},
+			</if>
+			<if test="trade.invoiceType != null and trade.invoiceType != ''">
+				INVOICE_TYPE = #{trade.invoiceType},
+			</if>
+			<if test="trade.buyerNick != null and trade.buyerNick != ''">
+				BUYER_NICK = #{trade.buyerNick},
+			</if>
+			<if test="trade.tradeAttr != null and trade.tradeAttr != ''">
+				TRADE_ATTR = #{trade.tradeAttr},
+			</if>
+			<if test="trade.creditCardFee != null and trade.creditCardFee != ''">
+				CREDIT_CARD_FEE = #{trade.creditCardFee},
+			</if>
+			<if test="trade.stepTradeStatus != null and trade.stepTradeStatus != ''">
+				STEP_TRADE_STATUS = #{trade.stepTradeStatus},
+			</if>
+			<if test="trade.stepPaidFee != null and trade.stepPaidFee != ''">
+				STEP_PAID_FEE = #{trade.stepPaidFee},
+			</if>
+			<if test="trade.markDesc != null and trade.markDesc != ''">
+				MARK_DESC = #{trade.markDesc},
+			</if>
+			<if test="trade.shippingType != null and trade.shippingType != ''">
+				SHIPPING_TYPE = #{trade.shippingType},
+			</if>
+			<if test="trade.buyerCodFee != null and trade.buyerCodFee != ''">
+				BUYER_COD_FEE = #{trade.buyerCodFee},
+			</if>
+			<if test="trade.adjustFee != null and trade.adjustFee != ''">
+				ADJUST_FEE = #{trade.adjustFee},
+			</if>
+			<if test="trade.tradeFrom != null and trade.tradeFrom != ''">
+				TRADE_FROM = #{trade.tradeFrom},
+			</if>
+			<if test="trade.buyerRate != null ">
+				BUYER_RATE = #{trade.buyerRate},
+			</if>
+			<if test="trade.receiverCity != null and trade.receiverCity != ''">
+				RECEIVER_CITY = #{trade.receiverCity},
+			</if>
+			<if test="trade.receiverDistrict != null and trade.receiverDistrict != ''">
+				RECEIVER_DISTRICT = #{trade.receiverDistrict},
+			</if>
+			<if test="trade.o2o != null and trade.o2o != ''">
+				o2o = #{trade.o2o},
+			</if>
+			<if test="trade.o2oGuideId != null and trade.o2oGuideId != ''">
+				O2O_GUIDE_ID = #{trade.o2oGuideId},
+			</if>
+			<if test="trade.o2oShopId != null and trade.o2oShopId != ''">
+				O2O_SHOP_ID = #{trade.o2oShopId},
+			</if>
+			<if test="trade.o2oGuideName != null and trade.o2oGuideName != ''">
+				O2O_GUIDE_NAME = #{trade.o2oGuideName},
+			</if>
+			<if test="trade.o2oShopName != null and trade.o2oShopName != ''">
+				O2O_SHOP_NAME = #{trade.o2oShopName},
+			</if>
+			<if test="trade.o2oDelivery != null and trade.o2oDelivery != ''">
+				O2O_DELIVERY = #{trade.o2oDelivery},
+			</if>
+			<if test="trade.eticketServiceAddr != null and trade.eticketServiceAddr != ''">
+				ETICKET_SERVICE_ADDR = #{trade.eticketServiceAddr},
+			</if>
+			<if test="trade.rxAuditStatus != null and trade.rxAuditStatus != ''">
+				RX_AUDIT_STATUS = #{trade.rxAuditStatus},
+			</if>
+			<if test="trade.esRange != null and trade.esRange != ''">
+				ES_RANGE = #{trade.esRange},
+			</if>
+			<if test="trade.esDate != null and trade.esDate != ''">
+				ES_DATE = #{trade.esDate},
+			</if>
+			<if test="trade.osDate != null and trade.osDate != ''">
+				OS_DATE = #{trade.osDate},
+			</if>
+			<if test="trade.osRange != null and trade.osRange != ''">
+				OS_RANGE = #{trade.osRange},
+			</if>
+			<if test="trade.couponFee != null and trade.couponFee != ''">
+				COUPON_FEE = #{trade.couponFee},
+			</if>
+			<if test="trade.postGateDeclare != null ">
+				POST_GATE_DECLARE = #{trade.postGateDeclare},
+			</if>
+			<if test="trade.crossBondedDeclare != null ">
+				CROSS_BONDED_DECLARE = #{trade.crossBondedDeclare},
+			</if>
+			<if test="trade.omnichannelParam != null and trade.omnichannelParam != ''">
+				OMNICHANNEL_PARAM = #{trade.omnichannelParam},
+			</if>
+			<if test="trade.assembly != null and trade.assembly != ''">
+				assembly = #{trade.assembly},
+			</if>
+			<if test="trade.topHold != null and trade.topHold != ''">
+				TOP_HOLD = #{trade.topHold},
+			</if>
+			<if test="trade.omniAttr != null and trade.omniAttr != ''">
+				OMNI_ATTR = #{trade.omniAttr},
+			</if>
+			<if test="trade.omniParam != null and trade.omniParam != ''">
+				OMNI_PARAM = #{trade.omniParam},
+			</if>
+			<if test="trade.isShShip != null ">
+				IS_SH_SHIP = #{trade.isShShip},
+			</if>
+			<if test="trade.o2oSnatchStatus != null and trade.o2oSnatchStatus != ''">
+				O2O_SNATCH_STATUS = #{trade.o2oSnatchStatus},
+			</if>
+			<if test="trade.market != null and trade.market != ''">
+				market = #{trade.market},
+			</if>
+			<if test="trade.etType != null and trade.etType != ''">
+				ET_TYPE = #{trade.etType},
+			</if>
+			<if test="trade.etShopId != null and trade.etShopId != ''">
+				ET_SHOP_ID = #{trade.etShopId},
+			</if>
+			<if test="trade.obs != null and trade.obs != ''">
+				obs = #{trade.obs},
+			</if>
+			<if test="trade.createdDate != null ">
+				createdDate = #{trade.createdDate},
+			</if>
+			<if test="trade.lastModifiedDate != null ">
+				lastModifiedDate = #{trade.lastModifiedDate},
+			</if>
+			<if test="trade.NUM_IID != null ">
+				NUM_IID = #{trade.NUM_IID},
+			</if>
+		</set>
+		<where>
+			tid = #{trade.tid}
+		</where>
+	</update>
+
+	
+	 <!-- 增强方法:批量保存Trade @author:jackstraw_yu  s2jh.biz.shop.crm.order.entity.TransactionOrder-->
+	<insert id="insertTransactionOrderEnhance" parameterType="Map">
+	  	INSERT INTO CRM_TRADE 
+		( tid ,SELLER_NICK, PIC_PATH, payment, SELLER_RATE, POST_FEE, RECEIVER_NAME, RECEIVER_STATE, RECEIVER_ADDRESS,RECEIVER_ZIP, RECEIVER_MOBILE,
+			RECEIVER_PHONE, CONSIGN_TIME, RECEIVED_PAYMENT, EST_CON_TIME, INVOICE_KIND, RECEIVER_COUNTRY, RECEIVER_TOWN, ORDER_TAX_FEE, PAID_COUPON_FEE,
+			SHOP_PICK, num, status, title, type, price, DISCOUNT_FEE, HAS_POST_FEE, TOTAL_FEE , created, PAY_TIME, modified, END_TIME, BUYER_MESSAGE, BUYER_MEMO,
+			BUYER_FLAG, SELLER_MEMO, SELLER_FLAG, INVOICE_NAME, INVOICE_TYPE, BUYER_NICK, TRADE_ATTR, CREDIT_CARD_FEE, STEP_TRADE_STATUS, STEP_PAID_FEE,
+			MARK_DESC, SHIPPING_TYPE, BUYER_COD_FEE, ADJUST_FEE, TRADE_FROM, BUYER_RATE, RECEIVER_CITY, RECEIVER_DISTRICT, o2o, O2O_GUIDE_ID, O2O_SHOP_ID,
+			O2O_GUIDE_NAME, O2O_SHOP_NAME, O2O_DELIVERY, ETICKET_SERVICE_ADDR, RX_AUDIT_STATUS, ES_RANGE, ES_DATE, OS_DATE, OS_RANGE, COUPON_FEE , POST_GATE_DECLARE,
+			CROSS_BONDED_DECLARE, OMNICHANNEL_PARAM, assembly, TOP_HOLD, OMNI_ATTR, OMNI_PARAM, IS_SH_SHIP, O2O_SNATCH_STATUS, market,ET_TYPE, obs,createdDate,
+			lastModifiedDate,NUM_IID
+		)
+		VALUE(
+				#{trade.tid},#{trade.sellerNick}, #{trade.picPath}, #{trade.payment}, #{trade.sellerRate}, #{trade.postFee}, #{trade.receiverName},
+				#{trade.receiverState}, #{trade.receiverAddress}, #{trade.receiverZip}, #{trade.receiverMobile}, #{trade.receiverPhone},
+				#{trade.consignTime}, #{trade.receivedPayment}, #{trade.estConTime}, #{trade.invoiceKind}, #{trade.receiverCountry},
+				#{trade.receiverTown}, #{trade.orderTaxFee}, #{trade.paidCouponFee}, #{trade.shopPick}, #{trade.num}, #{trade.status},
+				#{trade.title}, #{trade.type}, #{trade.price}, #{trade.discountFee}, #{trade.hasPostFee}, #{trade.totalFee}, #{trade.created},
+				#{trade.payTime}, #{trade.modified}, #{trade.endTime}, #{trade.buyerMessage}, #{trade.buyerMemo}, #{trade.buyerFlag},
+				#{trade.sellerMemo}, #{trade.sellerFlag}, #{trade.invoiceName},  #{trade.invoiceType}, #{trade.buyerNick}, #{trade.tradeAttr},
+				#{trade.creditCardFee}, #{trade.stepTradeStatus}, #{trade.stepPaidFee}, #{trade.markDesc}, #{trade.shippingType}, #{trade.buyerCodFee},
+				#{trade.adjustFee}, #{trade.tradeFrom}, #{trade.buyerRate}, #{trade.receiverCity},#{trade.receiverDistrict}, #{trade.o2o}, #{trade.o2oGuideId},
+				#{trade.o2oShopId}, #{trade.o2oGuideName}, #{trade.o2oShopName}, #{trade.o2oDelivery}, #{trade.eticketServiceAddr}, #{trade.rxAuditStatus},
+				#{trade.esRange}, #{trade.esDate}, #{trade.osDate}, #{trade.osRange}, #{trade.couponFee}, #{trade.postGateDeclare}, #{trade.crossBondedDeclare},
+				#{trade.omnichannelParam}, #{trade.assembly}, #{trade.topHold}, #{trade.omniAttr}, #{trade.omniParam}, #{trade.isShShip}, #{trade.o2oSnatchStatus},
+				#{trade.market}, #{trade.etType}, #{trade.obs}, #{trade.createdDate}, #{trade.lastModifiedDate},#{trade.NUM_IID}
+		)	
+	</insert>	 
+
+
+
+
+
+
+
+	 <!-- 增强方法:批量更新Trade @author:jackstraw_yu-->
+	<!-- <update id="updateTransactionOrderEnhance" parameterType="map">
+		<foreach collection="upTrades" item="trade" index="index" separator=";"
+		  open="" close="">
+		  	update CRM_TRADE 
+			<set>
+				<if test="trade.sellerNick != null and trade.sellerNick != ''">
+					SELLER_NICK = #{trade.sellerNick},
+				</if>
+				<if test="trade.picPath != null and trade.picPath != ''">
+					PIC_PATH = #{trade.picPath},
+				</if>
+				<if test="trade.payment != null and trade.payment != ''">
+					payment = #{trade.payment},
+				</if>
+				<if test="trade.sellerRate != null ">
+					SELLER_RATE = #{trade.sellerRate},
+				</if>
+				<if test="trade.postFee != null and trade.postFee != ''">
+					POST_FEE = #{trade.postFee},
+				</if>
+				<if test="trade.receiverName != null and trade.receiverName != ''">
+					RECEIVER_NAME = #{trade.receiverName},
+				</if>
+				<if test="trade.receiverState != null and trade.receiverState != ''">
+					RECEIVER_STATE = #{trade.receiverState},
+				</if>
+				<if test="trade.receiverAddress != null and trade.receiverAddress != ''">
+					RECEIVER_ADDRESS = #{trade.receiverAddress},
+				</if>
+				<if test="trade.receiverZip != null and trade.receiverZip != ''">
+					RECEIVER_ZIP = #{trade.receiverZip},
+				</if>
+				<if test="trade.receiverMobile != null and trade.receiverMobile != ''">
+					RECEIVER_MOBILE = #{trade.receiverMobile},
+				</if>
+				<if test="trade.receiverPhone != null and trade.receiverPhone != ''">
+					RECEIVER_PHONE = #{trade.receiverPhone},
+				</if>
+				<if test="trade.consignTime != null ">
+					CONSIGN_TIME = #{trade.consignTime},
+				</if>
+				<if test="trade.receivedPayment != null and trade.receivedPayment != ''">
+					RECEIVED_PAYMENT = #{trade.receivedPayment},
+				</if>
+				<if test="trade.estConTime != null and trade.estConTime != ''">
+					EST_CON_TIME = #{trade.estConTime},
+				</if>
+				<if test="trade.invoiceKind != null and trade.invoiceKind != ''">
+					INVOICE_KIND = #{trade.invoiceKind},
+				</if>
+				<if test="trade.receiverCountry != null and trade.receiverCountry != ''">
+					RECEIVER_COUNTRY = #{trade.receiverCountry},
+				</if>
+				<if test="trade.receiverTown != null and trade.receiverTown != ''">
+					RECEIVER_TOWN = #{trade.receiverTown},
+				</if>
+				<if test="trade.orderTaxFee != null and trade.orderTaxFee != ''">
+					ORDER_TAX_FEE = #{trade.orderTaxFee},
+				</if>
+				<if test="trade.paidCouponFee != null and trade.paidCouponFee != ''">
+					PAID_COUPON_FEE = #{trade.paidCouponFee},
+				</if>
+				<if test="trade.shopPick != null and trade.shopPick != ''">
+					SHOP_PICK = #{trade.shopPick},
+				</if>
+				<if test="trade.num != null and trade.num != ''">
+					num = #{trade.num},
+				</if>
+				<if test="trade.status != null and trade.status != ''">
+					status = #{trade.status},
+				</if>
+				<if test="trade.title != null and trade.title != ''">
+					title = #{trade.title},
+				</if>
+				<if test="trade.type != null and trade.type != ''">
+					type = #{trade.type},
+				</if>
+				<if test="trade.price != null and trade.price != ''">
+					price = #{trade.price},
+				</if>
+				<if test="trade.discountFee != null and trade.discountFee != ''">
+					DISCOUNT_FEE = #{trade.discountFee},
+				</if>
+				<if test="trade.hasPostFee != null ">
+					HAS_POST_FEE = #{trade.hasPostFee},
+				</if>
+				<if test="trade.totalFee != null and trade.totalFee != ''">
+					TOTAL_FEE = #{trade.totalFee},
+				</if>
+				<if test="trade.created != null ">
+					created = #{trade.created},
+				</if>
+				<if test="trade.payTime != null >
+					PAY_TIME = #{trade.payTime},
+				</if>
+				<if test="trade.modified != null ">
+					modified = #{trade.modified},
+				</if>
+				<if test="trade.endTime != null ">
+					END_TIME = #{trade.endTime},
+				</if>
+				<if test="trade.buyerMessage != null and trade.buyerMessage != ''">
+					BUYER_MESSAGE = #{trade.buyerMessage},
+				</if>
+				<if test="trade.buyerMemo != null and trade.buyerMemo != ''">
+					BUYER_MEMO = #{trade.buyerMemo},
+				</if>
+				<if test="trade.buyerFlag != null and trade.buyerFlag != ''">
+					BUYER_FLAG = #{trade.buyerFlag},
+				</if>
+				<if test="trade.sellerMemo != null and trade.sellerMemo != ''">
+					SELLER_MEMO = #{trade.sellerMemo},
+				</if>
+				<if test="trade.sellerFlag != null and trade.sellerFlag != ''">
+					SELLER_FLAG = #{trade.sellerFlag},
+				</if>
+				<if test="trade.invoiceName != null and trade.invoiceName != ''">
+					INVOICE_NAME = #{trade.invoiceName},
+				</if>
+				<if test="trade.invoiceType != null and trade.invoiceType != ''">
+					INVOICE_TYPE = #{trade.invoiceType},
+				</if>
+				<if test="trade.buyerNick != null and trade.buyerNick != ''">
+					BUYER_NICK = #{trade.buyerNick},
+				</if>
+				<if test="trade.tradeAttr != null and trade.tradeAttr != ''">
+					TRADE_ATTR = #{trade.tradeAttr},
+				</if>
+				<if test="trade.creditCardFee != null and trade.creditCardFee != ''">
+					CREDIT_CARD_FEE = #{trade.creditCardFee},
+				</if>
+				<if test="trade.stepTradeStatus != null and trade.stepTradeStatus != ''">
+					STEP_TRADE_STATUS = #{trade.stepTradeStatus},
+				</if>
+				<if test="trade.stepPaidFee != null and trade.stepPaidFee != ''">
+					STEP_PAID_FEE = #{trade.stepPaidFee},
+				</if>
+				<if test="trade.markDesc != null and trade.markDesc != ''">
+					MARK_DESC = #{trade.markDesc},
+				</if>
+				<if test="trade.shippingType != null and trade.shippingType != ''">
+					SHIPPING_TYPE = #{trade.shippingType},
+				</if>
+				<if test="trade.buyerCodFee != null and trade.buyerCodFee != ''">
+					BUYER_COD_FEE = #{trade.buyerCodFee},
+				</if>
+				<if test="trade.adjustFee != null and trade.adjustFee != ''">
+					ADJUST_FEE = #{trade.adjustFee},
+				</if>
+				<if test="trade.tradeFrom != null and trade.tradeFrom != ''">
+					TRADE_FROM = #{trade.tradeFrom},
+				</if>
+				<if test="trade.buyerRate != null ">
+					BUYER_RATE = #{trade.buyerRate},
+				</if>
+				<if test="trade.receiverCity != null and trade.receiverCity != ''">
+					RECEIVER_CITY = #{trade.receiverCity},
+				</if>
+				<if test="trade.receiverDistrict != null and trade.receiverDistrict != ''">
+					RECEIVER_DISTRICT = #{trade.receiverDistrict},
+				</if>
+				<if test="trade.o2o != null and trade.o2o != ''">
+					o2o = #{trade.o2o},
+				</if>
+				<if test="trade.o2oGuideId != null and trade.o2oGuideId != ''">
+					O2O_GUIDE_ID = #{trade.o2oGuideId},
+				</if>
+				<if test="trade.o2oShopId != null and trade.o2oShopId != ''">
+					O2O_SHOP_ID = #{trade.o2oShopId},
+				</if>
+				<if test="trade.o2oGuideName != null and trade.o2oGuideName != ''">
+					O2O_GUIDE_NAME = #{trade.o2oGuideName},
+				</if>
+				<if test="trade.o2oShopName != null and trade.o2oShopName != ''">
+					O2O_SHOP_NAME = #{trade.o2oShopName},
+				</if>
+				<if test="trade.o2oDelivery != null and trade.o2oDelivery != ''">
+					O2O_DELIVERY = #{trade.o2oDelivery},
+				</if>
+				<if test="trade.eticketServiceAddr != null and trade.eticketServiceAddr != ''">
+					ETICKET_SERVICE_ADDR = #{trade.eticketServiceAddr},
+				</if>
+				<if test="trade.rxAuditStatus != null and trade.rxAuditStatus != ''">
+					RX_AUDIT_STATUS = #{trade.rxAuditStatus},
+				</if>
+				<if test="trade.esRange != null and trade.esRange != ''">
+					ES_RANGE = #{trade.esRange},
+				</if>
+				<if test="trade.esDate != null and trade.esDate != ''">
+					ES_DATE = #{trade.esDate},
+				</if>
+				<if test="trade.osDate != null and trade.osDate != ''">
+					OS_DATE = #{trade.osDate},
+				</if>
+				<if test="trade.osRange != null and trade.osRange != ''">
+					OS_RANGE = #{trade.osRange},
+				</if>
+				<if test="trade.couponFee != null and trade.couponFee != ''">
+					COUPON_FEE = #{trade.couponFee},
+				</if>
+				<if test="trade.postGateDeclare != null ">
+					POST_GATE_DECLARE = #{trade.postGateDeclare},
+				</if>
+				<if test="trade.crossBondedDeclare != null ">
+					CROSS_BONDED_DECLARE = #{trade.crossBondedDeclare},
+				</if>
+				<if test="trade.omnichannelParam != null and trade.omnichannelParam != ''">
+					OMNICHANNEL_PARAM = #{trade.omnichannelParam},
+				</if>
+				<if test="trade.assembly != null and trade.assembly != ''">
+					assembly = #{trade.assembly},
+				</if>
+				<if test="trade.topHold != null and trade.topHold != ''">
+					TOP_HOLD = #{trade.topHold},
+				</if>
+				<if test="trade.omniAttr != null and trade.omniAttr != ''">
+					OMNI_ATTR = #{trade.omniAttr},
+				</if>
+				<if test="trade.omniParam != null and trade.omniParam != ''">
+					OMNI_PARAM = #{trade.omniParam},
+				</if>
+				<if test="trade.isShShip != null ">
+					IS_SH_SHIP = #{trade.isShShip},
+				</if>
+				<if test="trade.o2oSnatchStatus != null and trade.o2oSnatchStatus != ''">
+					O2O_SNATCH_STATUS = #{trade.o2oSnatchStatus},
+				</if>
+				<if test="trade.market != null and trade.market != ''">
+					market = #{trade.market},
+				</if>
+				<if test="trade.etType != null and trade.etType != ''">
+					ET_TYPE = #{trade.etType},
+				</if>
+				<if test="trade.etShopId != null and trade.etShopId != ''">
+					ET_SHOP_ID = #{trade.etShopId},
+				</if>
+				<if test="trade.obs != null and trade.obs != ''">
+					obs = #{trade.obs},
+				</if>
+			</set>
+			<where>
+				tid = #{trade.tid}
+			</where>
+		</foreach>
+	</update> -->
+	 
+	 <insert id="insertTransactionOrde"  parameterType="s2jh.biz.shop.crm.order.entity.TransactionOrder">
+	 INSERT INTO CRM_TRADE(tid,BUYER_NICK,PRICE,POST_FEE,TOTAL_FEE,PAYMENT,STATUS,BUYER_MESSAGE,RECEIVER_NAME,RECEIVER_ADDRESS,RECEIVER_CITY,RECEIVER_PHONE,RECEIVER_MOBILE,CREATED,PAY_TIME,NUM,TITLE,SELLER_NICK,TYPE,createdDate,optlock) 
+		VALUE(#{tid},#{buyerNick},#{price},#{postFee},#{totalFee},#{payment},#{status},#{buyerMessage},#{receiverName},#{receiverAddress},#{receiverCity},#{receiverPhone},#{receiverMobile},#{created},#{payTime},#{num},#{title},#{sellerNick},#{type},now(),0);
+	 </insert>
+	 
+	 <!-- 批量添加数据 -->
+	 <insert id="insertTransactionOrdeList"  parameterType="java.util.List">
+	 INSERT INTO CRM_TRADE(tid,BUYER_NICK,PRICE,POST_FEE,TOTAL_FEE,PAYMENT,STATUS,BUYER_MESSAGE,RECEIVER_NAME,RECEIVER_ADDRESS,RECEIVER_CITY,RECEIVER_PHONE,RECEIVER_MOBILE,CREATED,PAY_TIME,NUM,TITLE,SELLER_NICK,TYPE,createdDate,optlock) 
+		VALUE
+		<foreach collection="list" item="itemId" index="index" separator=",">
+		(#{itemId.tid},#{itemId.buyerNick},#{itemId.price},#{itemId.postFee},#{itemId.totalFee},#{itemId.payment},#{itemId.status},#{itemId.buyerMessage},#{itemId.receiverName},#{itemId.receiverAddress},#{itemId.receiverCity},#{itemId.receiverPhone},#{itemId.receiverMobile},#{itemId.created},#{itemId.payTime},#{itemId.num},#{itemId.title},#{itemId.sellerNick},#{itemId.type},now(),0)
+		</foreach>
+	 </insert>
+
+
+
+	 
+<!-- 	 <select id="findTradeToMongo" resultMap="tradeToMongo"> -->
+<!--  		select  t.tid t_tid,t.BUYER_NICK t_BUYER_NICK,t.PRICE t_PRICE,t.POST_FEE t_POST_FEE,t.TOTAL_FEE t_TOTAL_FEE, -->
+<!--  				t.PAYMENT t_PAYMENT,t.STATUS t_STATUS,t.BUYER_MESSAGE t_BUYER_MESSAGE,t.RECEIVER_NAME t_RECEIVER_NAME, -->
+<!--  				t.RECEIVER_ADDRESS t_RECEIVER_ADDRESS,t.RECEIVER_CITY t_RECEIVER_CITY,t.RECEIVER_PHONE t_RECEIVER_PHONE, -->
+<!--  				t.RECEIVER_MOBILE t_RECEIVER_MOBILE,t.CREATED t_CREATED,t.PAY_TIME t_PAY_TIME,t.NUM t_NUM,t.TITLE t_TITLE, -->
+<!--  				t.SELLER_NICK t_SELLER_NICK,t.TYPE t_TYPE,t.TRADE_FROM t_TRADE_FROM, -->
+ 				
+<!--  				o.oid o_oid,o.buyer_nick o_buyer_nick,o.price o_price,o.total_fee o_total_fee,o.payment o_payment,o.status o_status, -->
+<!--  				o.receiver_name o_receiver_name,o.receiver_city o_receiver_city,o.receiver_mobile o_receiver_mobile,o.created o_created, -->
+<!--  				o.title o_title,o.num o_num,o.seller_nick o_seller_nick,o.type o_type,o.order_from o_order_from -->
+<!-- 		from  CRM_ORDERS o,CRM_TRADE t -->
+<!-- 		   where o.tid = t.tid and -->
+<!-- 		   t.type = #{type} and t.SELLER_NICK = #{sellerNick} -->
+<!-- 		   limit #{startRows},#{currentRows} -->
+<!-- 	 </select> -->
+<!-- 	  <select id="findTradeToCount" resultType="java.lang.Integer"> -->
+<!--  		select count(*) -->
+<!-- 		from  CRM_TRADE where SELLER_NICK = #{userNick} and type = 'type' -->
+<!-- 	 </select> -->
+	 
+	 <select id="findTradeToMongo" resultMap="tradeToMongo">
+<!-- 	 	select   t3.*,o.`title`  as o_title from  ( -->
+	 
+		SELECT t.tid t_tid,t.BUYER_NICK t_BUYER_NICK,t.PRICE t_PRICE,t.POST_FEE t_POST_FEE,t.TOTAL_FEE t_TOTAL_FEE,
+ 				t.PAYMENT t_PAYMENT,t.STATUS t_STATUS,t.BUYER_MESSAGE t_BUYER_MESSAGE,t.RECEIVER_NAME t_RECEIVER_NAME,
+ 				t.RECEIVER_ADDRESS t_RECEIVER_ADDRESS,t.RECEIVER_CITY t_RECEIVER_CITY,t.RECEIVER_PHONE t_RECEIVER_PHONE,
+ 				t.RECEIVER_MOBILE t_RECEIVER_MOBILE,t.CREATED t_CREATED,t.PAY_TIME t_PAY_TIME,t.NUM t_NUM,t.TITLE t_TITLE,
+ 				t.SELLER_NICK t_SELLER_NICK,t.TYPE t_TYPE,t.TRADE_FROM t_TRADE_FROM  from CRM_TRADE t,(
+			SELECT  tid
+			from CRM_TRADE
+			where 1=1 and 
+			createdDate
+			BETWEEN #{beginTime} AND #{endTime} 
+			Order by tid+0 ASC 
+			limit #{startRows},#{pageSize}) t2 where t.tid=t2.tid
+			
+<!-- 			) t3   INNER JOIN  `crm_orders`  o on o.`tid` =t3.t_tid -->
+	</select>
+	
+	
+	<!-- 增强方法 :查询最近一个时间段修改过的总条数   @author:jackstraw_yu -->
+	<select id="importTradeCountByParam" resultType="java.lang.Long">
+		SELECT  count(tid)
+		from CRM_TRADE where 1=1   and
+			createdDate
+		BETWEEN #{beginTime} AND #{endTime} 
+	</select>
+	
+	
+</mapper>

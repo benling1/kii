@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.other.entity.Festival">
+	
+	<!-- 根据时间获取最近的节日 -->
+	<select id="findFestivalFromDate" resultType="s2jh.biz.shop.crm.other.entity.Festival">
+		select id,name,max(dateTime)
+		from crm_festival
+		where 1=1
+		<if test="dateTime !=null">
+			and DATE_FORMAT(dateTime,'%Y/%m/%d') >= DATE_FORMAT(#{dateTime},'%Y/%m/%d')
+		</if>
+		GROUP BY dateTime
+		LIMIT 1
+	</select>
+</mapper>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.OrderReminder">
+	<resultMap type="s2jh.biz.shop.crm.order.entity.OrderReminder" id="orderReminder">
+		<result column="orderDateType" property="orderDateType"/>
+		<result column="endTime" property="endTime"/>
+		<result column="startTime" property="startTime"/>
+		<result column="bookingStatus" property="bookingStatus"/>
+		<result column="orderStatus" property="orderStatus"/>
+		<result column="maxOrderPrice" property="maxOrderPrice"/>
+		<result column="minOrderPrice" property="minOrderPrice"/>
+		<result column="maxTradeNum" property="maxTradeNum"/>
+		<result column="minTradeNum" property="minTradeNum"/>
+		<result column="orderType" property="orderType"/>
+		<result column="evaluateStatus" property="evaluateStatus"/>
+		<result column="province" property="province"/>
+		<result column="sellerSign" property="sellerSign"/>
+		<result column="orderSource" property="orderSource"/>
+		<result column="alreadySendMessages" property="alreadySendMessages"/>
+		<result column="filterType" property="filterType"/>
+		<result column="userId" property="userId"/>
+		<result column="selectCommodityType" property="selectCommodityType"/>
+		<result column="commodityIds" property="commodityIds"/>
+		<result column="content" property="content"/>		
+		<result column="smsSign" property="smsSign"/>	
+		<result column="isTiming" property="isTiming"/>		
+		<result column="timing" property="timing"/>		
+		<result column="status" property="status"/>				
+	</resultMap>
+	<insert id="doAutoCreateByIsNull" parameterType="s2jh.biz.shop.crm.order.entity.OrderReminder">
+		INSERT INTO crm_orderReminder(orderStatus,bookingStatus,orderType,evaluateStatus,sellerSign,orderSource,alreadySendMessages,filterType,userId,selectCommodityType,content,smsSign,isTiming,status,createdDate,optlock,lastModifiedDate,lastModifiedBy)
+		VALUE(null,null,null,null,null,null,null,null,#{userId},null,#{content},#{smsSign},'1',null,now(),0,now(),'auto:system')
+	</insert>
+	<!-- 手动提醒定时一次性任务 -->
+	<select id="findAllByScheduleSend" resultMap="orderReminder">
+		SELECT * 
+		FROM crm_orderReminder
+		WHERE timing>=now() AND status=0
+	</select>
+	<select id="findOrderReminderBySendMsg" parameterType="java.util.Map" resultMap="orderReminder">
+	SELECT *
+	FROM crm_orderReminder
+	WHERE userId=#{userId} AND status=#{status}
+	</select>
+	<!-- 根据卖家编号查询手动订单提醒信息 -->
+	<select id="findOrderReminder" parameterType="s2jh.biz.shop.crm.order.entity.OrderReminder" resultMap="orderReminder">
+		select orderDateType,endTime,startTime,bookingStatus,orderStatus,maxOrderPrice,minOrderPrice,maxTradeNum,
+		minTradeNum,orderType,evaluateStatus,province,sellerSign,orderSource,alreadySendMessages,filterType,
+		userId,selectCommodityType,commodityIds,id,content,smsSign,isTiming,timing,status
+		from crm_orderReminder
+		where userId=#{userId}
+	</select>
+	
+	<!-- 修改手动订单提醒基本条件 -->
+	<update id="updateOrderReminder">
+		update crm_orderReminder
+		<set>		
+			orderDateType=#{orderDateType,jdbcType=VARCHAR},		
+			endTime=#{endTime},			
+			startTime=#{startTime},			
+			bookingStatus=#{bookingStatus,jdbcType=VARCHAR},
+			orderStatus=#{orderStatus,jdbcType=VARCHAR},
+			maxOrderPrice=#{maxOrderPrice,jdbcType=DOUBLE},
+			minOrderPrice=#{minOrderPrice,jdbcType=DOUBLE},
+			maxTradeNum=#{maxTradeNum,jdbcType=INTEGER},
+			minTradeNum=#{minTradeNum,jdbcType=INTEGER},
+			orderType=#{orderType,jdbcType=VARCHAR},
+			evaluateStatus=#{evaluateStatus,jdbcType=VARCHAR},			
+			province=#{province,jdbcType=VARCHAR},	     
+	        sellerSign= #{sellerSign,jdbcType=VARCHAR},
+	        orderSource=#{orderSource,jdbcType=VARCHAR},
+	        alreadySendMessages= #{alreadySendMessages,jdbcType=VARCHAR},
+	        filterType=#{filterType,jdbcType=VARCHAR},
+	        selectCommodityType= #{selectCommodityType,jdbcType=VARCHAR},
+	        commodityIds= #{commodityIds,jdbcType=VARCHAR},
+	        lastModifiedDate= #{lastModifiedDate,jdbcType=DATE}
+		</set>
+			where id=#{id}
+	</update>
+	<!-- 修改手动订单提醒短信设置条件 -->
+	<update id="updateOr" >
+		update crm_orderReminder
+		<set>
+			<if test="smsSign !=null and smsSign != ''">
+				smsSign= #{smsSign,jdbcType=VARCHAR},
+			</if>
+			<if test="isTiming !=null and isTiming != ''">
+				isTiming= #{isTiming,jdbcType=VARCHAR},
+			</if>
+			<if test="timing !=null">
+				timing= #{timing,jdbcType=DATE},
+			</if>
+			content= #{content,jdbcType=VARCHAR},
+	        lastModifiedDate= #{lastModifiedDate,jdbcType=DATE}
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 添加手动订单提醒条件 -->
+	<insert id="addOrderReminder" >
+		 insert into crm_orderReminder
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="userId != null" >
+	        userId,
+	      </if>
+	      <if test="orderDateType != null" >
+	        orderDateType,
+	      </if>
+	      <if test="endTime != null" >
+	        endTime,
+	      </if>
+	      <if test="startTime != null" >
+	        startTime,
+	      </if>	      
+	      <if test="bookingStatus != null" >
+	        bookingStatus,
+	      </if>
+	      <if test="orderStatus != null" >
+	        orderStatus,
+	      </if>	
+	      <if test="maxOrderPrice != null" >
+	        maxOrderPrice,
+	      </if>	
+	      <if test="minOrderPrice != null" >
+	        minOrderPrice,
+	      </if>	
+	      <if test="maxTradeNum != null" >
+	        maxTradeNum,
+	      </if>	
+	      <if test="minTradeNum != null" >
+	        minTradeNum,
+	      </if>	
+	      <if test="orderType != null" >
+	        orderType,
+	      </if>	
+	      <if test="evaluateStatus != null" >
+	        evaluateStatus,
+	      </if>	
+	      <if test="province != null" >
+	        province,
+	      </if>	
+	      <if test="sellerSign != null" >
+	        sellerSign,
+	      </if>	
+	      <if test="orderSource != null" >
+	        orderSource,
+	      </if>	
+	      <if test="alreadySendMessages != null" >
+	        alreadySendMessages,
+	      </if>	
+	      <if test="filterType != null" >
+	        filterType,
+	      </if>		      
+	      <if test="selectCommodityType != null" >
+	        selectCommodityType,
+	      </if>	
+	      <if test="commodityIds != null" >
+	        commodityIds,
+	      </if>	
+	      <if test="createdDate != null" >
+	        createdDate
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="userId != null" >
+	        #{userId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="orderDateType != null" >
+	        #{orderDateType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="endTime != null" >
+	        #{endTime,jdbcType=DATE},
+	      </if>
+	      <if test="startTime != null" >
+	        #{startTime,jdbcType=DATE},
+	      </if>
+	      <if test="bookingStatus != null" >
+	        #{bookingStatus,jdbcType=VARCHAR},
+	      </if>
+	      <if test="orderStatus != null" >
+	        #{orderStatus,jdbcType=VARCHAR},
+	      </if>
+	      <if test="maxOrderPrice != null" >
+	        #{maxOrderPrice,jdbcType=DOUBLE},
+	      </if>
+	      <if test="minOrderPrice != null" >
+	        #{minOrderPrice,jdbcType=DOUBLE},
+	      </if>
+	      <if test="maxTradeNum != null" >
+	        #{maxTradeNum,jdbcType=INTEGER},
+	      </if>
+	      <if test="minTradeNum != null" >
+	        #{minTradeNum,jdbcType=INTEGER},
+	      </if>
+	      <if test="orderType != null" >
+	        #{orderType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="evaluateStatus != null" >
+	        #{evaluateStatus,jdbcType=VARCHAR},
+	      </if>
+	      <if test="province != null" >
+	        #{province,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sellerSign != null" >
+	        #{sellerSign,jdbcType=VARCHAR},
+	      </if>
+	      <if test="orderSource != null" >
+	        #{orderSource,jdbcType=VARCHAR},
+	      </if>
+	      <if test="alreadySendMessages != null" >
+	        #{alreadySendMessages,jdbcType=VARCHAR},
+	      </if>
+	      <if test="filterType != null" >
+	        #{filterType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="selectCommodityType != null" >
+	        #{selectCommodityType,jdbcType=VARCHAR},
+	      </if>	  
+	       <if test="commodityIds != null" >
+	        #{commodityIds,jdbcType=VARCHAR},
+	      </if>	   
+	      <if test="createdDate != null" >
+	        #{createdDate,jdbcType=DATE}
+	      </if>	 
+	    </trim>	   
+	</insert>
+	<!-- 根据id更新手动订单提醒的开启状态 -->
+	<update id="updataStatusById">
+		update crm_orderreminder
+		<set>
+			<if test="status != null and status != ''">
+				status = #{status},
+			</if>
+			<if test="isTiming != null and isTiming != ''">
+				isTiming = #{isTiming},
+			</if>
+			<if test="timing != null and timing != ''">
+				timing = DATE_FORMAT(#{timing},'%Y-%m-%d %H:%i:%s'),
+			</if>
+		</set>
+		where userId = #{userId}
+	</update>
+</mapper>

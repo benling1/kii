@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.seller.entity.SellerGroup">
+	<resultMap type="s2jh.biz.shop.crm.seller.entity.SellerGroup"
+		id="SellerGroupInfo">
+		<result column="ID" property="id" />
+		<result column="group_id" property="groupId" />
+		<result column="group_name" property="groupName" />
+		<result column="group_create" property="groupCreate" />
+		<result column="group_modify" property="groupModify" />
+		<result column="status" property="status" />
+		<result column="member_count" property="memberCount" />
+		<result column="remark" property="remark" />
+		<result column="userId" property="userId" />
+		<result column="createdBy" property="createdBy" />
+		<result column="createdDate" property="createdDate" />
+		<result column="lastModifiedBy" property="lastModifiedBy" />
+		<result column="lastModifiedDate" property="lastModifiedDate" />
+	</resultMap>
+
+	<!-- 根据卖家编号获取所有分组信息 -->
+	<select id="findAllSellerGroup" resultMap="SellerGroupInfo">
+		select
+		id,group_id,group_name,group_create,group_modify,status,member_count,remark,rule_id,userId,
+		CASE memberType
+		WHEN 1 THEN '默认分组'
+		WHEN 2 THEN '自定义分组'
+		END
+		AS memberType
+
+		from crm_groups
+		where status =1
+		and userId= #{userId}
+		
+		<if test="memberType !=null and memberType!=''">
+			and memberType= #{memberType}
+		</if>
+		<if test="startRows!=null  and currentRows!=null">
+			limit #{startRows},#{currentRows}
+		</if>
+	</select>
+	
+	<!-- 根据卖家编号获取所有分组信息 -->
+	<select id="findAllGroup" resultMap="SellerGroupInfo">
+		select
+		id,group_id,group_name
+		from crm_groups
+		where status =1
+		and userId= #{userId}
+		ORDER BY group_id
+				
+	</select>
+
+	<!-- 根据卖家编号查询所有用户分组数量 -->
+	<select id="findSellerGroupCount" resultType="int">
+		select count(*)
+		from crm_groups
+		where status =1
+		and userId= #{userId}
+		<if test="memberType !=null and memberType!=''">
+			and memberType= #{memberType}
+		</if>
+	</select>
+
+	<!-- 根据会员分组编号删除会员分组 -->
+	<delete id="deleteSellerGroup" parameterType="int">
+		delete from crm_groups where group_id=#{groupId}
+	</delete>
+
+	<!-- 添加会员分组 -->
+	<insert id="addSellerGroup" useGeneratedKeys="true" keyProperty="groupId"
+		parameterType="s2jh.biz.shop.crm.seller.entity.SellerGroup">
+		insert into crm_groups
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				userId,
+			</if>
+			<if test="groupName != null">
+				group_name,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="memberType != null">
+				memberType,
+			</if>
+			<if test="memberCount != null">
+				member_count,
+			</if>
+			<if test="groupCreate != null">
+				group_create,
+			</if>
+			<if test="rule_id != null">
+				rule_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupName != null">
+				#{groupName,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="memberType != null">
+				#{memberType,jdbcType=VARCHAR},
+			</if>
+			<if test="memberCount != null">
+				#{memberCount,jdbcType=INTEGER},
+			</if>
+			<if test="groupCreate != null">
+				#{groupCreate,jdbcType=DATE},
+			</if>
+			<if test="rule_id != null">
+				#{rule_id,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- ZTK查询最近一条数据的主键GroupId -->
+	<select id="findGroupIdLast" resultType="Long">
+		select grouip_id from crm_groups order by group_create DESC;
+	</select>
+	
+
+	<!-- 修改卖家分组信息 -->
+	<update id="updateSellerGroup" parameterType="s2jh.biz.shop.crm.seller.entity.SellerGroup">
+		update crm_groups
+		<set>
+			<if test="userId != null">
+				userId = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupName != null">
+				group_name=#{groupName,jdbcType=VARCHAR},
+			</if>
+		<!-- 	<if test="remark != null"> -->
+				remark= #{remark,jdbcType=VARCHAR},
+			<!-- </if> -->
+			<if test="status != null">
+				status=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="memberType != null">
+				memberType=#{memberType,jdbcType=VARCHAR},
+			</if>
+			<if test="groupCreate != null">
+				GROUP_CREATE= #{groupCreate,jdbcType=DATE},
+			</if>
+			<if test="rule_id != null">
+				RULE_ID=#{rule_id,jdbcType=INTEGER},
+			</if>
+			<if test="memberCount !=null">
+				MEMBER_COUNT=#{memberCount,jdbcType=INTEGER},
+			</if>
+			  lastModifiedDate = now()
+
+		</set>
+		where GROUP_ID = #{groupId,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据分组编号查询分组信息 -->
+	<select id="findSellerGroup" resultMap="SellerGroupInfo">
+		select
+		id,group_id,group_name,group_create,group_modify,status,member_count,remark,userId,rule_id,
+		CASE memberType
+		WHEN 1 THEN '默认分组'
+		WHEN 2 THEN '匿名分组'
+		END
+		AS memberType
+
+		from crm_groups
+		where 1=1
+		<if test="groupId !=null and groupId!=''">
+			and group_id= #{groupId}
+		</if>
+	</select>
+	<!-- 根据分组编号查询分组信息 -->
+	<select id="findSellerGroupInfo" resultMap="SellerGroupInfo">
+		select
+		id,group_id,group_name,group_create,group_modify,status,member_count,userId,rule_id,memberType
+		from crm_groups
+		where 1=1 and group_id= #{groupId}
+		
+	</select>
+	
+
+	<!-- 根据卖家编号查询所有的默认分组 -->
+	<select id="findDefaultSellerGroup" resultMap="SellerGroupInfo">
+		select
+		id,group_id,group_name,group_create,group_modify,status,member_count,remark,userId,rule_id,memberType
+		from crm_groups
+		where memberType='1'
+		<if test="userId !=null">
+			and userId=#{userId,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="findSellerGroupByGroupId" parameterType="long" resultMap="SellerGroupInfo">
+		select
+		id,group_id,group_name,group_create,group_modify,status,member_count,remark,userId,rule_id,memberType
+		from crm_groups
+		where group_id = #{groupId}
+	</select>
+	<!-- 修改groups的成员数量 -->
+	<update id="updateSellerGroupMemberCount">
+		update crm_groups
+		<set>
+			<if test="memberCount !=null">
+				MEMBER_COUNT=#{memberCount,jdbcType=INTEGER},
+			</if>
+			  lastModifiedDate = now()
+
+		</set>
+		where GROUP_ID = #{groupId,jdbcType=BIGINT}
+	</update>
+	
+	<update id="updateSellerGroupMemberCountByUserId">
+		update crm_groups
+		<set>
+			<if test="memberCount !=null">
+				MEMBER_COUNT=#{memberCount,jdbcType=INTEGER},
+			</if>
+			  lastModifiedDate = now()
+		</set>
+		where userId = #{userId,jdbcType=VARCHAR} and group_name = #{group_name,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 根据组名和用户名称查询会员分组信息 -->
+	<select id="existenceSellerGroupInfo" resultMap="SellerGroupInfo">
+		select * 
+		from crm_groups
+		where 
+		group_name=#{groupName} and userId=#{userId}
+	</select>
+</mapper>

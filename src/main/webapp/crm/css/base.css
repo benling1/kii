@@ -1,0 +1,19 @@
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, p, blockquote, th, td, img{margin:0;padding:0;border:0;outline:none;}
+.clear{ height:0px;line-height:0px;clear:both;}
+.clearfix:after {content: ".";display: block;height: 0;clear: both;visibility: hidden;}
+*+html .clearfix { overflow:hidden;}
+* html .clearfix { height: 1%;}
+body{
+	font-size:0.83vw; margin:0px; padding:0px;
+}
+li{ list-style:none;}
+a img{ border:0;}
+img{
+	boder:none;
+}
+a{ text-decoration:none; border:none;}
+.clear{clear:both;height:0;font-size: 1px;line-height:1px;_line-height:0px;}
+
+input{border: 0;}
+select{border: 0;}
+

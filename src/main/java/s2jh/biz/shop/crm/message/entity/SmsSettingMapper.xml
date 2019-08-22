@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsSetting">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsSetting" id="smsSetting">
+		<result column="USER_ID" property="userId"/>
+		<result column="MEMEB_INFO_ID" property="memebInfoId"/>
+		<result column="ITEM_ID" property="itemId"/>
+		<result column="ORDERID" property="orderId"/>
+		<result column="MESSAGEVARIABLE" property="messageVariable"/>
+		<result column="MESSAGECONTENT" property="messageContent"/>
+		<result column="MESSAGESIGNATURE" property="messageSignature"/>
+		<result column="SETTINGTYPE" property="settingType"/>
+		<result column="PAYMENTLINK" property="paymentLink"/>
+		<result column="MOBLIETEST" property="mobileTest"/>
+		<result column="SMSNUMBER" property="smsNumber"/>
+		<result column="status" property="status"/>
+		<result column="ORDERID" property="orderId"/>
+	</resultMap>
+	<select id="findIdBySmsSetting" parameterType="s2jh.biz.shop.crm.message.entity.SmsSetting" resultType="java.lang.Long">
+		SELECT ID
+		FROM crm_sms_setting
+		WHERE USER_ID=#{userId} AND SETTINGTYPE=#{settingType}
+	</select>
+	<insert id="doCreateAutoModel" parameterType="s2jh.biz.shop.crm.message.entity.SmsSetting" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO crm_sms_setting(createdBy,createdDate,optlock,messageContent,MESSAGESIGNATURE,settingType,status,USER_ID)
+		VALUE('SystemAdmin',now(),0,#{messageContent},#{messageSignature},#{settingType},1,#{userId})
+	</insert>
+	<!-- 根据id更新短信设置 -->
+	<update id="updateSmsSettingById">
+		update crm_sms_setting
+		<set>
+			MOBLIETEST = #{mobileTest},
+			<if test="messageVariable != null">
+				MESSAGEVARIABLE = #{messageVariable},
+			</if>
+			<if test="messageContent != null">
+				MESSAGECONTENT = #{messageContent},
+			</if>
+			<if test="messageSignature!= null">
+				MESSAGESIGNATURE = #{messageSignature},
+			</if>
+			<if test="paymentLink != null">
+				PAYMENTLINK = #{paymentLink},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="smsNumber != null">
+				SMSNUMBER = #{smsNumber},
+			</if>
+			<if test="itemId != null">
+				ITEM_ID = #{itemId},
+			</if>
+			<if test="orderId != null">
+				ORDERID = #{orderId},
+			</if>
+			<if test="lastModifiedDate != null">
+				lastModifiedDate = #{lastModifiedDate},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	<!-- 查询短信设置  -->
+	<select id="findSmsSettingSend" resultMap="smsSetting">
+		select *
+		from crm_sms_setting
+		<where>
+			<if test="settingType != null">
+				and SETTINGTYPE = #{settingType}
+			</if>
+				and USER_ID = #{sellerName}
+		</where>
+	</select>
+	
+	<!-- 查询短信设置  -->
+	<select id="findSmsSetting" resultMap="smsSetting">
+		select id, 
+			MESSAGECONTENT,
+			USER_ID,
+			ITEM_ID,
+			MESSAGEVARIABLE,
+			MESSAGESIGNATURE,
+			SETTINGTYPE,
+			PAYMENTLINK,
+			MOBLIETEST,
+			status,
+			SMSNUMBER,
+			ORDERID
+		from crm_sms_setting
+		<where>
+			<if test="settingType != null and settingType != ''">
+				 SETTINGTYPE = #{settingType} and
+			</if>
+			<if test="userId!=null">
+				USER_ID = #{userId} and
+			</if>
+			<if test="userId==null">
+				USER_ID IS NULL and
+			</if>
+			1=1
+		</where>
+	</select>
+	
+	<!-- 退款关怀 -->
+	<!-- 买家申请退款 短信设置 修改方法 -->
+	<update id="updateRefundBuyer">
+	  update crm_sms_setting
+		<set>
+			MOBLIETEST = #{mobileTest},
+			<if test="userId != null">
+				USER_ID = #{userId},
+			</if>
+			<if test="messageVariable != null">
+				MESSAGEVARIABLE = #{messageVariable},
+			</if>
+			<if test="messageContent != null">
+				MESSAGECONTENT = #{messageContent},
+			</if>
+			<if test="messageSignature!= null">
+				MESSAGESIGNATURE = #{messageSignature},
+			</if>
+			<if test="settingType != null">
+				SETTINGTYPE = #{settingType},
+			</if>
+			<if test="paymentLink != null">
+				PAYMENTLINK = #{paymentLink},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="smsNumber != null">
+				SMSNUMBER = #{smsNumber},
+			</if>
+			
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 查询 买家申请退款 短信设置 -->
+	<select id="findBuyerRefundSetting" resultType="s2jh.biz.shop.crm.message.entity.SmsSetting">
+	
+	 select id, 
+			MESSAGECONTENT,
+			USER_ID,
+			MESSAGEVARIABLE,
+			MESSAGESIGNATURE,
+			SETTINGTYPE,
+			PAYMENTLINK,
+			MOBLIETEST,
+			status,
+			SMSNUMBER
+		from crm_sms_setting
+	 WHERE SETTINGTYPE=29
+	 <if test="userId != null">
+		and USER_ID = #{userId}
+	</if>
+	</select>
+	
+	<!-- 退款成功 短信设置 修改 -->
+	<update id="updateRefundSuccessSmsSetting">
+	    update crm_sms_setting
+		<set>
+			MOBLIETEST = #{mobileTest},
+			<if test="userId != null">
+				USER_ID = #{userId},
+			</if>
+			<if test="messageVariable != null">
+				MESSAGEVARIABLE = #{messageVariable},
+			</if>
+			<if test="messageContent != null">
+				MESSAGECONTENT = #{messageContent},
+			</if>
+			<if test="messageSignature!= null">
+				MESSAGESIGNATURE = #{messageSignature},
+			</if>
+			<if test="settingType != null">
+				SETTINGTYPE = #{settingType},
+			</if>
+			<if test="paymentLink != null">
+				PAYMENTLINK = #{paymentLink},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="smsNumber != null">
+				SMSNUMBER = #{smsNumber},
+			</if>
+		</set>
+		where id=#{id}
+	 
+	</update>
+	
+	<!-- 退款成功 短信设置 查询 -->
+	<select id="findRefundSuccessSmsSetting" resultType="s2jh.biz.shop.crm.message.entity.SmsSetting">
+	  select id, 
+			MESSAGECONTENT,
+			USER_ID,
+			MESSAGEVARIABLE,
+			MESSAGESIGNATURE,
+			SETTINGTYPE,
+			PAYMENTLINK,
+			MOBLIETEST,
+			status,
+			SMSNUMBER 
+		from crm_sms_setting
+	    WHERE SETTINGTYPE=30
+	 <if test="userId != null">
+		and USER_ID = #{userId}
+	</if>
+	</select>
+	
+	<!-- 等待退货 短信设置 修改 -->
+	<update id="updateWaitingRefundSmsSetting">
+	 update crm_sms_setting
+		<set>
+			MOBLIETEST = #{mobileTest},
+			<if test="userId != null">
+				USER_ID = #{userId},
+			</if>
+			<if test="messageVariable != null">
+				MESSAGEVARIABLE = #{messageVariable},
+			</if>
+			<if test="messageContent != null">
+				MESSAGECONTENT = #{messageContent},
+			</if>
+			<if test="messageSignature!= null">
+				MESSAGESIGNATURE = #{messageSignature},
+			</if>
+			<if test="settingType != null">
+				SETTINGTYPE = #{settingType},
+			</if>
+			<if test="paymentLink != null">
+				PAYMENTLINK = #{paymentLink},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="smsNumber != null">
+				SMSNUMBER = #{smsNumber},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 等待退货 短信设置 查询 -->
+	<select id="findWaitingRefundSmsSetting" resultType="s2jh.biz.shop.crm.message.entity.SmsSetting">
+	  select id, 
+			MESSAGECONTENT,
+			USER_ID,
+			MESSAGEVARIABLE,
+			MESSAGESIGNATURE,
+			SETTINGTYPE,
+			PAYMENTLINK,
+			MOBLIETEST,
+			status,
+			SMSNUMBER 
+		from crm_sms_setting
+	    WHERE SETTINGTYPE=31
+	 <if test="userId != null">
+		and USER_ID = #{userId}
+	</if>
+	</select>
+	
+	<!-- 拒绝退款 短信设置 修改方法 -->
+	<update id="updateRefusedRefundSmsSetting">
+	 update crm_sms_setting
+		<set>
+			MOBLIETEST = #{mobileTest},
+			<if test="userId != null">
+				USER_ID = #{userId},
+			</if>
+			<if test="messageVariable != null">
+				MESSAGEVARIABLE = #{messageVariable},
+			</if>
+			<if test="messageContent != null">
+				MESSAGECONTENT = #{messageContent},
+			</if>
+			<if test="messageSignature!= null">
+				MESSAGESIGNATURE = #{messageSignature},
+			</if>
+			<if test="settingType != null">
+				SETTINGTYPE = #{settingType},
+			</if>
+			<if test="paymentLink != null">
+				PAYMENTLINK = #{paymentLink},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="smsNumber != null">
+				SMSNUMBER = #{smsNumber},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 拒绝退款 短信设置 查询 -->
+	<select id="findRefusedRefundSmsSetting" resultType="s2jh.biz.shop.crm.message.entity.SmsSetting">
+	  select id, 
+			MESSAGECONTENT,
+			USER_ID,
+			MESSAGEVARIABLE,
+			MESSAGESIGNATURE,
+			SETTINGTYPE,
+			PAYMENTLINK,
+			MOBLIETEST,
+			status,
+			SMSNUMBER 
+		from crm_sms_setting
+	    WHERE SETTINGTYPE=32
+	 <if test="userId != null">
+		and USER_ID = #{userId}
+	</if>
+	</select>
+	
+	<!-- 查询用户所有的短信设置  -->
+	<select id="findSmsSettingList" resultMap="smsSetting">
+		select *
+		from crm_sms_setting
+		<where>
+			USER_ID = #{userId}
+		</where>
+	</select>
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllSettingCount" resultType="Long">
+		select count(1)
+		from crm_sms_setting
+	</select>
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllLimitSetting" resultMap="smsSetting">
+		SELECT *
+		FROM crm_sms_setting 
+		Order by id asc
+		limit #{startRows},#{pageSize}
+	</select>
+	
+</mapper>

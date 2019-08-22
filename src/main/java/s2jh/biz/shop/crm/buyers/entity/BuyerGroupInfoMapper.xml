@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.buyers.entity.BuyerGroupInfo">
+	<resultMap type="s2jh.biz.shop.crm.buyers.entity.BuyerGroupInfo" id="buyerGroupInfo">
+		<result column="ID" property="id"/>
+		<result column="BUYER_ID" property="buyerID"/>
+		<result column="group_id" property="groupId"/>
+		<result column="USER_ID" property="userId"/>	
+		<result column="REMARKS" property="remarks"/>
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+	</resultMap>
+	<!--根据卖家用户编号和会员分组编号查询信息 -->
+	<select id="findBuyerGroupInfo" resultMap="buyerGroupInfo">
+		SELECT id,BUYER_ID,USER_ID,group_id,REMARKS,createdBy,createdDate,lastModifiedBy,lastModifiedDate
+		FROM crm_buyer_group_info
+		where 1=1
+		<if test="userId !=null">
+			and user_id=#{userId}
+		</if>
+		<if test="groupId !=null">
+			and group_id=#{groupId}
+		</if>
+	</select>
+	<!--根据卖家用户编号和会员分组编号和买家id查询信息 -->
+	<select id="queryBuyerGroupInfos" resultMap="buyerGroupInfo" parameterType="s2jh.biz.shop.crm.buyers.entity.BuyerGroupInfo">
+		SELECT id,BUYER_ID,USER_ID,group_id,REMARKS,createdBy,createdDate,lastModifiedBy,lastModifiedDate
+		FROM crm_buyer_group_info
+		where 1=1
+		<if test="userId !=null">
+			and user_id=#{userId}
+		</if>
+		<if test="groupId !=null">
+			and group_id=#{groupId}
+		</if>
+		<if test="buyerID !=null">
+			and buyer_ID=#{buyerID}
+		</if>
+	</select>
+	<!-- 添加会员跟会员分组之间的绑定关系 -->
+	<insert id="addBuyerGroupInfo" >
+		 insert into crm_buyer_group_info
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="userId != null" >
+	        user_id,
+	      </if>
+	      <if test="groupId != null" >
+	        group_id,
+	      </if>
+	      <if test="buyerID != null" >
+	        buyer_id,
+	      </if>	      
+	      <if test="createdDate != null" >
+	        createdDate
+	      </if>	     
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="userId != null" >
+	        #{userId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="groupId != null" >
+	        #{groupId,jdbcType=BIGINT},
+	      </if>
+	      <if test="buyerID != null" >
+	        #{buyerID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createdDate != null" >
+	        #{createdDate},
+	      </if>	     
+	    </trim>	   
+	</insert>
+	
+	<!-- 根据会员分组编号删除数据 -->
+	 <delete id="delBuyerGroupInfo" parameterType="int">
+        delete from crm_buyer_group_info 
+        where 1=1 
+        <if test="groupId !=null">
+        	and group_id=#{groupId}
+        </if> 
+        <if test="userId !=null">
+        	and user_id=#{userId}
+        </if> 
+    </delete>
+    <delete id="delByUserIdAndBuyerId" parameterType="s2jh.biz.shop.crm.buyers.entity.BuyerGroupInfo">
+    	delete from crm_buyer_group_info 
+        where 1=1 
+        <if test="buyerID !=null">
+        	and buyer_ID=#{buyerID}
+        </if> 
+        <if test="userId !=null">
+        	and user_id=#{userId}
+        </if> 
+    </delete>
+</mapper>

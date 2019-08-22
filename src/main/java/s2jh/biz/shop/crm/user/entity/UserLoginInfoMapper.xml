@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.UserLoginInfo">
+	<resultMap type="s2jh.biz.shop.crm.user.entity.UserLoginInfo" id="userLoginInfo">
+		<result column="sellerNick" property="sellerNick" />
+		<result column="loginTime" property="loginTime" />
+		<result column="IpAddress" property="IpAddress" />
+	</resultMap>
+	
+	<!-- 添加用户登录信息 -->
+	<insert id="addUserLoginInfo">
+		insert into crm_UserLoginInfo
+		(sellerNick,loginTime,IpAddress) value (#{sellerNick},#{loginTime},#{IpAddress})
+	</insert>
+
+
+</mapper>

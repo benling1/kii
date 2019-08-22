@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsReceiveInfo">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsReceiveInfo" id="smsReceiveInfo">
+		<result column="ID" property="id"/>
+		<result column="taobao_nick" property="taobaoNick"/>
+		<result column="buyer_nick" property="buyerNick"/>
+		<result column="send_phone" property="sendPhone"/>
+		<result column="content" property="content"/>
+		<result column="receive_phone" property="receivePhone"/>
+		<result column="receive_date" property="receiveDate"/>
+		<result column="remarks" property="remarks"/>		
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+		<result column="status" property="status"/>
+		<result column="user_id" property="userId"/>		
+	</resultMap>
+	
+	<!-- 添加方法 -->
+	<insert id="insertSmsReceiverInfo">
+		insert into crm_sms_receive_info(taobao_nick,buyer_nick,send_phone,content,receive_phone,receive_date,remarks,
+		createdBy,createdDate,lastModifiedBy,lastModifiedDate,status,user_id,optlock) 
+		values(#{taobaoNick},#{buyerNick},#{sendPhone},#{content},#{receivePhone},#{receiveDate},#{remarks},
+		#{createdBy},now(),#{lastModifiedBy},now(),#{status},#{userId},0)
+	</insert>
+	
+	
+	<!--根据卖家昵称查询短信接收记录 -->
+	<select id="findAllSmsReceiveInfo" resultMap="smsReceiveInfo">
+		SELECT id,taobao_nick,send_phone,content,receive_phone,receive_date,remarks,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,user_id
+		FROM crm_sms_receive_info
+		where taobao_nick=#{taobaoNick}
+	</select>
+	
+	  <!--根据卖家条件查询短信接收到的记录 -->
+	<select id="querySmsReceiveInfo" resultMap="smsReceiveInfo">
+		SELECT id,taobao_nick,send_phone,content,receive_phone,receive_date,remarks,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,user_id
+		FROM crm_sms_receive_info
+		<where>
+			1=1
+			<if test="taobaoNick !=null">
+				and taobao_nick =#{taobaoNick}
+			</if>
+			<if test="sendPhone != null">
+				and send_phone= #{sendPhone}
+			</if>
+			<if test="content != null">
+				and content like #{content}
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+			<if test="startDate != null">
+			    and DATE_FORMAT(receive_date,'%Y/%m/%d') >= DATE_FORMAT(#{startDate},'%Y/%m/%d') 
+			</if>
+			<if test="endDate != null">
+			    and DATE_FORMAT(#{endDate},'%Y/%m/%d') >= DATE_FORMAT(receive_date,'%Y/%m/%d')
+			</if>					
+		</where> 
+	</select>
+	
+	
+	<!--根据卖家条件查询短信接收到的分页记录（分页）ZTK -->
+	<select id="findLimitList" resultMap="smsReceiveInfo">
+		SELECT id,taobao_nick,buyer_nick,send_phone,content,receive_phone,receive_date,remarks,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,user_id
+		FROM crm_sms_receive_info    
+		<where>
+			USER_ID = #{userId}
+			<if test="buyerNick !=null and buyerNick !='' ">
+				and buyer_nick like '%${buyerNick}%'
+			</if>
+			<if test="sendPhone != null and sendPhone !='' ">
+				and send_phone like '%${sendPhone}%'
+			</if>
+			<if test="status != null and status != ''">
+				and status = #{status}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+			    and DATE_FORMAT(receive_date,'%Y/%m/%d') >= DATE_FORMAT(#{beginTime},'%Y/%m/%d') 
+			</if>
+			<if test="endTime != null and endTime != ''">
+			    and DATE_FORMAT(#{endTime},'%Y/%m/%d') >= DATE_FORMAT(receive_date,'%Y/%m/%d')
+			</if>
+			<if test="containN != null and containN != ''">
+				and content like '%${containN}%'
+			</if>
+			<if test="notContainN != null and notContainN != ''">
+				and content not like '%${notContainN}%'
+			</if>
+			ORDER BY receive_date DESC	
+			limit #{startRows},#{currentRows}				
+		</where> 
+	</select>
+	
+	<select id="findReceiveInfoLimitList" resultMap="smsReceiveInfo">
+		SELECT ID,TAOBAO_NICK,BUYER_NICK,SEND_PHONE,CONTENT,RECEIVE_PHONE,RECEIVE_DATE,REMARKS,CREATEDBY,CREATEDDATE,LASTMODIFIEDBY,
+		LASTMODIFIEDDATE,STATUS,USER_ID
+		FROM CRM_SMS_RECEIVE_INFO 
+		where  1=1 and USER_ID = #{userId} and content not like '%${notContainN}%' 
+		ORDER BY ID DESC	
+		LIMIT #{startRows},#{currentRows}					 
+	</select>
+	
+	<!--根据卖家条件查询短信接收到的分页记录（不分页）ZTK -->
+	<select id="findList" resultMap="smsReceiveInfo">
+		SELECT id,taobao_nick,buyer_nick,send_phone,content,receive_phone,receive_date,remarks,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,user_id
+		FROM crm_sms_receive_info
+		<where>
+			USER_ID = #{userId}
+			<if test="buyerNick !=null and buyerNick !='' ">
+				and buyer_nick like CONCAT('%',#{buyerNick},'%')
+			</if>
+			<if test="sendPhone != null and sendPhone !='' ">
+				and send_phone like CONCAT('%',#{sendPhone},'%')
+			</if>
+			<if test="status != null and status != ''">
+				and status = #{status}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+			    and DATE_FORMAT(receive_date,'%Y/%m/%d') >= DATE_FORMAT(#{beginTime},'%Y/%m/%d') 
+			</if>
+			<if test="endTime != null and endTime != ''">
+			    and DATE_FORMAT(#{endTime},'%Y/%m/%d') >= DATE_FORMAT(receive_date,'%Y/%m/%d')
+			</if>
+			<if test="containN != null and containN != ''">
+				and content like '%${containN}%'
+			</if>
+			<if test="notContainN != null and notContainN != ''">
+				and content not like '%${notContainN}%'
+			</if>
+		</where> 
+		ORDER BY receive_date DESC	
+	</select>
+	
+	<!--根据卖家条件查询短信接收到的记录总条数 -->
+	<select id="findTotalCountByMap" resultType="java.lang.Long">
+		SELECT COUNT(1)
+		FROM crm_sms_receive_info
+		<where>
+			USER_ID = #{userId}
+			<if test="buyerNick !=null and buyerNick !='' ">
+				and buyer_nick like CONCAT('%',#{buyerNick},'%')
+			</if>
+			<if test="sendPhone != null and sendPhone !='' ">
+				and send_phone like CONCAT('%',#{sendPhone},'%')
+			</if>
+			<if test="status != null and status != ''">
+				and status = #{status}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+			    and DATE_FORMAT(receive_date,'%Y/%m/%d') >= DATE_FORMAT(#{beginTime},'%Y/%m/%d') 
+			</if>
+			<if test="endTime != null and endTime != ''">
+			    and DATE_FORMAT(#{endTime},'%Y/%m/%d') >= DATE_FORMAT(receive_date,'%Y/%m/%d')
+			</if>
+			<if test="containN != null and containN != ''">
+				and content = #{containN}
+			</if>
+			<if test="notContainN != null and notContainN != ''">
+				and content != #{notContainN}
+			</if>				
+		</where> 
+	</select>
+	
+	<!-- 标记未读信息为已读 -->
+	<update id="remarkSmsReceiveInfo" parameterType="Integer[]">
+		UPDATE crm_sms_receive_info
+		set status = 1
+		<where>
+			<if test="ids !=null">
+				and id
+				<foreach  collection="ids" item="id" open="in (" close=")" separator=",">   
+           		 #{id}  
+        		</foreach>
+			</if>
+		</where>
+	</update>
+	
+	<!--根据id数组查询会员互动中买家回复的短信记录 -->
+	<select id="getSmsReceiveInfoList" resultMap="smsReceiveInfo" parameterType="Integer[]">
+	SELECT id,taobao_nick,buyer_nick,send_phone,content,receive_phone,receive_date,remarks,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,user_id
+		FROM crm_sms_receive_info
+		<where>
+			<if test="ids !=null">
+				and id
+				<foreach  collection="ids" item="id" open="in (" close=")" separator=",">   
+           		 #{id}  
+        		</foreach>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 会员信息 查询买家回复内容 -->
+	<select id="findBuyerContent" resultType="s2jh.biz.shop.crm.message.entity.SmsReceiveInfo">
+	  SELECT id id,send_phone sendPhone,content content,RECEIVE_DATE receiveDate,user_id userId,buyer_nick buyerNick FROM CRM_SMS_RECEIVE_INFO
+	  <where>
+	    <if test="userId !=null">
+	      user_id=#{userId}
+	    </if>
+	    <if test="buyerNick !=null">
+	      and buyer_nick=#{buyerNick}
+	    </if>
+	    and content NOT IN('n' ,'N')
+	  </where>
+	</select>
+	
+	<!-- 会员信息 根据id删除买家回复内容 -->
+	<delete id="deleteSmsReceiveInfo">
+	  DELETE FROM CRM_SMS_RECEIVE_INFO
+	  <where>
+	    <if test="id!=null">
+	      id=#{id}
+	    </if>
+	  </where>
+	</delete>
+	
+	<!-- 根据买家昵称查询上行内容 -->
+	<select id="listReceiveInfoByBuyerNick" resultMap="smsReceiveInfo">
+		select receive_date,content
+		from CRM_SMS_RECEIVE_INFO
+		<where>
+			user_id = #{userId} and send_phone = #{phone}
+			order by id desc
+		</where>
+	</select>
+</mapper>

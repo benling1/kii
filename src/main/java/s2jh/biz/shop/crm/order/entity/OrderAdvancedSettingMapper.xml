@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting">
+
+	<resultMap type="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting" id="OrderAdvancedSetting_map">
+		<result column="LOCALITY" property="locality"/>
+		<result column="VENDOR_MARK" property="vendormark"/>
+		<result column="ORDER_SOURCE" property="orderSource"/>
+		<result column="MEMBER_LEVEL" property="memberLevel"/>
+		<result column="PRODUCE_SELECT" property="productSelect"/>
+		<result column="ItEM_ID" property="itemId"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="FLAGCOLOR" property="flagcolor"/>
+		<result column="MEMEB_INFO_ID" property="memebInfoId"/>
+		<result column="status" property="status"/>
+		<result column="SETTING_TYPE" property="settingType"/>
+
+	</resultMap>
+	<select id="findAdvanceByUserAndSettiType" parameterType="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting" resultType="java.lang.Long">
+		SELECT ID
+		FROM crm_order_advanced_setting
+		WHERE USER_ID=#{userId} AND SETTING_TYPE=#{settingType}
+	</select>
+	<!-- 通过userId和type查询高级设置 -->
+	<select id="findOrderAdvancedSettingByUserIdAndSettingType" resultMap="OrderAdvancedSetting_map">
+		SELECT id,
+			LOCALITY,
+			VENDOR_MARK,
+			ORDER_SOURCE,
+			MEMBER_LEVEL,
+			PRODUCE_SELECT,
+			ItEM_ID,
+			USER_ID,
+			FLAGCOLOR,
+			status
+		FROM crm_order_advanced_setting 
+		WHERE 
+			USER_ID=#{userId} 
+		AND 
+			SETTING_TYPE = #{settingType}
+	</select>
+	<!-- 通过userId和type查询高级设置 -->
+	<select id="findOrderAdvancedSettingByUserIdAndSettingTypeSend" resultMap="OrderAdvancedSetting_map">
+		SELECT *
+		FROM crm_order_advanced_setting 
+		<where>
+			<if test="settingType != null">
+			and SETTING_TYPE = #{settingType}
+			</if>
+			and user_id=#{sellerName}
+		</where>
+	</select>
+
+	<!-- 高级设置  买家退款申请修改 -->
+	<update id="updateBuyerRefundAvancedSetting">
+	    update CRM_ORDER_ADVANCED_SETTING
+		<set>
+			<if test="locality !=null and locality !='' ">
+				LOCALITY = #{locality},
+			</if>
+			<if test="vendormark !=null and vendormark !='' ">
+				VENDOR_MARK = #{vendormark},
+			</if>
+			<!-- 不能判空<if test="flagcolor !=null and flagcolor !='' "> -->
+				FLAGCOLOR = #{flagcolor},
+			<!-- </if> -->
+			<if test="orderSource !=null and orderSource !='' ">
+				ORDER_SOURCE = #{orderSource},
+			</if>
+			<if test="memberLevel !=null and memberLevel !='' ">
+				MEMBER_LEVEL = #{memberLevel},
+			</if>
+			<if test="productSelect !=null and productSelect !='' ">
+				PRODUCE_SELECT = #{productSelect},
+			</if>
+			<!-- 不能判空 -->
+			<!-- <if test="itemId !=null and itemId !='' "> -->
+				ITEM_ID = #{itemId},
+			<!-- </if> -->
+			status = #{status},
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 查询买家退款高级设置 -->
+	<select id="findBuyerRefundAdvanced" resultType="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting">
+		SELECT s.`id` id,s.`LOCALITY` locality,s.`VENDOR_MARK` vendormark,s.`FLAGCOLOR` flagcolor,
+		s.`ORDER_SOURCE` orderSource,s.`MEMBER_LEVEL` memberLevel,s.`PRODUCE_SELECT` productSelect,
+		s.`ItEM_ID` itemId,s.`USER_ID` userId
+		FROM CRM_ORDER_ADVANCED_SETTING s 
+		WHERE s.`SETTING_TYPE`=29 
+		AND 
+		user_id=#{userId} 
+	</select>
+	
+	<!-- 退款成功 高级设置 修改 -->
+	 <update id="updateRefundSuccess">
+	  update CRM_ORDER_ADVANCED_SETTING
+		<set>
+			<if test="locality !=null and locality !='' ">
+				LOCALITY = #{locality},
+			</if>
+			<if test="vendormark !=null and vendormark !='' ">
+				VENDOR_MARK = #{vendormark},
+			</if>
+			<!-- 不能判空<if test="flagcolor !=null and flagcolor !='' "> -->
+				FLAGCOLOR = #{flagcolor},
+			<!-- </if> -->
+			<if test="orderSource !=null and orderSource !='' ">
+				ORDER_SOURCE = #{orderSource},
+			</if>
+			<if test="memberLevel !=null and memberLevel !='' ">
+				MEMBER_LEVEL = #{memberLevel},
+			</if>
+			<if test="productSelect !=null and productSelect !='' ">
+				PRODUCE_SELECT = #{productSelect},
+			</if>
+			<!-- 不能判空 -->
+			<!-- <if test="itemId !=null and itemId !='' "> -->
+				ITEM_ID = #{itemId},
+			<!-- </if> -->
+			status = #{status},
+		</set>
+			where id=#{id}
+	</update> 
+	
+	<!-- 查询 退款成功 高级设置 -->
+	<select id="findBuyerRefundAdvanced1" resultType="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting">
+		
+		SELECT s.`id` id,s.`LOCALITY` locality,s.`VENDOR_MARK` vendormark,s.`FLAGCOLOR` flagcolor,
+		s.`ORDER_SOURCE` orderSource,s.`MEMBER_LEVEL` memberLevel,s.`PRODUCE_SELECT` productSelect,
+		s.`ItEM_ID` itemId,s.`USER_ID` userId
+		FROM CRM_ORDER_ADVANCED_SETTING s 
+		WHERE s.`SETTING_TYPE`=30 
+		AND 
+		USER_ID=#{userId}
+	</select>
+	
+	<!-- 等待退货 高级设置 修改 -->
+    <update id="upadteWaitingRefund">
+        update CRM_ORDER_ADVANCED_SETTING
+		<set>
+			<if test="locality !=null and locality !='' ">
+				LOCALITY = #{locality},
+			</if>
+			<if test="vendormark !=null and vendormark !='' ">
+				VENDOR_MARK = #{vendormark},
+			</if>
+			<!-- 不能判空<if test="flagcolor !=null and flagcolor !='' "> -->
+				FLAGCOLOR = #{flagcolor},
+			<!-- </if> -->
+			<if test="orderSource !=null and orderSource !='' ">
+				ORDER_SOURCE = #{orderSource},
+			</if>
+			<if test="memberLevel !=null and memberLevel !='' ">
+				MEMBER_LEVEL = #{memberLevel},
+			</if>
+			<if test="productSelect !=null and productSelect !='' ">
+				PRODUCE_SELECT = #{productSelect},
+			</if>
+			<!-- 不能判空 -->
+			<!-- <if test="itemId !=null and itemId !='' "> -->
+				ITEM_ID = #{itemId},
+			<!-- </if> -->
+		</set>
+			where id=#{id}
+    </update>
+    
+    <!-- 等待退货 高级设置查询 -->
+    <select id="findBuyerRefundAdvanced2" resultType="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting">
+        SELECT s.`id` id,s.`LOCALITY` locality,s.`VENDOR_MARK` vendormark,s.`FLAGCOLOR` flagcolor,
+		s.`ORDER_SOURCE` orderSource,s.`MEMBER_LEVEL` memberLevel,s.`PRODUCE_SELECT` productSelect,
+		s.`ItEM_ID` itemId,s.`USER_ID` userId
+		FROM CRM_ORDER_ADVANCED_SETTING s 
+		WHERE s.`SETTING_TYPE`=31 
+		AND 
+		USER_ID=#{userId} 
+    </select>
+    
+    <!-- 拒绝退款 高级设置修改 -->
+    <update id="updateRefusedrefundGj">
+        update CRM_ORDER_ADVANCED_SETTING
+		<set>
+			<if test="locality !=null and locality !='' ">
+				LOCALITY = #{locality},
+			</if>
+			<if test="vendormark !=null and vendormark !='' ">
+				VENDOR_MARK = #{vendormark},
+			</if>
+			<!-- 不能判空<if test="flagcolor !=null and flagcolor !='' "> -->
+				FLAGCOLOR = #{flagcolor},
+			<!-- </if> -->
+			<if test="orderSource !=null and orderSource !='' ">
+				ORDER_SOURCE = #{orderSource},
+			</if>
+			<if test="memberLevel !=null and memberLevel !='' ">
+				MEMBER_LEVEL = #{memberLevel},
+			</if>
+			<if test="productSelect !=null and productSelect !='' ">
+				PRODUCE_SELECT = #{productSelect},
+			</if>
+			<!-- 不能判空 -->
+			<!-- <if test="itemId !=null and itemId !='' "> -->
+				ITEM_ID = #{itemId},
+			<!-- </if> -->
+			status =#{status},
+		</set>
+			where id=#{id}
+    </update>
+    
+    <!-- 拒绝退款 高级设置查询 -->
+    <select id="findRefusedRefundGj" resultType="s2jh.biz.shop.crm.order.entity.OrderAdvancedSetting">
+        SELECT s.`id` id,s.`LOCALITY` locality,s.`VENDOR_MARK` vendormark,s.`FLAGCOLOR` flagcolor,
+		s.`ORDER_SOURCE` orderSource,s.`MEMBER_LEVEL` memberLevel,s.`PRODUCE_SELECT` productSelect,
+		s.`ItEM_ID` itemId,s.`USER_ID` userId
+		FROM CRM_ORDER_ADVANCED_SETTING s 
+		WHERE s.`SETTING_TYPE`=32 
+		AND 
+		USER_ID=#{userId} 
+    </select>
+	
+	<!-- 物流提醒高级设置修改 -->
+	<update id="updateOrderAdvancedSetting">
+		update CRM_ORDER_ADVANCED_SETTING
+		<set>
+			<if test="locality !=null and locality !='' ">
+				LOCALITY = #{locality},
+			</if>
+			<if test="vendormark !=null and vendormark !='' ">
+				VENDOR_MARK = #{vendormark},
+			</if>
+			<if test="flagcolor !=null">
+				FLAGCOLOR = #{flagcolor},
+			</if>
+			<if test="orderSource !=null and orderSource !='' ">
+				ORDER_SOURCE = #{orderSource},
+			</if>
+			<if test="memberLevel !=null and memberLevel !='' ">
+				MEMBER_LEVEL = #{memberLevel},
+			</if>
+			<if test="productSelect !=null and productSelect !='' ">
+				PRODUCE_SELECT = #{productSelect},
+			</if>
+			<if test="itemId !=null">
+				ITEM_ID = #{itemId},
+			</if>
+			<if test="lastModifiedDate !=null">
+				lastModifiedDate = #{lastModifiedDate},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	<!-- 修改高级设置的状态 -->
+	<update id="updateAdvancedStatus">
+		update CRM_ORDER_ADVANCED_SETTING
+		<set>
+			<if test="status !=null and status !='' ">
+				status = #{status},
+			</if>
+		</set>
+			where id = #{id}
+	</update>
+
+
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllSettingCount" resultType="Long">
+		SELECT count(1)
+		FROM crm_order_advanced_setting 
+	</select>
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllLimitSetting" resultMap="OrderAdvancedSetting_map">
+		SELECT *
+		FROM crm_order_advanced_setting 
+		Order by id asc
+		limit #{startRows},#{pageSize}
+	</select>
+</mapper>

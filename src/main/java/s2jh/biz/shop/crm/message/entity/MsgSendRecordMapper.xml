@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.MsgSendRecord">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.MsgSendRecord" id="msgSendRecord">
+		<result column="ID" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="total_count" property="totalCount"/>		
+		<result column="succeed_count" property="succeedCount"/>
+		<result column="failed_count" property="failedCount"/>
+		<result column="wrong_count" property="wrongCount"/>
+		<result column="repeat_count" property="repeatCount"/>
+		<result column="black_count" property="blackCount"/>
+		<result column="sheild_count" property="sheildCount"/>
+		<result column="status" property="status"/>
+		<result column="template_content" property="templateContent"/>		
+		<result column="activity_name" property="activityName"/>	
+		<result column="send_creat" property="sendCreat"/>
+		<result column="type" property="type"/>
+		<result column="is_show" property="isShow"/>
+		<result column="is_sent" property="isSent"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedDate " property="lastModifiedDate "/>
+	</resultMap>
+
+
+	 <!-- 查询短信发送记录总记录的总条数 -->
+	 <select id="queryMsgCount" resultType="java.lang.Long" >
+		SELECT COUNT(1) FROM CRM_MSGRECORD
+		<where>
+			<if test="beginTime !=null">
+				and  send_creat  >=  #{beginTime} 
+			</if>
+			<if test="endTime !=null">
+				and  #{endTime}  >=  send_creat    
+			</if>
+			<if test="type !=null and type != '' ">
+				and type = #{type}
+			</if>
+			<if test="activityName !=null and activityName !='' ">
+				and activity_name like CONCAT('%',#{activityName},'%')
+			</if>
+				and is_sent = #{isSent}
+				and is_show = true 
+				and user_id = #{userId}
+		</where>
+	 </select>
+
+	<!-- 查询短信发送记录总记录的单页 @jackstraw_yu -->
+	<select id="sendRecordPagination" resultMap="msgSendRecord">
+		SELECT *
+		FROM CRM_MSGRECORD
+		<where>
+			<if test="beginTime !=null">
+				and  send_creat  >=  #{beginTime} 
+			</if>
+			<if test="endTime !=null">
+				and  #{endTime}  >=  send_creat 
+			</if>
+			<if test="type !=null and type != '' ">
+				and type = #{type}
+			</if>
+			<if test="activityName !=null and activityName !='' ">
+				and activity_name like CONCAT('%',#{activityName},'%')
+			</if>
+				and is_sent = #{isSent}
+				and is_show = true 
+				and user_id = #{userId}
+		</where>
+		ORDER  BY send_creat DESC
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 查询短信发送记录总记录的单页,显示定时发送创建时间排序 @jackstraw_yu-->
+	<select id="toSendRecordPagination" resultMap="msgSendRecord">
+		SELECT *
+		FROM CRM_MSGRECORD
+		<where>
+			<if test="beginTime !=null">
+				and  send_creat  >=  #{beginTime} 
+			</if>
+			<if test="endTime !=null">
+				and  #{endTime}  >=  send_creat 
+			</if>
+			<if test="type !=null and type != '' ">
+				and type = #{type}
+			</if>
+			<if test="activityName !=null and activityName !='' ">
+				and activity_name like CONCAT('%',#{activityName},'%')
+			</if>
+				and is_sent = #{isSent}
+				and is_show = true 
+				and user_id = #{userId}
+		</where>
+		ORDER  BY createdDate DESC
+		limit #{startRows},#{currentRows}
+	</select>
+    
+     <!-- 删除群发总记录/将数据隐藏起来 @author:jackstraw -->
+	  <update id="hideMsgSendRecord">
+	 	update CRM_MSGRECORD
+	 	set is_show = false
+	 	where 
+	 	user_id = #{userId}
+	 	and type = #{type}
+	 	and id  = #{recordId}
+	 </update>
+	 
+	 <!-- 保存会员群发的总记录 -->
+	 <insert id="saveMsg" parameterType="s2jh.biz.shop.crm.message.entity.MsgSendRecord" useGeneratedKeys="true" keyProperty="id">
+	 	INSERT INTO CRM_MSGRECORD
+	 	(user_id,total_count,succeed_count,failed_count,status,template_content,
+	 	activity_name,send_creat,type,is_show,is_sent,createdDate,lastModifiedDate )
+		VALUE(#{userId},#{totalCount},#{succeedCount},#{failedCount},#{status},#{templateContent},
+		#{activityName},#{sendCreat},#{type},#{isShow},#{isSent},Now(),NOW())
+	 </insert>
+	 
+	 
+	 <!-- 会员短信群发:更新发送的总记录 @author:jackstraw -->
+	  <update id="updateMsg" parameterType="Map">
+	  	update CRM_MSGRECORD
+	 	<set>
+	 		<if test="msg.status !=null and msg.status !='' ">
+				 status = #{msg.status},
+			</if>
+	 		<if test="msg.succeedCount !=null ">
+				 succeed_count = #{msg.succeedCount},
+			</if>
+			<if test="msg.failedCount !=null ">
+				 failed_count = #{msg.failedCount},
+			</if>
+			<if test="msg.wrongCount !=null ">
+				 wrong_count = #{msg.wrongCount},
+			</if>
+			<if test="msg.repeatCount !=null ">
+				 repeat_count = #{msg.repeatCount},
+			</if>
+			<if test="msg.blackCount !=null ">
+				 black_count = #{msg.blackCount},
+			</if>
+			<if test="msg.sheildCount !=null ">
+				 sheild_count = #{msg.sheildCount},
+			</if>
+	 	</set>
+		 	where id  = #{msg.id}
+		 	and user_id = #{msg.userId}
+	 </update>
+    
+    
+     <!-- 查询短信发送记录总记录模板内容@author:jackstraw -->
+	<select id="querySmsRecordContent" resultType="java.lang.String">
+		SELECT template_content
+		FROM CRM_MSGRECORD
+		WHERE
+		user_id = #{userId}
+		and id = #{recordId}
+		and type = #{type}
+	</select>
+    
+    
+    <!-- 保存数据 -->
+	<insert id="insertMsgSendRecord" parameterType="s2jh.biz.shop.crm.message.entity.MsgSendRecord" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO CRM_MSGRECORD(user_Id,total_count,succeed_count,failed_count,wrong_count,repeat_count,black_count,sheild_count,status,template_content,activity_name,send_creat,type,is_show,is_sent,optlock,createdDate) 
+		VALUE(#{userId},#{totalCount},#{succeedCount},#{failedCount},#{wrongCount},#{repeatCount},#{blackCount},#{sheildCount},#{status},#{templateContent},#{activityName},#{sendCreat},#{type},#{isShow},#{isSent},0,now());
+	</insert>	
+	
+	<!-- 根据id更新总记录 -->
+	<update id="updateMsgRecordById">
+		update CRM_MSGRECORD
+		<set>
+			<if test="succeedCount != null">
+				succeed_count = #{succeedCount},
+			</if>
+			<if test="failedCount != null">
+				failed_count = #{failedCount},
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status},
+			</if>
+			<if test="repeatCount != null">
+				repeat_count = #{repeatCount},
+			</if>
+			<if test="blackCount != null">
+				black_count = #{blackCount},
+			</if>
+			<if test="isSent != null">
+				is_sent = #{isSent},
+			</if>
+		</set>
+		where ID = #{id} 
+	</update>
+	
+	<!-- 根据msgId更新总记录 -->
+	<update id="updateMsgRecordByMsgId">
+		update CRM_MSGRECORD
+		<set>
+ 				succeed_count = succeed_count+#{succeedCount}, 
+ 				failed_count = failed_count+#{failedCount},
+<!-- 				status = #{status}, -->
+				is_sent = #{isSent}
+		</set>
+		where ID = #{id} 
+	</update>
+
+	<!--取消定时任务,删除定时任务的总记录@author:jackstraw  -->
+	<delete id="removeMsgSchedule" parameterType="Map">
+		DELETE FROM CRM_MSGRECORD
+		WHERE 
+		user_id = #{userId}
+		and id = #{recordId}
+		and type = #{type}
+	</delete>
+	
+<!-- 会员短信群发效果统计 -->
+	<select id="findMsgRecordByType" resultMap="msgSendRecord">
+		select total_count,failed_count,status,template_content,send_creat,type
+		<where>
+			user_Id = #{userId} and isSent = true and type = #{type}
+			<if test="beginTime != null ">
+				and send_creat >= #{beginTime}
+			</if>
+			<if test="endTime != null ">
+				and #{endTime} >= send_creat
+			</if>
+			<if test="activityName != null and activityName != ''">
+				and activity_name = #{activityName}
+			</if>
+			order by send_creat DESC
+			limit #{startRows},#{currentRows}
+		</where>
+	</select>
+
+	
+	
+	<!-- 会员短信群发效果统计 @author:jackstraw-->
+	<select id="queryMsgSendRecord" resultMap="msgSendRecord">
+		select 
+		user_id,
+		total_count,
+		IFNULL(succeed_count,0) succeed_count,
+		IFNULL(failed_count,0) failed_count,IFNULL(wrong_count,0) wrong_count,
+		IFNULL(repeat_count,0) repeat_count,IFNULL(black_count,0) black_count,
+		IFNULL(sheild_count,0) sheild_count
+		,status,template_content
+		from CRM_MSGRECORD
+		<where>
+			user_Id = #{userId} and id = #{recordId} and type = #{type}
+		</where>
+	</select>
+	
+	
+	<select id="queryLastSendList" resultMap="msgSendRecord">
+		SELECT *
+		FROM CRM_MSGRECORD
+		<where>
+			<if test="beginTime !=null">
+				and  send_creat  >=  #{beginTime} 
+			</if>
+			<if test="endTime !=null">
+				and  #{endTime}  >=  send_creat 
+			</if>
+			<if test="type !=null and type != '' ">
+				and type = #{type}
+			</if>
+				and user_id = #{userId}
+		</where>
+		ORDER  BY send_creat DESC
+	</select>
+	
+	<!-- 2短信发送记录,统计成功发送客户总数@author:jackstraw -->
+	<select id="getSuccessCustom" resultType="java.lang.Long">
+		<!-- SELECT COUNT(1) FROM 
+			(SELECT * FROM CRM_SMS_SEND_RECORD
+			WHERE
+			is_show = true
+			and status = '2'
+			and type = #{type}
+			and msg_id = #{recordId}
+			and user_id = #{userId}
+			GROUP BY buyer_nick) A -->
+			<!-- SELECT COUNT(1) FROM 
+			(SELECT * FROM CRM_SMS_SEND_RECORD
+			WHERE
+			is_show = true
+			and status = '2'
+			and type = #{type}
+			and msg_id = #{recordId}
+			and user_id = #{userId}
+			GROUP BY rec_num) A -->
+			SELECT succeed_count   FROM CRM_MSGRECORD
+			WHERE
+			is_show = true
+			and type = #{type}
+			and id = #{recordId}
+			and user_id = #{userId}
+	</select>
+	
+	<!-- 1短信发送记录,统计目标发送客户总数@author:jackstraw -->
+	<select id="getTotalCustom" resultType="java.lang.Long">
+		<!-- SELECT COUNT(1) FROM 
+			(SELECT * FROM CRM_SMS_SEND_RECORD
+			WHERE
+			is_show = true
+			and type = #{type}
+			and msg_id = #{recordId}
+			and user_id = #{userId}
+			GROUP BY buyer_nick) A -->
+			SELECT total_count FROM CRM_MSGRECORD
+			WHERE
+			is_show = true
+			and type = #{type}
+			and id = #{recordId}
+			and user_id = #{userId}
+	</select>
+	
+	<!-- 查询时间段内的msgId -->
+	<select id="findMsgIdByTime" resultType="java.lang.Long">
+		select id from CRM_MSGRECORD
+		<where>
+			succeed_count > 1 
+			<if test="msgId != null">
+				and id > #{msgId}
+			</if>
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>
+			<if test="userId != null and userId != ''">
+				and user_id = #{userId}
+			</if>
+			<if test="status != null and status != ''">
+				and status = #{status} 
+			</if>
+			<if test="lastSynchMsgId != null">
+				and id > #{lastSynchMsgId}
+			</if>
+			<if test="beginTime != null and endTime != null">
+				and send_creat BETWEEN #{beginTime} and #{endTime}
+			</if>
+		</where>
+	</select>
+</mapper>

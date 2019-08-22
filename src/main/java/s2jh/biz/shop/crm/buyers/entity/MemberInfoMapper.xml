@@ -1,0 +1,1013 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+	<resultMap type="s2jh.biz.shop.crm.buyers.entity.MemberInfo"
+		id="memberInfo">
+		<result column="ID" property="id" />
+		<result column="BUYER_ID" property="buyerId" />
+		<result column="GRADE_ID" property="gradeId" />
+		<result column="USER_ID" property="userId" />
+		<result column="BUYER_NICK" property="buyerNick" />
+		<result column="status" property="status" />
+		<result column="TRADE_COUNT" property="tradeCount" />
+		<result column="TRADE_AMOUNT" property="tradeAmount" />
+		<result column="CLOSE_TRADE_AMOUNT" property="closeTradeAmount" />
+		<result column="CLOSE_TRADE_COUNT" property="closeTradeCount" />
+		<result column="PROVINCE" property="province" />
+		<result column="CITY" property="city" />
+		<result column="ITEM_NUM" property="itemNum" />
+		<result column="AVG_PRICE" property="avgPrice" />
+		<result column="RELATION_SOURCE" property="relationSource" />
+		<result column="LAST_TRADE_TIME" property="lastTradeTime" />
+		<result column="ITEM_CLOSE_COUNT" property="itemCloseCount" />
+		<result column="SEX" property="sex" />
+		<result column="AGE" property="age" />
+		<result column="OCCUPATION" property="occupation" />
+		<result column="BIRTHDAY" property="birthday" />
+		<result column="QQ" property="qq" />
+		<result column="WECHAT" property="wechat" />
+		<result column="PHONE" property="phone" />
+		<result column="PHONE_RANGE" property="phoneRange" />
+		<result column="EMAIL" property="email" />
+		<result column="EMAIL_TYPE" property="emailType" />
+		<result column="REGISTER_DATE" property="registerDate" />
+		<result column="SCORE" property="score" />
+		<result column="REMARKS" property="remarks" />
+		<result column="createdBy" property="createdBy" />
+		<result column="createdDate" property="createdDate" />
+		<result column="lastModifiedBy" property="lastModifiedBy" />
+		<result column="lastModifiedDate" property="lastModifiedDate" />
+		<result column="MEMBER_LEVEL_SETTING_ID" property="member_level_setting_id" />
+		<result column="memberInfo_code" property="memberInfoCode" />
+	</resultMap>
+
+	<delete id="doRemoveMemberInfoPhoneIsNull" parameterType="java.util.Map">
+		DELETE
+		FROM CRM_MEMBER_INFO
+		WHERE phone IS NULL
+	</delete>
+	<delete id="doRemoveMemberInfoByRepetition" parameterType="java.util.Map">
+		DELETE FROM CRM_MEMBER_INFO
+		WHERE BUYER_NICK = #{buyerNick} AND
+		user_id=#{userId} AND phone=#{phone}
+	</delete>
+	<!-- 找出重复的用户信息数据 -->
+	<select id="findByCountToDelete" resultType="java.util.Map">
+		SELECT BUYER_NICK
+		buyerNick,user_id userId,phone
+		FROM CRM_MEMBER_INFO
+		GROUP BY
+		BUYER_NICK,user_id,phone
+		HAVING COUNT(*)>2
+	</select>
+	<!--批量更新同个买家在店家的交易额 -->
+	<update id="doUpdateMemberCount" parameterType="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+		UPDATE
+		CRM_MEMBER_INFO
+		SET
+		TRADE_COUNT=#{tradeCount},TRADE_AMOUNT=#{tradeAmount},CLOSE_TRADE_AMOUNT=#{closeTradeAmount},CLOSE_TRADE_COUNT=#{closeTradeCount},grade_id=#{gradeId},LAST_TRADE_TIME=#{lastTradeTime}
+		WHERE BUYER_NICK = #{buyerNick} AND user_id=#{userId}
+	</update>
+	<!-- 修改最后一次交易时间 -->
+	<update id="doUpdateMemberLastModifyedDate" parameterType="java.util.Map">
+		UPDATE CRM_MEMBER_INFO
+		SET LAST_TRADE_TIME=#{lastTradeTime}
+		WHERE
+		BUYER_NICK = #{buyerName} AND user_id=#{sellerName}
+	</update>
+	<!-- 更新用户信息 注意慎用这个语句！！！！，只为已经存在的用户信息更新 String类型的在java代码实现金额的统计，其余在数据库中实现数据的增加比如交易成功次数，购买的宝贝数等 -->
+	<update id="doUpdateMemberInfo" parameterType="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+		UPDATE
+		CRM_MEMBER_INFO
+		SET
+		status=#{status},TRADE_COUNT=TRADE_COUNT+#{tradeCount},
+		TRADE_AMOUNT=#{tradeAmount},CLOSE_TRADE_AMOUNT=#{closeTradeAmount},
+		CLOSE_TRADE_COUNT=CLOSE_TRADE_COUNT+#{closeTradeCount},PROVINCE=#{province},
+		CITY=#{city},ITEM_NUM=ITEM_NUM+#{itemNum},AVG_PRICE=#{avgPrice},
+		ITEM_CLOSE_COUNT=#{itemCloseCount},lastModifiedDate=now(),grade_id=#{gradeId}
+		WHERE BUYER_NICK = #{buyerNick} AND user_id=#{userId}
+	</update>
+	<!-- 将用户变为黑名单用户 -->
+	<update id="doUpdateMemberBackList" parameterType="java.util.Map">
+		UPDATE
+		CRM_MEMBER_INFO SET status = '2'
+		WHERE BUYER_NICK = #{buyerName}
+		AND
+		user_id=#{sellerName}
+	</update>
+	<!-- 创建新的用户信息 -->
+	<insert id="doCreateMemberByAuto" parameterType="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+		INSERT INTO
+		CRM_MEMBER_INFO(BUYER_ID,GRADE_ID,USER_ID,BUYER_NICK,status,TRADE_COUNT,TRADE_AMOUNT,CLOSE_TRADE_AMOUNT,CLOSE_TRADE_COUNT,PROVINCE,CITY,ITEM_NUM,AVG_PRICE,RELATION_SOURCE,LAST_TRADE_TIME,ITEM_CLOSE_COUNT,SEX,AGE,OCCUPATION,BIRTHDAY,QQ,WECHAT,PHONE,PHONE_RANGE,EMAIL,EMAIL_TYPE,REGISTER_DATE,SCORE,REMARKS,createdBy,createdDate,lastModifiedBy,lastModifiedDate,optlock,cur_grade_name)
+		VALUE(#{buyerId},0,#{userId},#{buyerNick},#{status},#{tradeCount},#{tradeAmount},#{closeTradeAmount},#{closeTradeCount},#{province},#{city},#{itemNum},#{avgPrice},#{relationSource},#{lastTradeTime},#{itemCloseCount},#{sex},#{age},#{occupation},#{birthday},#{qq},#{wechat},#{phone},#{phoneRange},#{email},#{emailType},#{registerDate},#{score},#{remarks},#{createdBy},#{createdDate},#{lastModifiedBy},now(),1,'店铺客户')
+	</insert>
+	<!--根据搜索条件查询会员信息 -->
+	<select id="queryMemberInfo1" resultMap="memberInfo">
+		SELECT
+		BUYER_ID,GRADE_ID,USER_ID,BUYER_NICK,status,TRADE_COUNT,TRADE_AMOUNT,CLOSE_TRADE_AMOUNT,CLOSE_TRADE_COUNT,
+		PROVINCE,CITY,ITEM_NUM,AVG_PRICE,RELATION_SOURCE,LAST_TRADE_TIME,ITEM_CLOSE_COUNT,SEX,AGE,OCCUPATION,BIRTHDAY,QQ,
+		WECHAT,PHONE,PHONE_RANGE,EMAIL,EMAIL_TYPE,REGISTER_DATE,SCORE,REMARKS,createdBy,createdDate,lastModifiedBy,lastModifiedDate
+		FROM CRM_MEMBER_INFO
+		where 1=1
+		<if test="userId !=null">
+			and userId={#userId}
+		</if>
+	</select>
+
+	<!-- 根据搜索条件分页查询会员信息 -->
+	<select id="queryMemberInfo" resultMap="memberInfo">
+		select id,
+		buyer_id,buyer_nick,grade_id,last_trade_time,trade_count,ROUND(trade_amount,2)
+		trade_amount,relation_source
+		from crm_member_info
+		where
+		user_id =
+		#{userId}
+		<if test="customerLevel !=null">
+			and GRADE_ID = #{customerLevel}
+		</if>
+		<if test="minTradeNum != null">
+			and TRADE_COUNT >= #{minTradeNum}
+		</if>
+		<if test="maxTradeNum != null">
+			and #{maxTradeNum} >= TRADE_COUNT
+		</if>
+		<if test="minTradePrice != null">
+			and TRADE_AMOUNT >= #{minTradePrice}
+		</if>
+		<if test="maxTradePrice != null">
+			and #{maxTradePrice} >= TRADE_AMOUNT
+		</if>
+		<if test="minAvgPrice != null">
+			and avg_price >= #{minAvgPrice}
+		</if>
+		<if test="maxAvgPrice != null">
+			and #{maxAvgPrice} >= avg_price
+		</if>
+		<if test="memberIdentitys !=null">
+			and occupation in
+			<foreach collection="memberIdentitys" item="item" open="("
+				separator="," close=")" index="index">
+				#{item}
+			</foreach>
+		</if>
+		<if test="arrayList !=null">
+			and phone not in
+			<foreach collection="arrayList" item="pn" open="(" separator=","
+				close=")" index="index">
+				#{pn}
+			</foreach>
+		</if>
+		<if test="regionList !=null">
+			and PROVINCE in
+			<foreach collection="regionList" item="region" open="("
+				separator="," close=")" index="index">
+				#{region}
+			</foreach>
+		</if>
+		<if test="buyerName !=null and buyerName !='' ">
+			and buyer_nick like CONCAT('%',#{buyerName},'%' )
+		</if>
+		<if test="customerSource!= null ">
+			and relation_source = #{customerSource}
+		</if>
+		<!-- 此处的时间参数是String类型,判空串不要删除!!! -->
+		<if test="tradeStartTime != null and tradeStartTime !='' ">
+			and DATE_FORMAT(last_trade_time,'%Y/%m/%d') >=
+			DATE_FORMAT(#{tradeStartTime},'%Y/%m/%d')
+		</if>
+		<if test="tradeEndTime != null and tradeEndTime !='' ">
+			and DATE_FORMAT(#{tradeEndTime},'%Y/%m/%d') >=
+			DATE_FORMAT(last_trade_time,'%Y/%m/%d')
+		</if>
+
+	</select>
+
+	<!-- 根据搜索条件查询会员信息 -->
+	<select id="querylist" resultMap="memberInfo">
+		select t1.* from crm_member_info t1,
+		(
+		SELECT id FROM crm_member_info
+
+		where user_id = #{userId}
+
+		<if test="tradeAmount !=null ">
+			and trade_amount >= #{tradeAmount}
+		</if>
+		<if test="tradeNum !=null and tradeNum !=''">
+			and TRADE_COUNT = #{tradeNum}
+		</if>
+		<if test="tradeNum1 !=null ">
+			and TRADE_COUNT >= #{tradeNum1}
+		</if>
+		<if test="minTradeNum !=null and minTradeNum!=''">
+			and TRADE_COUNT >=#{minTradeNum}
+		</if>
+		<if test="maxTradeNum !=null and maxTradeNum!='' ">
+			and #{maxTradeNum} >=TRADE_COUNT
+		</if>
+		<if test="minAveragePrice !=null and minAveragePrice!='' ">
+			and avg_price >=#{minAveragePrice}
+		</if>
+		<if test="maxAveragePrice !=null and maxAveragePrice!='' ">
+			and avg_price &lt;= #{maxAveragePrice}
+		</if>
+		<if test="minAccumulatedAmount !=null and minAccumulatedAmount !='' ">
+			and TRADE_AMOUNT >=#{minAccumulatedAmount}
+		</if>
+		<if test="maxAccumulatedAmount !=null and maxAccumulatedAmount !='' ">
+			and #{maxAccumulatedAmount} >= TRADE_AMOUNT
+		</if>
+		<if test="arrayList !=null">
+			and phone not in
+			<foreach collection="arrayList" item="phones" open="("
+				separator="," close=")" index="index">
+				#{phones}
+			</foreach>
+		</if>
+		<if test="nickList !=null">
+			and buyer_nick not in
+			<foreach collection="nickList" item="member" open="("
+				separator="," close=")" index="index">
+				#{member}
+			</foreach>
+		</if>
+		<if test="memberNickList !=null">
+			and buyer_nick in
+			<foreach collection="memberNickList" item="buyerName" open="("
+				separator="," close=")" index="index">
+				#{buyerName}
+			</foreach>
+		</if>
+		<if test="regionArrs !=null">
+			and province in
+			<foreach collection="regionArrs" item="province" open="("
+				separator="," close=")" index="index">
+				#{province}
+			</foreach>
+		</if>
+		<if test="minTradeTime != null ">
+			and #{minTradeTime} &lt;= last_trade_time
+		</if>
+		<if test="maxTradeTime != null ">
+			and last_trade_time &lt;= #{maxTradeTime}
+		</if>
+		<if test="startTime != null ">
+			and #{startTime} &lt;= last_trade_time
+		</if>
+		<if test="endTime != null ">
+			and last_trade_time &lt;= #{endTime}
+		</if>
+		<if test="customerSource != null and customerSource!='' ">
+			and relation_source = #{customerSource}
+		</if>
+		<if test="refundStatus !=null and refundStatus ==true">
+			and refund_status &lt;&gt;1
+		</if>
+		order by id ASC
+		<if test="start!=null and maxNum!=null">
+			limit #{start},#{maxNum}
+		</if>
+		) t2
+		where t1.id = t2.id
+	</select>
+
+	<!-- 根据搜索条件查询会员总数 -->
+	<select id="querylistNum" resultType="java.lang.Integer">
+		SELECT count(*) FROM crm_member_info
+
+		where user_id = #{userId}
+
+		<if test="tradeAmount !=null ">
+			and trade_amount >= #{tradeAmount}
+		</if>
+		<if test="tradeNum !=null and tradeNum !=''">
+			and TRADE_COUNT = #{tradeNum}
+		</if>
+		<if test="tradeNum1 !=null ">
+			and TRADE_COUNT >= #{tradeNum1}
+		</if>
+		<if test="minTradeNum !=null and minTradeNum!=''">
+			and TRADE_COUNT >=#{minTradeNum}
+		</if>
+		<if test="maxTradeNum !=null and maxTradeNum!='' ">
+			and #{maxTradeNum} >=TRADE_COUNT
+		</if>
+		<if test="minAveragePrice !=null and minAveragePrice!='' ">
+			and avg_price >=#{minAveragePrice}
+		</if>
+		<if test="maxAveragePrice !=null and maxAveragePrice!='' ">
+			and avg_price &lt;= #{maxAveragePrice}
+		</if>
+		<if test="minAccumulatedAmount !=null and minAccumulatedAmount !='' ">
+			and TRADE_AMOUNT >=#{minAccumulatedAmount}
+		</if>
+		<if test="maxAccumulatedAmount !=null and maxAccumulatedAmount !='' ">
+			and #{maxAccumulatedAmount} >= TRADE_AMOUNT
+		</if>
+		<if test="arrayList !=null">
+			and phone not in
+			<foreach collection="arrayList" item="phones" open="("
+				separator="," close=")" index="index">
+				#{phones}
+			</foreach>
+		</if>
+		<if test="nickList !=null">
+			and buyer_nick not in
+			<foreach collection="nickList" item="member" open="("
+				separator="," close=")" index="index">
+				#{member}
+			</foreach>
+		</if>
+		<if test="memberNickList !=null">
+			and buyer_nick in
+			<foreach collection="memberNickList" item="buyerName" open="("
+				separator="," close=")" index="index">
+				#{buyerName}
+			</foreach>
+		</if>
+		<if test="regionArrs !=null">
+			and province in
+			<foreach collection="regionArrs" item="province" open="("
+				separator="," close=")" index="index">
+				#{province}
+			</foreach>
+		</if>
+		<if test="minTradeTime != null ">
+			and #{minTradeTime} &lt;= last_trade_time
+		</if>
+		<if test="maxTradeTime != null ">
+			and last_trade_time &lt;= #{maxTradeTime}
+		</if>
+		<if test="startTime != null ">
+			and #{startTime} &lt;= last_trade_time
+		</if>
+		<if test="endTime != null ">
+			and last_trade_time &lt;= #{endTime}
+		</if>
+		<if test="customerSource != null and customerSource!='' ">
+			and relation_source = #{customerSource}
+		</if>	
+	</select>
+
+	<!--根据买家昵称查询买家信息 -->
+	<select id="findMemberNum" resultMap="memberInfo">
+		select
+		buyer_id,buyer_nick,grade_id,last_trade_time,trade_count,trade_amount
+		from crm_member_info
+		where 1=1
+		<if test="memberInfolist !=null">
+			and BUYER_NICK in
+			<foreach collection="memberInfolist" item="item" open="("
+				separator="," close=")" index="index">
+				#{item.buyerNick}
+			</foreach>
+		</if>
+	</select>
+	<!--根据买家昵称查询买家信息 -->
+	<select id="findMemberByNickUpdate" parameterType="s2jh.biz.shop.crm.buyers.entity.MemberInfo"
+		resultMap="memberInfo">
+		SELECT *
+		FROM crm_member_info
+		WHERE BUYER_NICK = #{buyerNick} AND
+		user_id=#{userId}
+		<if test="phone == null">
+			AND phone IS NULL
+		</if>
+		<if test="phone != null">
+			AND phone=#{phone}
+		</if>
+	</select>
+	<!--根据买家昵称查询买家信息 -->
+	<select id="findMemberByNick" parameterType="java.util.Map"
+		resultMap="memberInfo">
+		select *
+		from crm_member_info
+		where BUYER_NICK = #{buyerName}
+		AND user_id=#{sellerName} AND phone=#{phone}
+	</select>
+	<!--根据买家昵称查询非黑名单买家信息 -->
+	<select id="findBlackListByNick" parameterType="java.util.Map"
+		resultMap="memberInfo">
+		select *
+		from crm_member_info
+		where BUYER_NICK = #{buyerName}
+		AND user_id=#{sellerName} AND status = 2 AND phone=#{phone}
+	</select>
+
+	<select id="queryMemberInfoList" resultMap="memberInfo">
+		select *
+		from crm_member_info
+		where
+		user_id=#{userId}
+		and buyer_nick in
+		<foreach collection="ids" item="mid" open="(" separator=","
+			close=")">
+			#{mid}
+		</foreach>
+		<!-- <where> <if test="ids !=null"> and id <foreach collection="ids" item="id" 
+			open="in (" close=")" separator=","> #{id} </foreach> </if> </where> -->
+
+	</select>
+
+	<!-- 根据时间查询所有 -->
+	<select id="findByLastModifiedDate" parameterType="map"
+		resultMap="memberInfo">
+		SELECT *
+		FROM crm_member_info
+		where
+		NOW() >= lastModifiedDate
+		AND
+		lastModifiedDate >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+		<if test="status !=null and status !=''">
+			and status =#{status}
+		</if>
+	</select>
+
+	<!-- 查询同一买家的所有手机号 -->
+	<!-- AND s.`status`=1 -->
+	<select id="findMemberInfoTel" resultType="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+		SELECT s.`phone` FROM
+		CRM_MEMBER_INFO s ,CRM_SMS_BLACKLIST h
+		WHERE s.`buyer_nick`=h.`nick`
+		 AND h.`USERID`=s.`user_id`
+	</select>
+	<!-- 查询添加的昵称是否存在会员表中 -->
+	<select id="findByBuerNick"  resultType="java.lang.Long">
+	  SELECT count(*) FROM
+		CRM_MEMBER_INFO 
+		<where>
+		  USER_ID=#{userId} and
+		  BUYER_NICK=#{buyerNick}
+		</where>
+	</select>
+	
+	<!-- 查询添加手机号是否在会员表中 -->
+	<select id="findByBuyerMobie" resultType="java.lang.Long">
+	   SELECT count(*) FROM
+		CRM_MEMBER_INFO 
+		<where>
+		  USER_ID=#{userId} and
+		  PHONE=#{phone}
+		</where>
+	</select>
+
+	<!-- 查询需要修改 状态的会员Id -->
+	<select id="findMemberInfoId" resultMap="memberInfo" resultType="java.lang.Long">
+		SELECT * FROM crm_member_info i WHERE i.`buyer_nick`=#{content} AND
+		i.`user_id`=#{userId}
+	</select>
+	<!-- 通过营销中心添加黑名单添加 更改 MemberInfo 的黑名单状态 -->
+	<update id="updateMemberInfoStatus">
+		UPDATE CRM_MEMBER_INFO SET STATUS='2' WHERE id=#{id}
+	</update>
+
+	<!-- 通过营销中心添加黑名单添加 更改 MemberInfo 的黑名单状态 (变成正常用户) -->
+	<update id="updateMemberInfoStatusOne">
+		UPDATE CRM_MEMBER_INFO i SET i.`status`=1
+		WHERE
+		i.`SMS_BLACKLIST_ID`=#{smsBlackListId}
+	</update>
+
+	<!-- 通过营销中心添加 昵称添加手机号 把 Id 添加到MemberInfo 的 smsBlackListId 中 -->
+	<update id="updateMemberInfoBlackListId" parameterType="java.util.Map">
+		UPDATE
+		CRM_MEMBER_INFO SET SMS_BLACKLIST_ID=#{ids}
+		WHERE
+		buyer_nick=#{buyerNick} and user_id=#{userId}
+	</update>
+
+
+	<!-- 把营销中心的 smsBlackListId 改为NUll值 -->
+	<update id="updateSmsBlackListIdOne">
+		UPDATE CRM_MEMBER_INFO i
+		SET i.`SMS_BLACKLIST_ID`=NULL
+		WHERE i.`SMS_BLACKLIST_ID`=#{smsBlackListId}
+	</update>
+
+	<!-- 根据卖家昵称、买家昵称和手机号查询会员信息 -->
+	<select id="getMemberInfo" parameterType="map" resultMap="memberInfo">
+		select
+		* from crm_member_info
+		where user_id = #{userId} and BUYER_NICK =
+		#{buyerNick}
+	</select>
+	<!-- 通过用户昵称list查询出手机号list:@author jackstraw_yu -->
+	<select id="queryPhoneList" resultType="java.lang.String">
+		SELECT phone
+		FROM CRM_MEMBER_INFO
+		<where>
+			<if test="nickList !=null">
+				BUYER_NICK
+				<foreach collection="nickList" item="nick" open="in ("
+					close=")" separator=",">
+					#{nick}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 根据卖家昵称、买家昵称查询出会员 @author;jackstraw_yu -->
+	<select id="isExist" parameterType="map" resultMap="memberInfo">
+		select * from
+		crm_member_info
+		where user_id = #{userId} and BUYER_NICK = #{buyerNick}
+	</select>
+
+	<!-- 从订单信息中分离出会员信息  并保存会员信息  批量更新 @author;jackstraw_yu -->
+	<insert id="saveMembersBatch" parameterType="map">
+		INSERT INTO
+		CRM_MEMBER_INFO
+		(BUYER_ID,GRADE_ID,USER_ID,BUYER_NICK,status,TRADE_COUNT,TRADE_AMOUNT,CLOSE_TRADE_AMOUNT,
+		CLOSE_TRADE_COUNT,PROVINCE,CITY,ITEM_NUM,AVG_PRICE,RELATION_SOURCE,LAST_TRADE_TIME,ITEM_CLOSE_COUNT,SEX,AGE,OCCUPATION,
+		BIRTHDAY,QQ,WECHAT,PHONE,PHONE_RANGE,EMAIL,EMAIL_TYPE,REGISTER_DATE,SCORE,REMARKS,
+		createdBy,createdDate,lastModifiedBy,lastModifiedDate,optlock)
+		VALUES
+		<foreach collection="members" item="memberInfo" index="index"
+			separator="," open="" close="">
+			(#{memberInfo.buyerId},#{memberInfo.gradeId},#{memberInfo.userId},#{memberInfo.buyerNick},#{memberInfo.status},
+			#{memberInfo.tradeCount},#{memberInfo.tradeAmount},#{memberInfo.closeTradeAmount},#{memberInfo.closeTradeCount},
+			#{memberInfo.province},#{memberInfo.city},#{memberInfo.itemNum},#{memberInfo.avgPrice},#{memberInfo.relationSource},
+			#{memberInfo.lastTradeTime},#{memberInfo.itemCloseCount},#{memberInfo.sex},#{memberInfo.age},#{memberInfo.occupation},
+			#{memberInfo.birthday},#{memberInfo.qq},#{memberInfo.wechat},#{memberInfo.phone},#{memberInfo.phoneRange},#{memberInfo.email},
+			#{memberInfo.emailType},#{memberInfo.registerDate},#{memberInfo.score},#{memberInfo.remarks},#{memberInfo.createdBy},NOW(),
+			#{memberInfo.lastModifiedBy},NOW(),1)
+		</foreach>
+	</insert>
+
+
+
+
+	<!-- 从订单信息中分离出会员信息  并保存会员信息  批量更新@author;jackstraw_yu -->
+	<update id="updateMembersBatch" parameterType="map">
+		<foreach collection="members" item="memberInfo" index="index"
+			separator=";" open="" close="">
+			update CRM_MEMBER_INFO
+			<set>
+				<if test="memberInfo.lastTradeTime != null">
+					last_trade_time = #{memberInfo.lastTradeTime},
+				</if>
+				<if test="memberInfo.phone != null and memberInfo.phone != ''">
+					PHONE = #{memberInfo.phone},
+				</if>
+				<if test="memberInfo.province != null and memberInfo.province != ''">
+					province = #{memberInfo.province},
+				</if>
+				<if test="memberInfo.relationSource != null ">
+					RELATION_SOURCE = #{memberInfo.relationSource},
+				</if>
+				<!-- 先计算出客单价 -->
+				<if test="memberInfo.tradeAmount != null and memberInfo.itemNum !=null ">
+					AVG_PRICE =
+					(IFNULL(trade_amount,0)+#{memberInfo.tradeAmount})/(IFNULL(ITEM_NUM,0)+#{memberInfo.itemNum}),
+				</if>
+				<if test="memberInfo.tradeAmount != null and memberInfo.itemNum ==null ">
+					AVG_PRICE =
+					(IFNULL(trade_amount,0)+#{memberInfo.tradeAmount})/(IFNULL(ITEM_NUM,1)),
+				</if>
+				<if test="memberInfo.tradeAmount == null and memberInfo.itemNum !=null ">
+					AVG_PRICE =
+					(IFNULL(trade_amount,0))/(IFNULL(ITEM_NUM,0)+#{memberInfo.itemNum}),
+				</if>
+				<!-- 先计算出客单价 -->
+				<if test="memberInfo.tradeAmount != null ">
+					trade_amount = IFNULL(trade_amount,0)+#{memberInfo.tradeAmount},
+				</if>
+				<if test="memberInfo.tradeCount != null and memberInfo.tradeCount != ''">
+					trade_count = IFNULL(trade_count,0)+#{memberInfo.tradeCount},
+				</if>
+				<if test="memberInfo.itemNum != null ">
+					ITEM_NUM = IFNULL(ITEM_NUM,0)+#{memberInfo.itemNum},
+				</if>
+				<if test="memberInfo.closeTradeAmount != null and memberInfo.closeTradeAmount != ''">
+					CLOSE_TRADE_AMOUNT =
+					IFNULL(CLOSE_TRADE_AMOUNT,0)+#{memberInfo.closeTradeAmount},
+				</if>
+				<if test="memberInfo.closeTradeCount != null ">
+					CLOSE_TRADE_COUNT =
+					IFNULL(CLOSE_TRADE_COUNT,0)+#{memberInfo.closeTradeCount},
+				</if>
+				<if test="memberInfo.itemCloseCount != null">
+					ITEM_CLOSE_COUNT =
+					IFNULL(ITEM_CLOSE_COUNT,0)+#{memberInfo.itemCloseCount},
+				</if>
+				<if test="lastModifiedDate == null">
+					lastModifiedDate = NOW(),
+				</if>
+			</set>
+			<where>
+				user_id = #{memberInfo.userId}
+				and
+				BUYER_NICK =
+				#{memberInfo.buyerNick}
+			</where>
+		</foreach>
+	</update>
+
+	<!-- 判断会员是否存在,返回会员对象(id主键,买家昵称,买家昵称) @author:jackstraw_yu -->
+	<select id="isExistEnhance" parameterType="map" resultType="java.lang.Long">
+		select id
+		from CRM_MEMBER_INFO
+		where user_id = #{userId} and BUYER_NICK
+		=
+		#{buyerNick}
+	</select>
+
+	<!-- 从订单信息中分离出会员信息  并保存会员信息  单条保存@author;jackstraw_yu -->
+	<insert id="saveMemberInfo" parameterType="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+		INSERT INTO
+		CRM_MEMBER_INFO
+		(BUYER_ID,memberInfo_code,GRADE_ID,USER_ID,BUYER_NICK,status,TRADE_COUNT,TRADE_AMOUNT,CLOSE_TRADE_AMOUNT,
+		CLOSE_TRADE_COUNT,PROVINCE,CITY,ITEM_NUM,AVG_PRICE,RELATION_SOURCE,LAST_TRADE_TIME,ITEM_CLOSE_COUNT,SEX,AGE,OCCUPATION,
+		BIRTHDAY,QQ,WECHAT,PHONE,PHONE_RANGE,EMAIL,EMAIL_TYPE,REGISTER_DATE,SCORE,REMARKS,
+		createdBy,createdDate,lastModifiedBy,lastModifiedDate,optlock)
+
+		VALUE(#{buyerId},#{memberInfoCode},#{gradeId},#{userId},#{buyerNick},#{status},#{tradeCount},#{tradeAmount},#{closeTradeAmount},#{closeTradeCount},
+		#{province},#{city},#{itemNum},#{avgPrice},#{relationSource},#{lastTradeTime},#{itemCloseCount},
+		#{sex},#{age},#{occupation},#{birthday},#{qq},#{wechat},#{phone},#{phoneRange},#{email},#{emailType},
+		#{registerDate},#{score},#{remarks},#{createdBy},NOW(),#{lastModifiedBy},NOW(),1)
+	</insert>
+
+	<!-- 从订单信息中分离出会员信息   并更新会员信息  单条更新@author;jackstraw_yu -->
+	<update id="updateMemberInfo" parameterType="s2jh.biz.shop.crm.buyers.entity.MemberInfo">
+		update CRM_MEMBER_INFO
+		<set>
+			<if test="lastTradeTime != null">
+				last_trade_time = #{lastTradeTime},
+			</if>
+			<if test="phone != null and phone != ''">
+				PHONE = #{phone},
+			</if>
+			<if test="province != null and province != ''">
+				province = #{province},
+			</if>
+			<if test="relationSource != null ">
+				RELATION_SOURCE = #{relationSource},
+			</if>
+			<!-- 先计算出客单价 -->
+			<if test="tradeAmount != null and itemNum !=null ">
+				AVG_PRICE =
+				(IFNULL(trade_amount,0)+#{tradeAmount})/(IFNULL(ITEM_NUM,0)+#{itemNum}),
+			</if>
+			<if test="tradeAmount != null and itemNum ==null ">
+				AVG_PRICE =
+				(IFNULL(trade_amount,0)+#{tradeAmount})/(IFNULL(ITEM_NUM,1)),
+			</if>
+			<if test="tradeAmount == null and itemNum !=null ">
+				AVG_PRICE =
+				(IFNULL(trade_amount,0))/(IFNULL(ITEM_NUM,0)+#{itemNum}),
+			</if>
+			<!-- 先计算出客单价 -->
+
+			<if test="tradeAmount != null ">
+				trade_amount = IFNULL(trade_amount,0)+#{tradeAmount},
+			</if>
+			<if test="tradeCount != null and tradeCount != ''">
+				trade_count = IFNULL(trade_count,0)+#{tradeCount},
+			</if>
+			<if test="itemNum != null ">
+				ITEM_NUM = IFNULL(ITEM_NUM,0)+#{itemNum},
+			</if>
+			<if test="closeTradeAmount != null and closeTradeAmount != ''">
+				CLOSE_TRADE_AMOUNT =
+				IFNULL(CLOSE_TRADE_AMOUNT,0)+#{closeTradeAmount},
+			</if>
+			<if test="closeTradeCount != null ">
+				CLOSE_TRADE_COUNT =
+				IFNULL(CLOSE_TRADE_COUNT,0)+#{closeTradeCount},
+			</if>
+			<if test="itemCloseCount != null">
+				ITEM_CLOSE_COUNT =
+				IFNULL(ITEM_CLOSE_COUNT,0)+#{itemCloseCount},
+			</if>
+			<if test="lastModifiedDate == null">
+				lastModifiedDate = NOW(),
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<select id="queryMemberCountByLevel" resultMap="memberInfo">
+    <![CDATA[
+		 SELECT  T.USER_ID, T.GRADEID,T.TRADE_COUNT   FROM  (
+		    SELECT   USER_ID,1 AS  GRADEID,COUNT(1) AS TRADE_COUNT  
+		    FROM   CRM_MEMBER_INFO  WHERE   USER_ID=#{userId}
+		 	  AND (TRADE_AMOUNT  >= #{tradeAmount1} OR TRADE_COUNT >= #{tradeCount1}) AND  TRADE_AMOUNT <#{tradeAmount2}  AND TRADE_COUNT < #{tradeCount2} 
+		    AND  TRADE_COUNT IS NOT NULL AND  TRADE_AMOUNT IS NOT NULL   
+		 
+		    UNION 
+		
+		   SELECT  USER_ID,2 AS  GRADEID,COUNT(1) AS TRADE_COUNT  
+		    FROM   CRM_MEMBER_INFO  WHERE    USER_ID=#{userId}
+		 	  AND (TRADE_AMOUNT  >= #{tradeAmount2}  OR TRADE_COUNT >= #{tradeCount2}) AND TRADE_COUNT < #{tradeCount3} AND  TRADE_AMOUNT <#{tradeAmount3} 
+		    AND  TRADE_COUNT IS NOT NULL AND  TRADE_AMOUNT IS NOT NULL   
+		
+		    UNION 
+		
+		   SELECT  USER_ID, 3 AS  GRADEID,COUNT(1) AS TRADE_COUNT  
+		    FROM   CRM_MEMBER_INFO  WHERE    USER_ID=#{userId}
+		 	  AND (TRADE_AMOUNT  >=#{tradeAmount3}  OR TRADE_COUNT >= #{tradeCount3}) AND TRADE_COUNT < #{tradeCount4} AND  TRADE_AMOUNT <#{tradeAmount4} 
+		    AND  TRADE_COUNT IS NOT NULL AND  TRADE_AMOUNT IS NOT NULL   
+		
+		    UNION 
+		
+		   SELECT  USER_ID, 4 AS  GRADEID,COUNT(1) AS TRADE_COUNT  
+		    FROM   CRM_MEMBER_INFO  WHERE   USER_ID=#{userId}
+		 	  AND (TRADE_AMOUNT  >= #{tradeAmount4}   OR TRADE_COUNT >= #{tradeCount4} )
+		    AND  TRADE_COUNT IS NOT NULL AND  TRADE_AMOUNT IS NOT NULL   
+		 
+		) T   WHERE 1=1  AND  USER_ID IS NOT NULL  ORDER BY  USER_ID,GRADEID ASC  
+   
+	]]>
+	</select>
+
+	<!-- 会员点击会员营销时将对应默认分组的客户信息查出来 -->
+	<select id="getDefaultGroupMemberInfo" resultMap="memberInfo">
+		select t1.* from crm_member_info t1 ,
+		( select id from CRM_MEMBER_INFO
+		where user_id =#{userId}
+		and (trade_amount>=#{tradePrice} or
+		TRADE_COUNT>=#{tradeNum})
+		<if test="nextTradePrice!=null">
+			and #{nextTradePrice}>trade_amount
+		</if>
+		<if test="nextTradeNum!=0 and nextTradeNum!=null">
+			and #{nextTradeNum}>TRADE_COUNT
+		</if>
+		AND TRADE_COUNT IS NOT NULL AND TRADE_AMOUNT IS NOT NULL order by id
+		ASC
+		<if test="start!=null and maxNum!=null">
+			limit #{start},#{maxNum}
+		</if>
+		) t2
+		where t1.id = t2.id
+
+	</select>
+
+	<select id="getMemberInfoToPhone" resultType="java.lang.String">
+		select t1.phone from crm_member_info t1 ,
+		( select id from
+		CRM_MEMBER_INFO
+		where user_id =#{userId}
+		and
+		(trade_amount>=#{minAccumulatedAmount} or
+		TRADE_COUNT>=#{minTradeNum})
+		<if test="maxAccumulatedAmount!=null">
+			and #{maxAccumulatedAmount}>trade_amount
+		</if>
+		<if test="maxTradeNum!=0 and maxTradeNum!=null">
+			and #{maxTradeNum}>TRADE_COUNT
+		</if>
+		AND TRADE_COUNT IS NOT NULL AND TRADE_AMOUNT IS NOT NULL order by id
+		ASC
+		<if test="startRows!=null and pageSize!=null">
+			limit #{startRows},#{pageSize}
+		</if>
+		) t2
+		where t1.id = t2.id
+
+	</select>
+
+	<!-- 会员点击会员营销时将对应默认分组的客户信息总数查出来 -->
+	<select id="getDefaultGroupMemberInfoNum" resultType="java.lang.Integer">
+		select count(*) from CRM_MEMBER_INFO
+		where user_id =#{userId}
+		and
+		(trade_amount>=#{tradePrice} or TRADE_COUNT>=#{tradeNum})
+		<if test="nextTradePrice!=null">
+			and #{nextTradePrice}>trade_amount
+		</if>
+		<if test="nextTradeNum!=0 and nextTradeNum!=null">
+			and #{nextTradeNum}>TRADE_COUNT
+		</if>
+		AND TRADE_COUNT IS NOT NULL AND TRADE_AMOUNT IS NOT NULL
+	</select>
+
+
+
+	<!-- 根据搜索条件查询会员信息:分页查询查询 @author:jackstraw_yu -->
+	<select id="queryLimitList" resultMap="memberInfo">
+		SELECT m1.user_id,ROUND(m1.trade_amount,2)
+		trade_amount,m1.TRADE_COUNT,m1.AVG_PRICE,
+		m1.phone,m1.buyer_nick,m1.last_trade_time,m1.relation_source FROM
+		crm_member_info m1,
+		(SELECT ID FROM crm_member_info
+		<where>
+			user_id = #{userId}
+			<if test="minTradeNum !=null ">
+				and TRADE_COUNT &gt;= #{minTradeNum}
+			</if>
+			<if test="maxTradeNum !=null ">
+				and TRADE_COUNT &lt;= #{maxTradeNum}
+			</if>
+			<if test="minAccumulatedAmount !=null ">
+				and trade_amount &gt;= #{minAccumulatedAmount}
+			</if>
+			<if test="maxAccumulatedAmount !=null  ">
+				and trade_amount &lt;= #{maxAccumulatedAmount}
+			</if>
+			<if test="minAveragePrice !=null ">
+				and avg_price &gt;= #{minAveragePrice}
+			</if>
+			<if test="maxAveragePrice !=null ">
+				and avg_price &lt;= #{maxAveragePrice}
+			</if>
+			<if test="startTime != null ">
+				and #{startTime} &lt;= last_trade_time
+			</if>
+			<if test="endTime != null ">
+				and last_trade_time &lt;= #{endTime}
+			</if>
+			<if test="customerSource != null and customerSource!='' ">
+				and relation_source = #{customerSource}
+			</if>
+			<if test="refundStatus !=null and refundStatus ==true">
+				and refund_status &lt;&gt; 1
+			</if>
+			<if test="sortNums !=null">
+				and phone not in
+				<foreach collection="sortNums" item="num" open="("
+					separator="," close=")" index="index">
+					#{num}
+				</foreach>
+			</if>
+			<if test="mList !=null">
+				and buyer_nick in
+				<foreach collection="mList" item="buyerName" open="("
+					separator="," close=")" index="index">
+					#{buyerName}
+				</foreach>
+			</if>
+			<if test="regionArrs !=null">
+				and province in
+				<foreach collection="regionArrs" item="province" open="("
+					separator="," close=")" index="index">
+					#{province}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY ID ASC LIMIT #{startRows},#{pageSize}
+		) m2 where m1.id = m2.id
+	</select>
+
+	<!-- 根据搜索条件查询会员信息:查询总条数 @author:jackstraw_yu -->
+	<select id="queryMemberCount" resultType="java.lang.Long">
+		SELECT count(1) FROM crm_member_info
+		<where>
+			user_id = #{userId}
+			<if test="minTradeNum !=null ">
+				and TRADE_COUNT &gt;= #{minTradeNum}
+			</if>
+			<if test="maxTradeNum !=null ">
+				and TRADE_COUNT &lt;= #{maxTradeNum}
+			</if>
+			<if test="minAccumulatedAmount !=null ">
+				and trade_amount &gt;= #{minAccumulatedAmount}
+			</if>
+			<if test="maxAccumulatedAmount !=null  ">
+				and trade_amount &lt;= #{maxAccumulatedAmount}
+			</if>
+			<if test="minAveragePrice !=null ">
+				and avg_price &gt;= #{minAveragePrice}
+			</if>
+			<if test="maxAveragePrice !=null ">
+				and avg_price &lt;= #{maxAveragePrice}
+			</if>
+			<if test="startTime != null ">
+				and #{startTime} &lt;= last_trade_time
+			</if>
+			<if test="endTime != null ">
+				and last_trade_time &lt;= #{endTime}
+			</if>
+			<if test="customerSource != null and customerSource!='' ">
+				and relation_source = #{customerSource}
+			</if>
+			<if test="refundStatus !=null and refundStatus ==true">
+				and refund_status &lt;&gt;1
+			</if>
+			<if test="sortNums !=null">
+				and phone not in
+				<foreach collection="sortNums" item="num" open="("
+					separator="," close=")" index="index">
+					#{num}
+				</foreach>
+			</if>
+			<if test="mList !=null">
+				and buyer_nick in
+				<foreach collection="mList" item="buyerName" open="("
+					separator="," close=")" index="index">
+					#{buyerName}
+				</foreach>
+			</if>
+			<if test="regionArrs !=null">
+				and province in
+				<foreach collection="regionArrs" item="province" open="("
+					separator="," close=")" index="index">
+					#{province}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+
+
+	<!-- 根据搜索条件查询会员信息:分页查询查询 @author:jackstraw_yu -->
+	<select id="queryNumList" resultType="java.lang.String">
+		SELECT m1.phone FROM crm_member_info m1,
+		(SELECT ID FROM
+		crm_member_info
+		<where>
+			user_id = #{userId}
+			<if test="minTradeNum !=null ">
+				and TRADE_COUNT &gt;= #{minTradeNum}
+			</if>
+			<if test="maxTradeNum !=null ">
+				and TRADE_COUNT &lt;= #{maxTradeNum}
+			</if>
+			<if test="minAccumulatedAmount !=null ">
+				and trade_amount &gt;= #{minAccumulatedAmount}
+			</if>
+			<if test="maxAccumulatedAmount !=null  ">
+				and trade_amount &lt;= #{maxAccumulatedAmount}
+			</if>
+			<if test="minAveragePrice !=null ">
+				and avg_price &gt;= #{minAveragePrice}
+			</if>
+			<if test="maxAveragePrice !=null ">
+				and avg_price &lt;= #{maxAveragePrice}
+			</if>
+			<if test="startTime != null ">
+				and #{startTime} &lt;= last_trade_time
+			</if>
+			<if test="endTime != null ">
+				and last_trade_time &lt;= #{endTime}
+			</if>
+			<if test="customerSource != null and customerSource!='' ">
+				and relation_source = #{customerSource}
+			</if>
+			<if test="sortNums !=null">
+				and phone not in
+				<foreach collection="sortNums" item="num" open="("
+					separator="," close=")" index="index">
+					#{num}
+				</foreach>
+			</if>
+			<if test="mList !=null">
+				and buyer_nick in
+				<foreach collection="mList" item="buyerName" open="("
+					separator="," close=")" index="index">
+					#{buyerName}
+				</foreach>
+			</if>
+			<if test="regionArrs !=null">
+				and province in
+				<foreach collection="regionArrs" item="province" open="("
+					separator="," close=")" index="index">
+					#{province}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY ID ASC LIMIT #{startRows},#{pageSize}
+		) m2 where m1.id = m2.id
+	</select>
+
+
+
+
+	<!-- 根据手机号查询买家 -->
+	<select id="findMemberInfoByPhone" parameterType="String"
+		resultMap="memberInfo">
+		select BUYER_NICK,USER_ID,LAST_TRADE_TIME,PHONE_RANGE
+		from
+		CRM_MEMBER_INFO where PHONE = #{_parameter}
+		order by LAST_TRADE_TIME
+		DESC
+	</select>
+	<!-- 通过昵称查询会员等级 -->
+	<select id="findMemberInfoByNick" resultType="java.lang.String">
+		select cur_grade_name from CRM_MEMBER_INFO where USER_ID = #{userId} and buyer_nick = #{buyerNick}
+	</select>
+
+
+	<!-- 批量修改用户的退款状态 -->
+	<update id="updateMemberInfoRefundStatus" parameterType="map">
+		<foreach collection="memberInfos" item="memberInfo" index="index"
+			separator=";" open="" close="">
+			update CRM_MEMBER_INFO
+			<set>
+				refund_status = #{memberInfo.refundStatus}
+			</set>
+			<where>
+				user_id = #{memberInfo.userId}
+				and
+				BUYER_NICK =
+				#{memberInfo.buyerNick}
+			</where>
+		</foreach>
+	</update>
+</mapper>

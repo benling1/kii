@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.UserInfo">
+	<resultMap type="s2jh.biz.shop.crm.user.entity.UserInfo" id="userInfo">
+		<result column="taobao_user_id" property="taobaoUserId" />
+		<result column="sub_taobao_user_id" property="subtaobaoUserId" />
+		<result column="Create_Time" property="createTime" />
+		<result column="last_login_date" property="lastLoginDate" />
+		<result column="status" property="status" />
+		<result column="expirationTime" property="expirationTime" />
+		<result column="mobile" property="mobile" />
+		<result column="appkey" property="appkey" />
+		<result column="taobao_user_nick" property="taobaoUserNick" />
+		<result column="sub_taobao_user_nick" property="subtaobaoUserNick" />
+		<result column="modify_time" property="modifyTime" />
+		<result column="email_num" property="emailNum" />
+		<result column="sms_num" property="userAccountSms" />
+		<result column="access_token" property="access_token" />
+		<result column="qqNum" property="qqNum" />
+		<result column="shopName" property="shopName" />
+		<result column="id" property="id" />
+		<result column="has_provide" property="hasProvide" />
+	</resultMap>
+	<!-- 查询用户的余额和过期时间 -->
+	<select id="findExpireTimeAndSms" parameterType="java.lang.String" resultMap="userInfo">
+		SELECT shopName,expirationTime,status
+		FROM crm_user
+		WHERE taobao_user_nick = #{sellerName}
+	</select>
+	<!-- 查询用户是否存在 -->
+	<select id="findIdByCreateAccount" parameterType="java.lang.String" resultType="java.lang.Long">
+	   SELECT  id
+	   FROM    crm_user
+	   WHERE   taobao_user_nick = #{sellerName}
+	</select>
+	<!-- 查询用户的sessionKey -->
+	<select id="findSessionTokenBySellerNick" parameterType="java.lang.String"  resultType="java.lang.String">
+		SELECT access_token
+		FROM crm_user
+		WHERE taobao_user_nick = #{sellerName}
+	</select>
+	<!-- 查询未过期的账号昵称 -->
+	<select id="findAllByAccount" resultType="java.lang.String">
+		SELECT taobao_user_nick
+		FROM crm_user
+		WHERE expirationTime>=now() AND status=0
+	</select>
+	<!-- 查询user表的所有userID -->
+	<select id="findAllUserId" resultType="java.util.HashMap">
+
+		SELECT u.`taobao_user_id`
+		FROM crm_user u
+		<where>
+			<if test="taobaouserid !=null">
+				u.`taobao_user_nick` = #{taobaouserid}
+			</if>
+		</where>
+
+	</select>
+
+	<!-- 通过taobao_user_nick查询出用户信息数 -->
+	<select id="findUserInfo" resultMap="userInfo" flushCache="true" useCache="false">
+		SELECT
+		create_time,status,last_login_date,expirationTime,mobile,appkey,taobao_user_nick,blackStatus,
+		taobao_user_id,sub_taobao_user_id,sub_taobao_user_nick,modify_time,email_num,id,access_token,qqNum,shopName
+		FROM crm_user WHERE taobao_user_nick = #{taobao_user_nick}
+	</select>
+
+	<!-- 添加买家用户信息 -->
+	<insert id="addUserInfo">
+		insert into crm_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="status != null">
+				status,
+			</if>
+			<if test="lastLoginDate != null">
+				last_login_date,
+			</if>			
+			<if test="expirationTime != null">
+				expirationTime,
+			</if>
+			<if test="taobaoUserNick != null">
+				taobao_user_nick,
+			</if>
+			<if test="taobaoUserId != null">
+				taobao_user_id,
+			</if>
+			<if test="subtaobaoUserId != null">
+				sub_taobao_user_id,
+			</if>
+			<if test="subtaobaoUserNick != null">
+				sub_taobao_user_nick,
+			</if>
+			<if test="emailNum != null">
+				email_num,
+			</if>
+			<if test="createTime != null">
+				Create_Time,
+			</if>
+			<if test="access_token != null">
+				access_token,
+			</if>
+			<if test="level != null">
+				level,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="lastLoginDate != null">
+				#{lastLoginDate},
+			</if>
+			<if test="expirationTime != null">
+				#{expirationTime},
+			</if>
+			<if test="taobaoUserNick != null">
+				#{taobaoUserNick,jdbcType=VARCHAR},
+			</if>
+			<if test="taobaoUserId != null">
+				#{taobaoUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="subtaobaoUserId != null">
+				#{subtaobaoUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="subtaobaoUserNick != null">
+				#{subtaobaoUserNick,jdbcType=VARCHAR},
+			</if>
+			<if test="emailNum != null">
+				#{emailNum,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="access_token != null">
+				#{access_token,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				#{level,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 当用户访问应用时更新卖家用户的access_token -->
+	<update id="updateUserToken">
+		UPDATE crm_user
+		<set>
+			<if test="access_token != null and access_token != '' ">
+				access_token = #{access_token},
+			</if>
+			<if test="expiration_time != null ">
+				expirationTime = #{expiration_time},
+			</if>
+				last_login_date = now(),
+				lastModifiedDate = now(),
+				expires_in = #{expires_in},
+		</set>
+				
+		<where>
+			taobao_user_nick = #{taobao_user_nick}
+		</where>
+	</update>
+	
+	<!-- 首页小红包,保存资料 author:jackstraw_yu -->
+	<update id="saveUserMobileInfo" parameterType="java.util.Map">
+		UPDATE crm_user
+		<set>
+			<if test="phoneNum != null and phoneNum !='' ">
+			 mobile = #{phoneNum},
+			</if>
+			<if test="qqNum != null and qqNum !='' ">
+			 qqNum = #{qqNum},
+			</if>
+			<if test="hasProvide != null">
+			 has_provide = #{hasProvide},
+			</if>
+			lastModifiedDate = NOW()
+		</set>
+		WHERE	
+		taobao_user_nick = #{userId}
+	</update>
+	
+	<!--首页小红包,用户关闭了首页小红包显示  author:jackstraw_yu -->
+	<update id="updateUserHasProvide"  parameterType="java.util.Map">
+		UPDATE crm_user
+			SET
+			 has_provide = #{hasProvide},
+			 lastModifiedDate = NOW()
+		WHERE
+			taobao_user_nick = #{userId}
+	</update>
+	
+	<!-- 过期时间查询 -->
+	<select id="findUserInfoDq" resultType="Date">
+	SELECT u.`expirationTime` expirationTime,
+	u.`taobao_user_nick` taobaoUserNick FROM CRM_USER u
+	<where>
+	 <if test="taobaoUserNick!=null">
+	  u.`taobao_user_nick`  = #{taobaoUserNick}
+	 </if>
+	</where>
+	</select>
+	<!-- 查询用户access_token数据 -->
+	<select id="findUserInfoToken" resultMap="userInfo">
+		SELECT id,taobao_user_nick,access_token FROM crm_user
+	</select>
+	
+	
+	<!-- 后台管理,获得当前用户的过期日期且不能过期 -->
+<!-- 	<select id="queryExpirationTime" resultType="Date" >
+		SELECT
+		expirationTime
+		FROM crm_user 
+		WHERE 
+		taobao_user_nick = #{userId}
+		and expirationTime > NOW()
+	</select> -->
+	
+	
+	<!-- 通过userId查询出用户-->
+	<!-- <select id="queryUserInfo" resultMap="userInfo" parameterType="String">
+		SELECT *
+		FROM  crm_user 
+		WHERE
+		taobao_user_nick = #{userId}
+	</select> -->
+	
+	<!-- 通过userId查询出用户-->
+	<select id="queryTokenInfo" resultMap="userInfo" parameterType="java.lang.String">
+		SELECT * 
+		FROM  crm_user 
+		WHERE
+		taobao_user_nick = #{userId}
+	</select>
+	
+	<!-- 通过消息 推送的 nick 查询获取 用户 的 access_token -->
+	<select id="findUserInfoTokens" resultType="java.lang.String">
+	  SELECT u.`access_token` FROM crm_user u 
+	  WHERE u.`taobao_user_nick` = #{taobaoUserNick}
+	</select>
+
+	<!-- 通过accessToken查询用户 ZTK -->
+	<select id="findUserInfoBytoken" parameterType="String" resultMap="userInfo">
+		select id,taobao_user_nick from crm_user where access_token = #{_parameter}
+	</select>
+	
+	
+	<!-- 通过id查询accessToken ZTK -->
+	<select id="findTokenById" resultType="String">
+		select access_token from crm_user where id = #{userInfoId}
+	</select>
+	
+	<update id="saveShopName">
+		UPDATE crm_user
+		<set>
+			shopName = #{shopName}
+		</set>
+		where taobao_user_nick = #{userId}
+	</update>
+	
+	<select id="findActiveUserList" resultMap="userInfo">
+	    SELECT   ID,ACCESS_TOKEN,LAST_LOGIN_DATE,TAOBAO_USER_NICK,EXPIRES_IN
+	    FROM CRM_USER WHERE  ACCESS_TOKEN  IS NOT  NULL     
+	</select>
+	
+	<!-- 查询店铺名称@author:jackstraw_yu -->
+	<select id="queryShopName" resultType="String">
+		select IFNULL(shopName,TAOBAO_USER_NICK) AS shopName from crm_user where taobao_user_nick = #{userId}
+	</select>
+	
+	<!--后台设置 短信签名回显查询 -->
+	<select id="findShopName" resultType="String">
+		select IFNULL(`shopName`,`taobao_user_nick` ) AS shopName from crm_user where taobao_user_nick = #{userId}
+	</select>
+	
+	<!-- 后台设置 短信签名修改 -->
+	<update id="modiftyShopName">
+	  UPDATE crm_user
+		<set>
+			shopName = #{shopName}
+		</set>
+		where taobao_user_nick = #{userId}
+	</update>
+	
+	<select id="findAllUserByLoginTime" parameterType="java.lang.String" resultType="java.lang.String">
+		select * from crm_user where last_login_date >= #{_parameter}
+	</select>
+	
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllUserCount" resultType="Long">
+		SELECT COUNT(1)
+		FROM crm_user  where expirationTime  &gt; NOW() 
+		AND  ACCESS_TOKEN IS NOT NULL
+		<!-- AND MOBILE  IS NOT NULL -->  
+	</select>
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllUserList" resultMap="userInfo">
+		SELECT *
+		FROM crm_user  where expirationTime  &gt; NOW() 
+		AND  ACCESS_TOKEN IS NOT NULL
+		<!-- AND MOBILE  IS NOT NULL -->  
+		Order by id asc
+		limit #{startRows},#{pageSize}
+	</select>
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findUserInUse" resultMap="userInfo" parameterType="String">
+		SELECT *
+		FROM crm_user  where 
+		taobao_user_nick = #{userId}
+		and expirationTime  &gt; NOW() 
+		AND  ACCESS_TOKEN IS NOT NULL
+	</select>
+	<!-- 同步账号余额度，临时 -->
+	<select id="synSmsNumByUserAccount" parameterType="java.lang.Integer" resultMap="userInfo">
+	   SELECT *
+       FROM crm_user
+       LIMIT #{startNum},1000
+	</select>
+	
+	
+	<!-- 首页小红包,通过用户昵称查询用户信息 author:jackstraw_yu -->
+	<select id="queryUserInfoByNick" resultMap="userInfo" parameterType="String">
+		SELECT * 
+		FROM crm_user 
+		WHERE taobao_user_nick = #{userNick}
+	</select>
+	
+	
+	<!-- 批量修改用户的淘宝等级 -->
+	<select id="batchUpdateUserLevel"  parameterType="java.util.List">
+		<foreach collection="list" item="item" open=""
+						separator=";" close="" index="index">
+				UPDATE crm_user 
+				SET LEVEL = #{item.level} 
+				WHERE taobao_user_nick = #{item.taobaoUserNick}
+		</foreach>
+	</select>
+	
+	<!-- 订单中心效果分析排除用户不进行统计 -->
+	<select id="findUserAccessNotNull" resultType="java.lang.String">
+		select taobao_user_nick FROM crm_user where expirationTime > '2017-11-15 00:00:00' and access_token IS NOT NULL 
+	</select>
+	
+	
+</mapper>

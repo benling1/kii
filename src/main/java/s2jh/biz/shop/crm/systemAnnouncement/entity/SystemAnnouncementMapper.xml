@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.systemAnnouncement.entity.SystemAnnouncement">
+	<resultMap
+		type="s2jh.biz.shop.crm.systemAnnouncement.entity.SystemAnnouncement"
+		id="systemAnnouncement">
+		<result column="ID" property="id" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+		<result column="source" property="source" />
+		<result column="createdate" property="createdate" />
+		<result column="MODIFYDATE" property="MODIFYDATE" />
+		<result column="userNick" property="userNick" />
+		<result column="createdBy" property="createdBy" />
+		<result column="createdDate" property="createdDate" />
+		<result column="lastModifiedBy" property="lastModifiedBy" />
+		<result column="lastModifiedDate" property="lastModifiedDate" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<!-- 根据卖家昵称查询所有的系统公告 -->
+	<select id="findAllAnnouncement" resultMap="systemAnnouncement">
+		select
+		id,title,content,source,MODIFYDATE,userNick,createdBy,createdDate,lastModifiedBy,lastModifiedDate
+		from crm_system_announcement
+		where userNick =#{taobao_user_nick} 
+	</select>
+	
+	
+	<!-- 根据卖家昵称查询所有的系统公告 的分页列表-->
+	<select id="queryPagination" resultMap="systemAnnouncement">
+		select
+		id,title,content,source,MODIFYDATE,userNick,createdBy,createdDate,lastModifiedBy,lastModifiedDate,status
+		from crm_system_announcement
+		<where>
+				userNick = #{taobao_user_nick}
+		</where>
+		ORDER BY createdate DESC
+		LIMIT #{startRows},#{currentRows}
+	</select>
+	
+	
+	<!-- 根据卖家昵称查询所有的系统公告总条数 -->
+	<select id="queryTotalCount" resultType="long">
+		SELECT COUNT(1) FROM crm_system_announcement
+		<where>
+				userNick = #{taobao_user_nick}
+		</where>
+	</select>
+
+
+	<!-- 标记未读信息为已读 -->
+	<update id="remarkAll" parameterType="Integer[]">
+		UPDATE crm_system_announcement
+		set status = 1
+		<where>
+			<if test="ids !=null">
+				and id
+				<foreach  collection="ids" item="id" open="in (" close=")" separator=",">   
+           		 #{id}  
+        		</foreach>
+			</if>
+			<if test="taobao_user_nick != null and taobao_user_nick !='' ">
+				and userNick = #{taobao_user_nick}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 标记未读信息为已读 -->
+	<update id="remarkOne" parameterType="Integer">
+		UPDATE crm_system_announcement
+		set status = 1
+		<where>
+			<if test="id !=null">
+				id = #{id}
+			</if>
+			<if test="taobao_user_nick != null and taobao_user_nick !='' ">
+				and userNick = #{taobao_user_nick}
+			</if>
+		</where>
+	</update>
+
+</mapper>

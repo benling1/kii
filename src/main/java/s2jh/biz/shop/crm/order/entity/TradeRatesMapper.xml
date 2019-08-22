@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.TradeRates">
+	<resultMap type="s2jh.biz.shop.crm.order.entity.TradeRates" id="tradeRates">
+		<result column="oid" property="oid"/>
+		<result column="tid" property="tid"/>
+		<result column="role" property="role"/>
+		<result column="nick" property="nick"/>
+		<result column="result" property="result"/>
+		<result column="created" property="created"/>		
+		<result column="rated_nick" property="ratedNick"/>
+		<result column="item_title" property="itemTitle"/>
+		<result column="item_price" property="itemPrice"/>		
+		<result column="content" property="content"/>
+		<result column="reply" property="reply"/>
+		<result column="num_iid" property="numIid"/>
+		<result column="valid_score" property="validScore"/>
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+		<result column="rate_type" property="rateType"/>
+	</resultMap>
+	<sql id="Base_Column_List" >
+    	id,oid, tid, role, nick, result, created, rated_nick,item_title,item_price,content,reply,num_iid,valid_score,createdBy,
+    	createdDate,lastModifiedBy,lastModifiedDate
+  	</sql>
+  	<!-- 查询最大的主键id -->
+  	<select id="findByMaxId" resultType="java.lang.Integer">
+  		select MAX(id) from crm_trade_rates
+  	</select>
+	<!-- 根据订单查询是具体评价信息 -->
+	<select id="findByOrderSeller" parameterType="java.lang.String" resultMap="tradeRates">
+		SELECT <include refid="Base_Column_List" />
+		from crm_trade_rates
+		WHERE oid=#{oid} AND role='seller'
+	</select>
+	<!-- 根据订单查询是具体评价信息 -->
+	<select id="findByOrderBuyer" parameterType="java.lang.String" resultMap="tradeRates">
+		SELECT <include refid="Base_Column_List" />
+		from crm_trade_rates
+		WHERE oid=#{oid} AND role='buyer'
+	</select>
+	<!-- 根据卖家编号查询中评价信息 -->
+	<select id="queryTradeRates" resultType="java.lang.String">
+		select  
+		nick
+		from crm_trade_rates
+			where
+			rated_nick=#{userId}
+			and	role = #{role}
+			and result != #{result}
+		group by nick
+	</select>
+	
+	<!-- 根据多条件查询评价列表 -->
+	<select id="findTradeRatesByQuery" resultMap="tradeRates">
+		select 
+		<include refid="Base_Column_List" />
+		 from crm_trade_rates
+		<where>
+		 	role = #{role} 
+		 	<if test="ratedNick != null and ratedNick != ''">
+		 		and rated_nick = #{ratedNick}
+		 	</if>
+			<if test="rateType != null and rateType != ''">
+				and rate_type = #{rateType}
+			</if>
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="result != null and result != ''">
+				and result = #{result}
+			</if>
+			<if test="result == null or result == ''">
+				and result in ('neutral','bad')
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(#{dueTime},'%Y-%m-%d') = DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			 <if test="nick != null and nick != ''">
+			 	and nick = #{nick}
+			 </if>
+		 	 <if test="noOid != null and noOid != ''">
+			 	and oid in (select t.oid from crm_trade_rates t where nick = #{noOid} or content like '%${noOid}%' group by t.oid)
+	  		</if>
+		</where>
+		order by created ASC
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 根据多条件查询评价列表总数 -->
+	<select id="findTradeRatesByQueryCount" resultType="int">
+		select count(*) from crm_trade_rates
+		<where>
+			role = #{role}
+			<if test="ratedNick != null and ratedNick != ''">
+		 		and rated_nick = #{ratedNick}
+		 	</if>
+			<if test="rateType != null and rateType != ''">
+				and rate_type = #{rateType}
+			</if>
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="result != null and result != ''">
+				and result = #{result}
+			</if>
+			<if test="result == null or result == ''">
+				and result in ('neutral','bad')
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(#{dueTime},'%Y-%m-%d') = DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			 <if test="nick != null and nick != ''">
+			 	and nick = #{nick}
+			 </if>
+		 	 <if test="noOid != null and noOid != ''">
+			 	and oid in (select t.oid from crm_trade_rates t where nick = #{noOid} or content like '%${noOid}%' group by t.oid)
+	  		</if>
+		</where>
+	</select>
+	
+	<!-- 中差评统计查询汇总 -->
+	<select id="findAggregatezcaggregate" resultType="s2jh.biz.shop.crm.order.entity.RatedVo">
+	 SELECT SUM(s.`result`='neutral') neutral,SUM(s.`result`='bad') bad,(SUM(s.`result`='neutral')+SUM(s.`result`='bad')) volume 
+	 FROM crm_trade_rates s WHERE s.`role`='buyer'
+	<!--  <if test="nick!=null">
+	  and nick = #{nick}
+	 </if> -->
+	 <if test="ratedNick!=null">
+	   and s.`rated_nick` =#{ratedNick}
+	 </if>
+	</select>
+	
+	<!-- 中差评统计 按日期 统计查询  DATE_FORMAT(s.`created`,'%Y-%m-%d') created-->
+	<select id="findAggregatezcaggregate1" resultType="s2jh.biz.shop.crm.order.entity.RatedVo">
+	SELECT IFNULL(SUM(s.`result`='neutral'),0) neutral,IFNULL(SUM(s.`result`='bad'),0) bad,
+    IFNULL((SUM(s.`result`='neutral')+SUM(s.`result`='bad')),0) volume,
+    IFNULL(s.`created`,NOW())created FROM crm_trade_rates s
+	<!-- SELECT SUM(s.`result`='neutral') neutral,SUM(s.`result`='bad') bad,(SUM(s.`result`='neutral')+SUM(s.`result`='bad')) volume,
+    s.`created`created FROM crm_trade_rates s  -->
+    <where> 
+    s.`role`='buyer' 
+   <!--  <if test="nick!=null">
+     	and nick = #{nick}
+    </if> -->
+    <if test="ratedNick!=null">
+      and s.`rated_nick`=#{ratedNick}
+    </if>
+    <if test="bTime !=null">
+		and DATE_FORMAT(s.`created`,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+	</if>
+	<if test="eTime !=null">
+		and DATE_FORMAT(#{eTime}, '%Y-%m-%d') >= DATE_FORMAT(s.`created`, '%Y-%m-%d')
+	</if>
+	</where>
+    <!-- GROUP BY s.`created` DESC -->
+    GROUP BY  DATE_FORMAT(s.`created`,'%Y-%m-%d')   DESC 
+    limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 中差评统计  分页查询总条数 -->
+	<select id="findAggregatezcaggregateCount" resultType="java.lang.Long">
+	
+	  SELECT COUNT(*) FROM (SELECT IFNULL(SUM(s.`result`='neutral'),0) neutral,IFNULL(SUM(s.`result`='bad'),0) bad,
+	  IFNULL((SUM(s.`result`='neutral')+SUM(s.`result`='bad')),0) volume,
+	  IFNULL(s.`created`,NOW())created FROM crm_trade_rates s 
+	  WHERE s.`role`='buyer'
+	  <if test="bTime !=null">
+		 and DATE_FORMAT(s.`created`,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+	  </if>
+	  <if test="eTime !=null">
+		 and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(s.`created`, '%Y-%m-%d')   
+	  </if>
+      <if test="ratedNick!=null">
+        and s.`rated_nick`=#{ratedNick}
+      </if>
+      GROUP BY s.`created` DESC) a
+	<!--  SELECT COUNT(1) FROM crm_trade_rates s WHERE s.`role`='buyer'
+	  <if test="bTime !=null and bTime!=''">
+		and DATE_FORMAT(s.`created`,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+	</if>
+	<if test="eTime !=null and eTime!=''">
+		and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(s.`created`, '%Y-%m-%d')   
+	</if>
+	<if test="nick!=null">
+     	and nick = #{nick}
+    </if>
+    <if test="ratedNick!=null">
+      and s.`rated_nick`=#{ratedNick}
+    </if> -->
+	</select>
+	
+	
+	<!-- 中差评 统计 折线图统计查询 -->
+	<select id="findRatedVo" resultType="s2jh.biz.shop.crm.order.entity.RatedVo">
+	 SELECT SUM(s.`result`='neutral') neutral,SUM(s.`result`='bad') bad,
+     s.`created` created FROM crm_trade_rates s  WHERE s.`role`='buyer' 
+     <if test="dateTime!=null">
+     	and DATE_FORMAT(created,'%Y-%m-%d')  LIKE CONCAT('%',#{dateTime},'%')
+     </if> 
+     <if test="bTime !=null">
+		and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+	</if>
+	<if test="eTime !=null">
+		and DATE_FORMAT(#{eTime}, '%Y-%m-%d') >= DATE_FORMAT(created, '%Y-%m-%d')
+	</if>
+	<if test="ratedNick!=null">
+	  and s.`rated_nick`=#{ratedNick}
+	</if>
+	<!-- <if test="nick!=null">
+     	and nick = #{nick}
+    </if> -->
+	</select>
+	
+	<select id="findtradeRatesByTidAndOid" resultMap="tradeRates">
+		select 
+		<include refid="Base_Column_List" />
+		 from crm_trade_rates
+		 where oid = #{oid}
+			   and tid = #{tid}
+	</select>
+	
+	<!-- 更新评价表的数据标识已被删除中差评 -->
+	<update id="updataTradeRatesISDelete">
+		UPDATE crm_trade_rates 
+		SET result = #{result},
+		lastModifiedDate = #{lastModifiedDate} 
+		WHERE id=#{id}
+	</update>
+	
+	<!-- 根据多条件查询评价列表 -->
+	<select id="findAllTradeRates" resultMap="tradeRates">
+		select 
+		<include refid="Base_Column_List" />
+		 from crm_trade_rates
+		<where>
+		 	role = #{role} 
+		 	<if test="ratedNick != null and ratedNick != ''">
+		 		and rated_nick = #{ratedNick}
+		 	</if>
+			<if test="rateType != null and rateType != ''">
+				and rate_type = #{rateType}
+			</if>
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="result != null and result != ''">
+				and result = #{result}
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(#{dueTime},'%Y-%m-%d') = DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			 <if test="nick != null and nick != ''">
+			 	and nick = #{nick}
+			 </if>
+		 	 <if test="noOid != null and noOid != ''">
+			 	and oid in (select t.oid from crm_trade_rates t where nick = #{noOid} or content like '%${noOid}%' group by t.oid)
+	  		</if>
+		</where>
+		order by created DESC
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 根据多条件查询评价列表总数 -->
+	<select id="findAllTradeRatesCount" resultType="int">
+		select count(*) from crm_trade_rates
+		<where>
+			role = #{role}
+			<if test="ratedNick != null and ratedNick != ''">
+		 		and rated_nick = #{ratedNick}
+		 	</if>
+			<if test="rateType != null and rateType != ''">
+				and rate_type = #{rateType}
+			</if>
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="result != null and result != ''">
+				and result = #{result}
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(#{dueTime},'%Y-%m-%d') = DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			 <if test="nick != null and nick != ''">
+			 	and nick = #{nick}
+			 </if>
+		 	 <if test="noOid != null and noOid != ''">
+			 	and oid in (select t.oid from crm_trade_rates t where nick = #{noOid} or content like '%${noOid}%' group by t.oid)
+	  		</if>
+		</where>
+	</select>
+	
+	
+	
+	
+	<!-- ==============中差评查看使用============================== -->
+	<!-- 根据多条件查询评价列表 -->
+	<select id="findTradeRatesToList" resultMap="tradeRates">
+		select id,oid, item_title,reply, content, nick,result
+		 from crm_trade_rates
+		<where>
+			<if test="rateType != null and rateType != ''">
+				and rate_type = #{rateType}
+			</if>
+				and rated_nick = #{ratedNick}
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="result != null and result != ''">
+				and result = #{result}
+			</if>
+			<if test="result == null or result == ''">
+				and result in ('neutral','bad')
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(#{dueTime},'%Y-%m-%d') = DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			 <if test="nick != null and nick != ''">
+			 	and nick = #{nick}
+			 </if>
+			<!--  and role = #{role} -->
+		 	 <if test="noOid != null and noOid != ''">
+			 	and oid in (select t.oid from crm_trade_rates t where nick = #{noOid} or item_title like '%${noOid}%' group by t.oid)
+	  		</if>
+		</where>
+		ORDER BY created DESC	
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 根据多条件查询评价列表总数 -->
+	<select id="findTradeRatesToCount" resultType="int">
+		select count(*) from crm_trade_rates
+		<where>
+			<if test="rateType != null and rateType != ''">
+				and rate_type = #{rateType}
+			</if>
+				and rated_nick = #{ratedNick}
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="result != null and result != ''">
+				and result = #{result}
+			</if>
+			<if test="result == null or result == ''">
+				and result in ('neutral','bad')
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(created,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(#{dueTime},'%Y-%m-%d') = DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			 <if test="nick != null and nick != ''">
+			 	and nick = #{nick}
+			 </if>
+			 <!-- and role = #{role} -->
+		 	 <if test="noOid != null and noOid != ''">
+			 	and oid in (select t.oid from crm_trade_rates t where nick = #{noOid} or item_title like '%${noOid}%' group by t.oid)
+	  		</if>
+		</where>
+	</select>
+	<!-- ========================================================= -->
+	
+	<!-- 添加评价 -->
+	<insert id="insertTradeRate" useGeneratedKeys="true" keyProperty="id">
+		insert into crm_trade_rates(tid,oid,role,nick,result,created,rated_nick,item_title,item_price,content,reply,num_iid,valid_score,createdDate,lastModifiedBy,lastModifiedDate,optlock)
+		values(#{tid},#{oid},#{role},#{nick},#{result},#{created},#{ratedNick},#{itemTitle},#{itemPrice},#{content},#{reply},#{numIid},#{validScore},#{createdDate},#{lastModifiedBy},NOW(),0);
+	</insert>
+	
+	
+	<!-- 加密TradeRate的数据————查询 -->
+	<select id="findAllId" resultMap="tradeRates">
+		select id,nick,rated_nick from crm_trade_rates
+		<where>
+			role = 'buyer'
+			<if test="lastUpdateId != null">
+				and id > #{lastUpdateId}
+			</if>
+		</where>
+		order by id asc
+		limit #{init},#{size}
+	</select>
+	
+	<!-- 加密TradeRate的数据————查询 -->
+	<select id="findAllSelelrId" resultMap="tradeRates">
+		select id,nick,rated_nick from crm_trade_rates
+		<where>
+			role = 'seller'
+			<if test="lastUpdateId != null">
+				and id > #{lastUpdateId}
+			</if>
+		</where>
+		order by id asc
+		limit #{init},#{size}
+	</select>
+	
+	<!-- 加密TradeRate的数据————更新 -->
+	<update id="updateRateById">
+		update crm_trade_rates
+		<set>
+			<if test="nick != null and nick != ''">
+				nick = #{nick},
+			</if>
+			<if test="ratedNick != null and ratedNick != ''">
+				rated_nick = #{ratedNick}
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+	
+</mapper>

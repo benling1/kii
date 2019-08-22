@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.OrderApplicationInfo">
+
+	<resultMap type="s2jh.biz.shop.crm.user.entity.OrderApplicationInfo"
+		id="orderApplicationInfo">
+		<result column="id" property="id" />
+		<result column="userNick" property="userNick" />
+		<result column="subId" property="subId" />
+		<result column="articleCode" property="articleCode" />
+		<result column="itemName" property="itemName" />
+		<result column="itemCode" property="itemCode" />
+		<result column="expireNotice" property="expireNotice" />
+		<result column="endDate" property="endDate" />
+		<result column="effectStatus" property="effectStatus" />
+		<result column="autosub" property="autosub" />
+		<result column="articleName" property="articleName" />
+	</resultMap>
+
+
+	<!-- 更具淘宝昵称查找用户 -->
+	<select id="queryOrderApplicationInfo" resultType="s2jh.biz.shop.crm.user.entity.OrderApplicationInfo">
+
+		SELECT id, userNick, subId, articleCode, itemName, itemCode
+		expireNotice, endDate, effectStatus, autosub ,articleName
+		FROM crm_orderapplicationinfo
+		<where>
+			userNick = #{userNick}
+		</where>
+
+	</select>
+
+	<!-- 更具淘宝昵称修改用户的到期时间 -->
+	<update id="updateOrderApplicationInfo">
+		UPDATE crm_orderapplicationinfo
+		<set>
+			<if test="subId !=null ">
+				subId = #{subId},
+			</if>
+			<if test="itemName !=null and itemName !='' ">
+				itemName = #{itemName},
+			</if>
+			<if test="itemCode !=null and itemCode !='' ">
+				itemCode = #{itemCode},
+			</if>
+			<if test="expireNotice !=null">
+				expireNotice = #{expireNotice},
+			</if>
+			<if test="endDate !=null ">
+				endDate = #{endDate},
+			</if>
+			<if test="effectStatus !=null ">
+				effectStatus = #{effectStatus},
+			</if>
+			<if test="autosub !=null ">
+				autosub = #{autosub},
+			</if>
+			<if test="articleName !=null and articleName !='' ">
+				articleName = #{articleName},
+			</if>
+			<if test="articleCode !=null and articleCode !='' ">
+				articleCode = #{articleCode},
+			</if>
+		</set>
+		<where>
+			<if test="userNick !=null and userNick !='' ">
+				userNick = #{userNick}
+			</if>
+		</where>
+	</update>
+
+
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.other.entity.Notice">
+	<!-- 首页系统公告 -->
+	<select id="findNotice" resultType="hashmap">
+	 SELECT c.`title`,c.`createdate`,c.`content` FROM CRM_SYSTEM_ANNOUNCEMENT c
+	 ORDER BY DATE_FORMAT(c.`createdate`,'%Y/%m/%d') DESC
+	</select>
+</mapper>

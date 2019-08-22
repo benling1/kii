@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.user.entity.UserRecharge">
+	<resultMap type="s2jh.biz.shop.crm.user.entity.UserRecharge"
+		id="userRecharge">
+		<result column="id" property="id" />
+		<result column="userNick" property="userNick" />
+		<result column="rechargePrice" property="rechargePrice" />
+		<result column="RECHARGE_TYPE" property="rechargeType" />
+		<result column="UNIT_PRICE" property="unitPrice" />
+		<result column="status" property="status" />
+		<result column="rechargeDate" property="rechargeDate" />
+		<result column="REMARKS" property="remarks" />
+		<result column="orderId" property="orderId" />
+		<result column="rechargeNUm" property="rechargeNUm" />
+		<!-- 超类中的属性 -->
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>		
+		<!-- 锁optlock -->
+		<result column="optlock" property="version"/>
+	</resultMap>
+	<!-- 根据订单编号查询是否存在该订单 -->
+	<select id="queryUserRechargeCount" resultType="long">
+
+		SELECT COUNT(1)
+		FROM CRM_USER_RECHARGE_RECORD
+		<where>
+			<if test="orderId !=null and orderId !='' ">
+				orderId = #{orderId}
+			</if>
+		</where>
+
+	</select>
+
+	<!-- 根据订单编号查询充值信息 -->
+	<select id="queryUserRecharge" resultType="s2jh.biz.shop.crm.user.entity.UserRecharge">
+
+		SELECT
+		id,userNick,rechargePrice,recharge_type,unit_price,rechargeDate,status,remarks,orderId,rechargeNUm
+		FROM CRM_USER_RECHARGE_RECORD
+		<where>
+			<if test="orderId !=null and orderId !='' ">
+				orderId = #{orderId}
+			</if>
+		</where>
+
+	</select>
+
+	<!-- 用户充值是添加一条数据 -->
+	<!-- 搜索未发现使用   jackstraw_yu -->
+	<!-- <insert id="insertUserRecharge">
+		INSERT INTO CRM_USER_RECHARGE_RECORD
+		(userNick,
+		rechargePrice, unit_price, recharge_type,rechargeDate, status,
+		orderId, rechargeNUm)
+
+		values(#{userNick}, #{rechargePrice}, #{unitPrice}, #{rechargeType},
+		#{rechargeDate}, #{status}, #{orderId}, #{rechargeNUm})
+	</insert> -->
+
+
+	<!-- 根据用户名称查询出总条数 author:jackstraw_yu -->
+	<select id="getTotalCount" resultType="long">
+		SELECT COUNT(1) 
+		FROM CRM_USER_RECHARGE_RECORD
+		WHERE
+			status != '3' 
+			AND 
+			userNick = #{taobao_user_nick}
+	</select>
+	
+	<!-- 根据用户名称查询出充值记录的分页列表 author:jackstraw_yu -->
+	<select id="queryPagination" resultMap="userRecharge">
+		SELECT * 
+		FROM CRM_USER_RECHARGE_RECORD
+		WHERE
+			status != '3' 
+			AND
+			userNick = #{taobao_user_nick}
+		ORDER BY rechargeDate DESC
+		LIMIT #{startRows},#{currentRows}
+	</select>
+
+	<!-- author:HL -->
+	<insert id="insertUserRechargeRecord" parameterType="s2jh.biz.shop.crm.user.entity.UserRecharge" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO CRM_USER_RECHARGE_RECORD(userNick,RECHARGEPRICE,RECHARGE_TYPE,UNIT_PRICE,rechargeDate,STATUS,REMARKS,orderId,rechargeNUm,createdDate,lastModifiedDate,optlock) 
+		VALUE(#{userNick},#{rechargePrice},#{rechargeType},#{unitPrice},#{rechargeDate},#{status},#{remarks},#{orderId},#{rechargeNUm},#{createdDate},#{lastModifiedDate},0);
+	</insert>
+
+	<!-- author:HL -->
+	<select id="findUserRechargeByOrderId" parameterType="java.lang.String" resultMap="userRecharge">
+		SELECT id, userNick,rechargeNUm,STATUS,rechargePrice FROM CRM_USER_RECHARGE_RECORD
+		WHERE orderId = #{orderId}
+	</select>
+	
+	<!-- author:HL -->
+	<update id="updateUserRechargeStatus" parameterType="s2jh.biz.shop.crm.user.entity.UserRecharge">
+		UPDATE CRM_USER_RECHARGE_RECORD SET STATUS = #{status},lastModifiedDate = #{lastModifiedDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- author:jackstraw_yu -->
+	<insert id="saveUserRechargeRecord" parameterType="s2jh.biz.shop.crm.user.entity.UserRecharge" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO CRM_USER_RECHARGE_RECORD
+			(userNick,RECHARGEPRICE,RECHARGE_TYPE,UNIT_PRICE,rechargeDate,STATUS,REMARKS,orderId,rechargeNUm,
+			createdDate,lastModifiedDate,createdBy,lastModifiedBy,optlock) 
+		VALUE
+			(#{userNick},#{rechargePrice},#{rechargeType},#{unitPrice},#{rechargeDate},#{status},#{remarks},#{orderId},#{rechargeNUm},
+			NOW(),NOW(),#{userNick},#{userNick},0);
+	</insert>
+	
+</mapper>

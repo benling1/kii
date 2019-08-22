@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsSendInfo">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsSendInfo" id="smsSendInfo">
+		<result column="ID" property="id"/>
+		<result column="phone" property="phone"/>
+		<result column="nickname" property="nickname"/>
+		<result column="content" property="content"/>
+		<result column="user_id" property="userId"/>
+		<result column="send_time" property="sendTime"/>
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+		<result column="status" property="status"/>
+		<result column="actual_deduction" property="actualDeduction"/>
+		<result column="channel" property="channel"/>
+		<result column="taskId" property="taskId"/>
+	</resultMap>
+	<!-- 查询卖家的短信发送历史 -->
+	<select id="findSellerHistory" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT phone,content
+		FROM crm_sms_send_info
+		WHERE createdDate BETWEEN #{startDate} AND #{endDate} AND type = #{type} AND user_id = #{sellerNick}
+		ORDER BY phone,content
+	</select>
+	<!-- 创建短信记录 -->
+	<insert id="doCreateByMessage" parameterType="s2jh.biz.shop.crm.message.entity.SmsSendInfo">
+		INSERT INTO crm_sms_send_info(user_id,PHONE,NICKNAME,CONTENT,type,send_time,actual_deduction,status,channel,createdDate,lastModifiedDate,tid) 
+		VALUE(#{userId},#{phone},#{nickname},#{content},#{type},#{createdDate},#{actualDeduction},#{status},#{channel},#{createdDate},#{createdDate},#{tid});
+	</insert>
+	<!-- 查询超过一个月短信的数量 -->
+	<select id="findByOnceDayCount" parameterType="java.util.Date" resultType="java.lang.Integer">
+		 SELECT count(id) FROM crm_sms_send_info WHERE DATE_SUB(#{nowDate},INTERVAL 30 DAY) > createdDate
+	</select>
+	<!-- 查询超过一个月的短信 -->
+	<select id="findByOnceDay" parameterType="java.util.Map" resultType="java.lang.Long">
+		 SELECT id FROM crm_sms_send_info WHERE DATE_SUB(#{nowDate},INTERVAL 30 DAY) > createdDate LIMIT 0,#{lineSize}
+	</select>	
+	<!-- 根据tid和类型查询是否存在 -->
+	<select id="findCountByTidAndType" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT count(*) FROM crm_sms_send_info WHERE tid=#{tid} AND type=#{type}
+	</select>
+	<!-- 根据卖家昵称和买家昵称和类型查询是否存在 -->
+	<select id="findCountByNickAndType" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT count(*) 
+		FROM  crm_sms_send_info 
+		WHERE type=#{type} AND createdDate > #{startDate} AND  #{endDate} > createdDate
+		      AND  user_id = #{sellerNick} AND nickName = #{buyerNick} 
+	</select>
+	<!-- 删除两天之前的短信记录-->
+  	<delete id="removeByInvalid" parameterType="java.util.Map">
+  		DELETE FROM crm_sms_send_info WHERE id in 
+  		<foreach collection="idsList" item="item" open="(" separator="," close=")" index="index">
+				#{item}
+		</foreach>
+  	</delete>
+	<!-- 根据用户的需求来查询出x时间到今天之内给买家发送成功的短信次数 -->
+	<select id="findCountBySendManaual" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM crm_sms_send_info
+		<where>
+			<if test="sellerNick != null">
+				user_id=#{sellerNick} AND
+			</if>
+			<if test="phone !=null">
+				PHONE=#{phone} AND
+			</if>
+			<if test="startTime != null">
+				send_time BETWEEN #{startTime} AND now() AND
+			</if>
+			TYPE=26 AND status=1
+		</where>
+	</select>
+<!-- 		添加发送的信息日志 -->
+<!-- 	INSERT INTO crm_sms_send_info(phone,nickname,content,user_id,send_time,autograph,record_id,createdBy,createdDate,lastModifiedBy, -->
+<!-- 			lastModifiedDate,status,actual_deduction,channel,isMember)  -->
+<!-- 		VALUE(#{phone},#{nickname},#{content},#{user_id},#{send_time},#{autograph},#{record_id},#{createdBy},#{createdDate},#{lastModifiedBy}, -->
+<!-- 			#{lastModifiedDate},#{status},#{actual_deduction},#{channel},#{isMember}); -->
+	
+	<!--根据卖家ID查询短信发送记录 -->
+	<select id="findAllSmsSendInfo" resultMap="smsSendInfo">
+		SELECT id,phone,nickname,content,user_id,send_time,autograph,record_id,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,actual_deduction,channel,isMember
+		FROM crm_sms_send_info
+		where user_id=#{sellerName} 
+		<if test="isMember!= null">
+			and isMember =#{isMember}
+		</if>
+	</select>
+	<select id="findBySendInfoDateCount" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM crm_sms_send_info
+		WHERE user_id=#{sellerName} AND phone=#{phone} AND send_time BETWEEN #{nowDayStart} AND #{nowDayEnd} AND status=2 AND type =#{settingType}
+	</select>
+	
+	<!--根据卖家条件查询短信发送记录 -->
+	<select id="querySmsSendInfo" resultMap="smsSendInfo">
+		SELECT id,phone,nickname,content,user_id,send_time,autograph,record_id,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,actual_deduction,channel,isMember
+		FROM crm_sms_send_info
+		<where>
+			1=1
+			<if test="isMember!= null">
+				and isMember =#{isMember}
+			</if>
+			<if test="userId !=null">
+				and user_id =#{userId}
+			</if>
+			<if test="phone != null">
+				and phone= #{phone}
+			</if>
+			<if test="nickname != null">
+				and nickname = #{nickname}
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+			<if test="startDate != null">
+			    and DATE_FORMAT(send_time,'%Y/%m/%d') >= DATE_FORMAT(#{startDate},'%Y/%m/%d') 
+			</if>
+			<if test="endDate != null">
+			    and DATE_FORMAT(#{endDate},'%Y/%m/%d') >= DATE_FORMAT(send_time,'%Y/%m/%d')
+			</if>
+		</where> 
+		ORDER BY send_time DESC 
+	</select>
+		
+	<!--根据短信群发记录的id,任务状态与电话号码查询出短信发送详情的分页列表 -->
+	<select id="findLimitList" resultMap="smsSendInfo">
+		SELECT id,phone,nickname,content,user_id,send_time,autograph,record_id,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,actual_deduction,channel,isMember
+		FROM crm_sms_send_info
+		<where>
+			<if test="recordId != null">
+				and record_id =#{recordId}
+			</if>
+			<if test="status !=null">
+				and status =#{status}
+			</if>
+			<if test="nickname !=null and nickname != '' ">
+				and nickname like CONCAT('%',#{nickname},'%')
+			</if>
+			<if test="type !=null ">
+				and type  =#{type }
+			</if>
+			<if test="phone !=null and phone != '' ">
+				and phone like CONCAT('%',#{phone},'%')
+			</if>
+			<if test="beginTime !=null   ">
+				and DATE_FORMAT(send_time,'%Y-%m-%d') >= DATE_FORMAT(#{beginTime},'%Y-%m-%d')
+			</if>
+			<if test="endTime !=null  ">
+				and DATE_FORMAT(#{endTime}, '%Y-%m-%d')  >= DATE_FORMAT(send_time, '%Y-%m-%d')   
+			</if>
+				and user_id =#{userId}
+		</where>
+		ORDER BY send_time DESC
+		limit #{startRows},#{currentRows} 
+	</select>
+	
+	<!-- 根据短信群发记录的id,任务状态与电话号码查询出短信发送详情总条数 -->
+	<select id="findTotalCountByQuery" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM crm_sms_send_info
+		<where>
+			<if test="recordId != null">
+				and record_id =#{recordId}
+			</if>
+			<if test="status !=null">
+				and status =#{status}
+			</if>
+			<if test="nickname !=null and nickname != '' ">
+				and nickname like CONCAT('%',#{nickname},'%')
+			</if>
+			<if test="type !=null ">
+				and type  =#{type }
+			</if>
+			<if test="phone !=null and phone != '' ">
+				and phone like CONCAT('%',#{phone},'%')
+			</if>
+			<if test="beginTime !=null  ">
+				and DATE_FORMAT(send_time,'%Y-%m-%d') >= DATE_FORMAT(#{beginTime},'%Y-%m-%d')
+			</if>
+			<if test="endTime !=null   ">
+				and DATE_FORMAT(#{endTime}, '%Y-%m-%d')  >= DATE_FORMAT(send_time, '%Y-%m-%d')   
+			</if>
+				and user_id =#{userId}
+		</where>
+		ORDER BY send_time DESC 
+	</select>
+	
+	
+	
+	<!--根据时间查询已经发送过的短信的买家信息  -->
+	<select id="querySmsSendInfoToDate" resultType="java.lang.String">
+	SELECT rec_num
+		FROM CRM_SMS_SEND_RECORD
+		<where>
+				user_id =#{userId}
+			<if test="lastDate != null">
+			    and DATE_FORMAT(send_time,'%Y/%m/%d') >= DATE_FORMAT(#{lastDate},'%Y/%m/%d') 
+			</if>
+			<if test="todayDate != null">
+			    and DATE_FORMAT(#{todayDate},'%Y/%m/%d') >= DATE_FORMAT(send_time,'%Y/%m/%d')
+			</if>
+			and status = '2'
+		</where>
+		group by rec_num
+	</select>
+	
+	
+	<!--根据id数组查询会员互动中卖家发送的短信记录 -->
+	<select id="getSmsSendInfoList" resultMap="smsSendInfo" parameterType="Integer[]">
+	SELECT id,phone,nickname,content,user_id,send_time,autograph,record_id,createdBy,createdDate,lastModifiedBy,
+		lastModifiedDate,status,actual_deduction,channel,isMember
+		FROM crm_sms_send_info
+		<where>
+			<if test="ids !=null">
+				and id
+				<foreach  collection="ids" item="id" open="in (" close=")" separator=",">   
+           		 #{id}  
+        		</foreach>
+			</if>
+		</where>
+		ORDER BY send_time DESC 
+	</select>
+	
+	
+	<!--根据时间查询已经发送过的短信的买家信息  -->
+	<select id="querySmsSendPhoneNums" resultType="java.lang.String">
+	SELECT phone
+		FROM crm_sms_send_info
+		<where>
+			<if test="lastDate != null">
+			    and DATE_FORMAT(send_time,'%Y/%m/%d') >= DATE_FORMAT(#{lastDate},'%Y/%m/%d') 
+			</if>
+			<if test="todayDate != null">
+			    and DATE_FORMAT(#{todayDate},'%Y/%m/%d') >= DATE_FORMAT(send_time,'%Y/%m/%d')
+			</if>
+			and user_id =#{userId}
+		</where>
+	</select>
+	
+	
+	<!--后台管理设置,获得催付效果即查询出当前前一天的催付短信发送数量 -->
+	<select id="queryExpediting" resultType="java.lang.Long">
+	SELECT
+	IFNULL(SUM(actual_deduction),0)
+		FROM crm_sms_send_info
+		WHERE
+		user_id =#{userId}
+		AND type IN ('2','3','4','5')
+		AND send_time LIKE CONCAT('%',#{currentTime},'%')
+	</select>
+	
+	<!--后台管理设置,查询出当前前一天的短信发送总数量-->
+	<select id="querySendCount" resultType="java.lang.Long">
+	SELECT
+	IFNULL(SUM(actual_deduction),0)
+		FROM crm_sms_send_info
+		WHERE
+		user_id =#{userId}
+		AND send_time LIKE CONCAT('%',#{currentTime},'%')
+	</select>
+	
+	
+	<insert id="insertbatchSmsInfo" parameterType="java.util.List">  
+	
+    insert into crm_sms_send_info ( user_id,PHONE,NICKNAME,CONTENT,type,send_time,AUTOGRAPH,
+    status,actual_deduction,channel,isMember,createdDate,oid,record_id,lastModifiedDate) values  
+    <foreach collection="list" item="item" index="index"  
+        separator=",">  
+        ( #{item.userId},#{item.phone},#{item.nickname},#{item.content},#{item.type},
+        #{item.sendTime},#{item.autograph},#{item.status},#{item.actualDeduction},#{item.channel},
+        #{item.isMember},now(),#{item.oid},#{item.recordId},now() )  
+    </foreach>  
+    
+  </insert>  
+</mapper>

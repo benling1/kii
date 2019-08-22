@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.other.entity.TaskNode">
+	<resultMap type="s2jh.biz.shop.crm.other.entity.TaskNode" id="taskNode">
+		<result column="task_node" property="taskNode"/>
+		<result column="task_endTime" property="taskEndTime"/>
+		<result column="type" property="type"/>
+		<result column="type" property="type"/>
+	</resultMap>
+
+	<insert id="insertTaskNode">
+		insert into CRM_TASKNODE(task_node,task_endTime,type) values(#{i},#{taskEndTime},#{type})
+	</insert>	
+	
+	<!-- 根据类型更新时间ZTK -->
+	<update id="updateTaskTime">
+		update CRM_TASKNODE set task_endTime = #{taskEndTime},task_node = #{i} where type = #{type}
+	</update>
+	
+	<!-- 根据类型查询时间ZTK -->
+	<select id="findTaskLastTime" parameterType="String" resultMap="taskNode">
+		select task_node,task_endTime,type from CRM_TASKNODE
+		<where>
+			type = #{_parameter}
+		</where>
+	</select>
+	
+	<!-- 查询更新商品最后执行时间 -->
+	<select id="findItems" resultMap="taskNode" >
+	  SELECT task_node FROM crm_tasknode WHERE TYPE='items'
+	</select>
+	
+	<!-- 根据type类型修改taskNode和taskEndTime -->
+	<update id="updateTaskNode">
+		update crm_tasknode set task_node = #{taskNode},task_endTime = #{taskEndTime} where type = #{type}
+	</update>
+	
+	<!-- 根据类型查询上次添加的记录 -->
+	<select id="findTaskNodeOne" parameterType="String" resultMap="taskNode">
+		select task_node,task_endTime,type from CRM_TASKNODE
+		<where>
+			type = #{type}
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsTemplate">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsTemplate" id="smsTemplate">
+		<result column="ID" property="id"/>
+		<result column="content" property="content"/>
+		<result column="type" property="type"/>		
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>		
+		<result column="fashion" property="fashion"/>	
+		<result column="name" property="name"/>	
+	</resultMap>
+	<!-- 如果用户未设置短信内容，则自动给他保存一个默认的短信模板设置 -->
+	<select id="findAutoModel" parameterType="java.util.Map" resultMap="smsTemplate">
+		SELECT *
+		FROM crm_sms_template
+		WHERE user_nick=#{settingType} AND createdBy='SystemAdmin' AND createdDate='1111-11-11 11:11:11'
+	</select>
+    <!-- 根据类型查询所有短信模板信息 -->    
+	<select id="findAll"  resultType="s2jh.biz.shop.crm.message.entity.SmsTemplate">
+   		select id,content,type,createdDate,fashion,name
+   		from crm_sms_template
+   		where 1=1
+   		<if test="type !=null">
+   			and type = #{type}
+   		</if>
+   		<if test="startRows!=null  and currentRows!=null">
+   			limit #{startRows},#{currentRows}
+   		</if>
+    </select>
+    
+	<!-- 查询所有短信模板信息总条数 -->    
+    <select id="findSmsTemplateCount"  resultType="int">
+   		select count(*)
+   		from crm_sms_template
+   		<where>
+	   		<if test="type !=null and type != ''">
+	   			and type = #{type}
+	   		</if>
+	   		<if test="type1 != null and type1 != ''">
+				or type = #{type1}
+	   		</if>
+	   		<if test="type2 != null and type2 != ''">
+				or type = #{type2}
+	   		</if>
+	   		<if test="type3 != null and type3 != ''">
+				or type = #{type3}
+	   		</if>
+   		</where>
+    </select>
+	
+	<!-- 根据卖家编号查询所有短信使用模板信息 -->    
+    <select id="queryAll"  resultType="s2jh.biz.shop.crm.message.entity.SmsTemplate">
+   		select t.id,t.content
+   		from crm_sms_historytemplate h,crm_sms_template t
+   		where t.id= h.templateId
+   		<if test="userId !=null">
+   			and h.userId = #{userId}
+   		</if>
+   		<if test="startRows!=null  and currentRows!=null">
+   			limit #{startRows},#{currentRows}
+   		</if>
+    </select>
+    
+    <!-- 根据类型查询短信模板 -->
+    <select id="findTemplateByType" resultMap="smsTemplate">
+    	select id,content,type,name,fashion
+    	from crm_sms_template
+    	<where>
+    		<if test="typeList != null">
+				type IN
+	    		<foreach collection="typeList" item="typeList" open="(" separator="," close=")">
+	    			#{typeList}
+	    		</foreach>
+    		</if>
+    		<if test="userId != null and userId != ''">
+    			and user_nick = #{userId}
+    		</if>
+    	</where>
+    	order by createdDate DESC
+    </select>
+    
+    <!-- 根据type和userNick查询短信模板==中差评安抚==我的模板 -->
+    <select id="findTemplateByTypeAnduserNick" resultMap="smsTemplate">
+    	select id,content,type,name,fashion
+    	from crm_sms_template
+    	<where>
+    		<if test="type != null">
+				and type=#{type}
+    		</if>
+    		<if test="userNick != null and userNick !='' ">
+				and user_nick=#{userNick}
+    		</if>
+    	</where>
+    	order by createDate DESC
+    </select>
+     <!-- 根据type和userNick查询短信模板  自动评价 -->
+    <select id="findTemplateByAutoRate" parameterType="java.util.Map" resultType="java.lang.String">
+    	select content
+    	from crm_sms_template
+    	<where>
+				type=#{type} and user_nick=#{userNick}
+    	</where>
+    	order by createDate DESC
+    </select>
+    
+    <!-- 根据id查询模板对象 -->
+    <select id="findSmsTempById" resultMap="smsTemplate">
+    	select content,type,id from crm_sms_template
+    	<where>
+    		<if test="id != null and id != ''">
+    			id = #{id}	
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 设置页 查询 系统短语库查询 -->
+    <select id="findSmsTem" resultMap="smsTemplate">
+       SELECT id,content,type,name,user_nick,createdDate FROM crm_sms_template 
+       <where>
+         user_nick IS NULL
+         <if test="type!=null and type!=''">
+            AND TYPE=#{type}
+         </if>
+       </where>
+       ORDER BY createdDate DESC
+    </select>
+    
+    <!-- 设置页 自定义 短语库查询 -->
+    <select id="findCustomSmsTem" resultMap="smsTemplate">
+       SELECT id,content,type,name,user_nick,createdDate FROM crm_sms_template 
+       <where>
+        <if test="userNick!=null and userNick!=''">
+          user_nick =#{userNick}
+        </if>
+         <if test="type!=null and type!=''">
+            AND TYPE=#{type}
+         </if>
+       </where>
+       ORDER BY createdDate DESC
+    </select>
+    
+    <!-- 设置页另存为短语库，查询模板名称是否重复 -->
+    <select id="findTemNameIsExist" resultType="int">
+      SELECT COUNT(1) FROM crm_sms_template
+      <where>
+      <if test="userNick!=null and userNick!=''">
+        user_nick =#{userNick}
+      </if>
+      <if test="name!=null and name!=''">
+        and name=#{name}
+      </if>
+      <if test="type!=null and type!=''">
+        and type=#{type}
+      </if>
+      </where>
+    </select>
+    
+    <!-- 删除自定义短语库 -->
+    <delete id="deleteTemZdy">
+      DELETE FROM crm_sms_template 
+      <where>
+        user_nick =#{userNick}
+        and id=#{id}
+      </where>
+    </delete>
+</mapper>

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.LogisticsOrder">
+		<resultMap type="s2jh.biz.shop.crm.order.entity.LogisticsOrder" id="LogisticsOrder_map">
+		<result column="ORDER_CODE" property="orderCode"/>
+		<result column="status" property="status"/>
+		<result column="IS_QUICK_COD_ORDER" property="isQuickCodOrder"/>
+		<result column="SELLER_NICK" property="sellerNick"/>
+		<result column="BUYER_NICK" property="buyerNick"/>
+		<result column="DELIVERY_START" property="deliveryStart"/>
+		<result column="DELIVERY_END" property="deliveryEnd"/>
+		<result column="OUT_SID" property="outSid"/>
+		<result column="ITEM_TITLE" property="itemTitle"/>
+		<result column="RECEIVER_NAME" property="receiverName"/>
+		<result column="RECEIVER_PHONE" property="receiverPhone"/>
+		<result column="RECEIVER_MOBILE" property="receiverMobile"/>
+		<result column="type" property="type"/>
+		<result column="FREIGHT_PAYER" property="freightPayer"/>
+		<result column="SELLER_CONFIRM" property="sellerConfirm"/>
+		<result column="COMPANY_NAME" property="companyName"/>
+		<result column="IS_SUCCESS" property="isSuccess"/>
+		<result column="created" property="created"/>
+		<result column="modified" property="modified"/>
+		<result column="IS_SPILT" property="isSpilt"/>
+		<result column="SUB_TIDS" property="subTids"/>
+	</resultMap>
+	<select id="findByTidSendMessage" parameterType="java.lang.String" resultMap="LogisticsOrder_map">
+		SELECT * FROM crm_order_logistics  WHERE tid=#{tid} ORDER BY lastModifiedDate DESC
+	</select>
+	<select id="findByTid" parameterType="String" resultMap="LogisticsOrder_map">
+		select ORDER_CODE,
+				status,
+				IS_QUICK_COD_ORDER,
+				SELLER_NICK,
+				BUYER_NICK,
+				DELIVERY_START,
+				OUT_SID,
+				ITEM_TITLE,
+				RECEIVER_NAME,
+				RECEIVER_PHONE,
+				RECEIVER_MOBILE,
+				type,
+				FREIGHT_PAYER,
+				SELLER_CONFIRM,
+				COMPANY_NAME,
+				IS_SUCCESS,
+				created,
+				modified,
+				IS_SPILT,
+				SUB_TIDS
+		
+		from crm_order_logistics 
+		<where>
+			order_code =#{order_code}
+		</where>
+	</select>
+
+	
+	<!-- 通过id更新设置 -->
+	<update id="updateReviewCareSetupById">
+		update CRM_ORDER_RATECARE_SETUP 
+		<set>
+			<if test="status != null and status != ''">
+				status = #{status}
+			</if>
+			<if test="reviewChoose != null and reviewChoose != ''">
+				ratechoose = #{rateChoose}
+			</if>
+			<if test="result != null and result != ''">
+				result = #{}
+			</if>
+			<if test="content != null and content != ''">
+				content = #{content}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	
+	
+	
+	<!-- 定时任务执行更改数据-helei -->
+	<!-- 通过OrderCode更新设置 -->
+	<update id="updateLogisticsOrderByOrderCode">
+		update CRM_ORDER_LOGISTICS 
+		<set>
+			<if test="tid != null and tid != ''">
+				TID = #{tid},
+			</if>
+			<if test="status != null and status != ''">
+				STATUS = #{status},
+			</if>
+			<if test="isQuickCodOrder != null and isQuickCodOrder != ''">
+				IS_QUICK_COD_ORDER = #{isQuickCodOrder},
+			</if>
+			<if test="sellerNick != null and sellerNick != ''">
+				SELLER_NICK = #{sellerNick},
+			</if>
+			<if test="buyerNick != null and buyerNick != ''">
+				BUYER_NICK = #{buyerNick},
+			</if>
+			<if test="deliveryStart != null ">
+				DELIVERY_START = #{deliveryStart},
+			</if>
+			<if test="deliveryEnd != null  ">
+				DELIVERY_END = #{deliveryEnd},
+			</if>
+			<if test="outSid != null and outSid != ''">
+				OUT_SID = #{outSid},
+			</if>
+			<if test="itemTitle != null and itemTitle != ''">
+				ITEM_TITLE = #{itemTitle},
+			</if>
+			<if test="receiverName != null and receiverName != ''">
+				RECEIVER_NAME = #{receiverName},
+			</if>
+			<if test="receiverPhone != null and receiverPhone != ''">
+				RECEIVER_PHONE = #{receiverPhone},
+			</if>
+			<if test="receiverMobile != null and receiverMobile != ''">
+				RECEIVER_MOBILE = #{receiverMobile},
+			</if>
+			<if test="type != null and type != ''">
+				TYPE = #{type},
+			</if>
+			<if test="freightPayer != null and freightPayer != ''">
+				FREIGHT_PAYER = #{freightPayer},
+			</if>
+			<if test="sellerConfirm != null and sellerConfirm != ''">
+				SELLER_CONFIRM = #{sellerConfirm},
+			</if>
+			<if test="companyName != null and companyName != ''">
+				COMPANY_NAME = #{companyName},
+			</if>
+			<if test="isSuccess != null and isSuccess != ''">
+				IS_SUCCESS = #{isSuccess},
+			</if>
+			<if test="created != null">
+				CREATED = #{created},
+			</if>
+			<if test="modified != null">
+				MODIFIED = #{modified},
+			</if>
+			<if test="isSpilt != null and isSpilt != ''">
+				IS_SPILT = #{isSpilt},
+			</if>
+			<if test="subTids != null and subTids != ''">
+				SUB_TIDS = #{subTids},
+			</if>
+				lastModifiedDate = now()
+		</set>
+		where ORDER_CODE=#{orderCode}
+	</update>
+	
+	<!-- 查询物流信息数据 -->
+	<select id="findLogisticsOrderByOrderCode" resultType="int">
+			SELECT COUNT(order_code) FROM crm_order_logistics
+			<where>
+				<if test="orderCode != null">
+					order_code = #{orderCode}
+				</if>
+			</where>
+	</select>
+	
+	<!-- 保存物流信息数据 -->
+	<insert id="saveLogisticsOrder">
+		INSERT INTO CRM_ORDER_LOGISTICS (createdDate, optlock, 
+			BUYER_NICK, COMPANY_NAME, CREATED, DELIVERY_END, DELIVERY_START, 
+			FREIGHT_PAYER, IS_QUICK_COD_ORDER, IS_SPILT, IS_SUCCESS, ITEM_TITLE, 
+			MODIFIED, ORDER_CODE, OUT_SID, RECEIVER_MOBILE, RECEIVER_NAME, 
+			RECEIVER_PHONE, SELLER_CONFIRM, SELLER_NICK, STATUS, SUB_TIDS, 
+			TID, TYPE)
+		VALUES (#{createdDate}, 0, 
+			#{buyerNick}, #{companyName}, #{created}, #{deliveryEnd}, #{deliveryStart}, 
+			#{freightPayer}, #{isQuickCodOrder}, #{isSpilt}, #{isSuccess}, #{itemTitle}, 
+			#{modified}, #{orderCode}, #{outSid}, #{receiverMobile}, #{receiverName}, 
+			#{receiverPhone}, #{sellerConfirm}, #{sellerNick}, #{status}, #{subTids}, 
+			#{tid}, #{type})
+	</insert>
+	
+	
+	<!-- 批量保存物流信息数据 -->
+	<insert id="saveLogisticsOrderList">
+		INSERT INTO CRM_ORDER_LOGISTICS (createdDate, optlock, 
+			BUYER_NICK, COMPANY_NAME, CREATED, DELIVERY_END, DELIVERY_START, 
+			FREIGHT_PAYER, IS_QUICK_COD_ORDER, IS_SPILT, IS_SUCCESS, ITEM_TITLE, 
+			MODIFIED, ORDER_CODE, OUT_SID, RECEIVER_MOBILE, RECEIVER_NAME, 
+			RECEIVER_PHONE, SELLER_CONFIRM, SELLER_NICK, STATUS, SUB_TIDS, 
+			TID, TYPE)
+			VALUES
+		<foreach collection="list" index="index" item="logisticsOrder" separator=",">
+			 	(#{logisticsOrder.createdDate}, 0, 
+				#{logisticsOrder.buyerNick}, #{logisticsOrder.companyName}, #{logisticsOrder.created}, #{logisticsOrder.deliveryEnd}, #{logisticsOrder.deliveryStart}, 
+				#{logisticsOrder.freightPayer}, #{logisticsOrder.isQuickCodOrder}, #{logisticsOrder.isSpilt}, #{logisticsOrder.isSuccess}, #{logisticsOrder.itemTitle}, 
+				#{logisticsOrder.modified}, #{logisticsOrder.orderCode}, #{logisticsOrder.outSid}, #{logisticsOrder.receiverMobile}, #{logisticsOrder.receiverName}, 
+				#{logisticsOrder.receiverPhone}, #{logisticsOrder.sellerConfirm}, #{logisticsOrder.sellerNick}, #{logisticsOrder.status}, #{logisticsOrder.subTids}, 
+				#{logisticsOrder.tid}, #{logisticsOrder.type})
+		</foreach>	
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 通过OrderCode批量更新设置 -->
+	<!-- <update id="updateLogisticsOrderList">
+		<foreach collection="list" item="logisticsOrder" index="index" separator=";">
+			update CRM_ORDER_LOGISTICS 
+			<set>
+				<if test="logisticsOrder.tid != null and logisticsOrder.tid != ''">
+					TID = #{logisticsOrder.tid},
+				</if>
+				<if test="logisticsOrder.status != null and logisticsOrder.status != ''">
+					STATUS = #{logisticsOrder.status},
+				</if>
+				<if test="logisticsOrder.isQuickCodOrder != null and logisticsOrder.isQuickCodOrder != ''">
+					IS_QUICK_COD_ORDER = #{logisticsOrder.isQuickCodOrder},
+				</if>
+				<if test="logisticsOrder.sellerNick != null and logisticsOrder.sellerNick != ''">
+					SELLER_NICK = #{logisticsOrder.sellerNick},
+				</if>
+				<if test="logisticsOrder.buyerNick != null and logisticsOrder.buyerNick != ''">
+					BUYER_NICK = #{logisticsOrder.buyerNick},
+				</if>
+				<if test="logisticsOrder.deliveryStart != null and logisticsOrder.deliveryStart != ''">
+					DELIVERY_START = #{logisticsOrder.deliveryStart},
+				</if>
+				<if test="logisticsOrder.deliveryEnd != null and logisticsOrder.deliveryEnd != ''">
+					DELIVERY_END = #{logisticsOrder.deliveryEnd},
+				</if>
+				<if test="logisticsOrder.outSid != null and logisticsOrder.outSid != ''">
+					OUT_SID = #{logisticsOrder.outSid},
+				</if>
+				<if test="logisticsOrder.itemTitle != null and logisticsOrder.itemTitle != ''">
+					ITEM_TITLE = #{logisticsOrder.itemTitle},
+				</if>
+				<if test="logisticsOrder.receiverName != null and logisticsOrder.receiverName != ''">
+					RECEIVER_NAME = #{logisticsOrder.receiverName},
+				</if>
+				<if test="logisticsOrder.receiverPhone != null and logisticsOrder.receiverPhone != ''">
+					RECEIVER_PHONE = #{logisticsOrder.receiverPhone},
+				</if>
+				<if test="logisticsOrder.receiverMobile != null and logisticsOrder.receiverMobile != ''">
+					RECEIVER_MOBILE = #{logisticsOrder.receiverMobile},
+				</if>
+				<if test="logisticsOrder.type != null and logisticsOrder.type != ''">
+					TYPE = #{logisticsOrder.type},
+				</if>
+				<if test="logisticsOrder.freightPayer != null and logisticsOrder.freightPayer != ''">
+					FREIGHT_PAYER = #{logisticsOrder.freightPayer},
+				</if>
+				<if test="logisticsOrder.sellerConfirm != null and logisticsOrder.sellerConfirm != ''">
+					SELLER_CONFIRM = #{logisticsOrder.sellerConfirm},
+				</if>
+				<if test="logisticsOrder.companyName != null and logisticsOrder.companyName != ''">
+					COMPANY_NAME = #{logisticsOrder.companyName},
+				</if>
+				<if test="logisticsOrder.isSuccess != null and logisticsOrder.isSuccess != ''">
+					IS_SUCCESS = #{logisticsOrder.isSuccess},
+				</if>
+				<if test="logisticsOrder.created != null and logisticsOrder.created != ''">
+					CREATED = #{logisticsOrder.created},
+				</if>
+				<if test="logisticsOrder.modified != null and logisticsOrder.modified != ''">
+					MODIFIED = #{logisticsOrder.modified},
+				</if>
+				<if test="logisticsOrder.isSpilt != null and logisticsOrder.isSpilt != ''">
+					IS_SPILT = #{logisticsOrder.isSpilt},
+				</if>
+				<if test="logisticsOrder.subTids != null and logisticsOrder.subTids != ''">
+					SUB_TIDS = #{logisticsOrder.subTids},
+				</if>
+				<if test="logisticsOrder.lastModifiedDate != null and logisticsOrder.lastModifiedDate != ''">
+					lastModifiedDate = #{logisticsOrder.lastModifiedDate},
+				</if>
+			</set>
+			<where>
+				ORDER_CODE=#{logisticsOrder.orderCode}
+			</where> 
+		</foreach>
+	</update> -->
+</mapper>

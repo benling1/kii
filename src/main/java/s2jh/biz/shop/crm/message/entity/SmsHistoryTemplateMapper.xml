@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.message.entity.SmsHistoryTemplate">
+	<resultMap type="s2jh.biz.shop.crm.message.entity.SmsHistoryTemplate" id="historyTemplate">
+		<result column="userId" property="userId"/>
+		<result column="templateId" property="templateId"/>		
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>		
+		<result column="type" property="type"/>		
+		<result column="content" property="content"/>		
+		<result column="id" property="id"/>	
+	</resultMap>
+
+    <!-- 根据卖家编号查询所有短信使用模板信息 -->
+    <select id="findAll"  resultMap="historyTemplate">
+   		select t.id,t.content
+   		from crm_sms_historytemplate h,crm_sms_template t
+   		where t.id= h.templateId
+   			and h.userId = #{userId}
+   		<if test="type != null and type != ''">
+   			and h.type = #{type}
+   		</if>
+   		order by h.lastModifiedDate ASC
+   		<if test="startRows!=null  and currentRows!=null">
+   			limit #{startRows},#{currentRows}
+   		</if>
+    </select>
+    
+    <!-- 根据templateId和userId查询使用记录 -->
+    <select id="findTemplateBytemplateId" resultMap="historyTemplate">
+    	select id,userId,templateId,createdBy,createdDate,type,content
+    	from crm_sms_historytemplate
+    	<where>
+    		templateId = #{templateId} 
+    		and userId = #{userId}
+   		<if test="type != null and type != ''">
+   			and type = #{type}
+   		</if>
+    	</where>
+    </select>
+    
+	<!-- 根据卖家编号查询所有短信模板信息总条数 -->
+   	<select id="findAllCount"  resultType="int">
+   		select count(*)
+   		from crm_sms_historytemplate h,crm_sms_template t
+   		where t.id= h.templateId
+   			and h.userId = #{userId}
+   		<if test="type != null and type != ''">
+   			and t.type = #{type}
+   		</if>
+	</select>
+	<!-- 根据卖家id、type以及templateId更新历史使用 -->
+	<select id="updateHistoryTempById">
+		update crm_sms_historytemplate 
+		<set>
+			lastModifiedDate = #{lastModifiedDate}
+		</set>
+		where userId = #{userId} and type = #{type} and templateId = #{templateId} and id = #{id}
+	</select>
+	
+	<!-- 根据卖家id、type以及templateId更新历史使用ztk -->
+	<select id="updateHistoryTempByTempid">
+		update crm_sms_historytemplate 
+		<set>
+			lastModifiedDate = #{lastModifiedDate}
+			<if test="type != null and type != ''">
+				,type = #{type}
+			</if>
+		</set>
+		where userId = #{userId} and templateId = #{templateId} and id = #{id}
+	</select>
+	
+	<!-- 中差评历史使用短信查询 -->
+	<select id="findListAll"  resultMap="historyTemplate">
+   		select t.id,t.content,h.templateId
+   		from crm_sms_historytemplate h,crm_sms_template t
+   		<where>
+   			t.id= h.templateId
+   			and h.userId = #{userId}
+	   		<if test="type != null and type != ''">
+	   			and h.type = #{type}
+	   		</if>
+	   		<if test="type1 != null and type != ''">
+	   			or h.type = #{type1}
+	   		</if>
+	   		<if test="type2 != null and type != ''">
+	   			or h.type = #{type2}
+	   		</if>
+	   		<if test="type3 != null and type != ''">
+	   			or h.type = #{type3}
+	   		</if>
+   		</where>
+	   		order by h.lastModifiedDate DESC
+    </select>
+    
+    <!-- 查找订单中心的短信发送历史记录 -->
+    <select id="findOrdersSmsHisTemplate" resultMap="historyTemplate">
+    	select content,templateId,type
+    	from crm_sms_historytemplate
+    	<where>
+    		userId = #{userId}
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>    	
+    	</where>
+    	order by createdDate DESC
+    </select>
+    
+</mapper>

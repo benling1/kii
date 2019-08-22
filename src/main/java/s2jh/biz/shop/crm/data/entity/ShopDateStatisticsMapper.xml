@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.data.entity.ShopDataStatistics">
+	<delete id="doRemoveDataBySellerAndTime" parameterType="java.util.Map">
+		DELETE FROM CRM_SHOP_DATA_STATISTICS
+		WHERE USERID=#{sellerName} AND CTIME = #{startDate}
+	</delete>
+	<insert id="doCreateByShcedule" parameterType="java.util.Map">
+		<!-- 订单数  -->
+		INSERT INTO CRM_SHOP_DATA_STATISTICS(DATA_TYPE,USERID,CHANGEQUANTITY,CTIME,optlock,createdBy,createdDate,lastModifiedBy,lastModifiedDate) 
+		VALUES('1',#{sellerName},#{yesterdayOrderCounts},#{startDate},0,'auto',now(),'auto',now()),
+		('3',#{sellerName},#{waitBuyerPay},#{startDate},0,'auto',now(),'auto',now()),
+		('2',#{sellerName},#{nowRefund},#{startDate},0,'auto',now(),'auto',now()),
+		('4',#{sellerName},#{waitSellerSendGoods},#{startDate},0,'auto',now(),'auto',now()),
+		('5',#{sellerName},#{itemOnsaleCounts},#{startDate},0,'auto',now(),'auto',now()),
+		('6',#{sellerName},#{orderFinshedAllMoney},#{startDate},0,'auto',now(),'auto',now()),
+		('13',#{sellerName},#{privilegeAllMoney},#{startDate},0,'auto',now(),'auto',now()),
+		('14',#{sellerName},#{pcCounts},#{startDate},0,'auto',now(),'auto',now()),
+		('17',#{sellerName},#{wifiCounts},#{startDate},0,'auto',now(),'auto',now()),
+		('15',#{sellerName},#{pcAllMoney},#{startDate},0,'auto',now(),'auto',now()),
+		('16',#{sellerName},#{wifiAllMoney},#{startDate},0,'auto',now(),'auto',now());
+	</insert>
+	<!-- 昨日数据数据查询 -->
+	<select id="findYesTeday" resultType="s2jh.biz.shop.crm.data.entity.ShopDataStatistics">
+	SELECT ROUND(SUM(s.`CHANGEQUANTITY`),2) changeQuantity,s.`CTIME` cTime,s.`USERID` userId,
+	CASE  s.`DATA_TYPE`
+			WHEN 1 THEN '订单数' 
+			WHEN 2 THEN '退款中'
+			WHEN 3 THEN '待付款'
+			WHEN 4 THEN '待发货'
+			WHEN 5 THEN '出售中'
+			WHEN 6 THEN '成交额'
+			WHEN 7 THEN '购物车宝贝'
+			WHEN 8 THEN '被收藏宝贝'
+			WHEN 9 THEN '被浏览宝贝'
+			WHEN 10 THEN '总访客'
+			WHEN 11 THEN 'PC流量'
+			WHEN 12 THEN '无线流量'
+			WHEN 13 THEN '聚划算成交额'
+			WHEN 14 THEN 'PC订单数'
+			WHEN 15 THEN 'PC成交额'
+			WHEN 16 THEN '无线成交额'
+			WHEN 17 THEN '无线订单数'
+			WHEN 18 THEN '已厨窗推荐'
+			WHEN 19 THEN '直通车点击转化率'
+			WHEN 20 THEN '直通车账户余额'
+			WHEN 21 THEN '直通车展现量'
+			WHEN 22 THEN '直通车花费'
+			WHEN 23 THEN '总流量'
+			WHEN 24 THEN '买家秀点赞数'
+			WHEN 25 THEN '买家秀访问量'
+			WHEN 26 THEN '买家秀评论数'
+			END
+			AS dataType
+	FROM CRM_SHOP_DATA_STATISTICS s WHERE 
+	DATE_FORMAT(`cTime`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	<if test="dataType != null and dataType !='' ">
+		and s.`DATA_TYPE` = #{dataType}
+    </if>
+    <if test="bTime !=null  ">
+		and DATE_FORMAT(cTime,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+	</if>
+	<if test="eTime !=null  ">
+		and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(cTime, '%Y-%m-%d')   
+	</if>
+	<if test="userId != null">
+	 and s.`USERID` = #{userId}
+	</if>
+	GROUP BY s.`DATA_TYPE`
+    </select>
+    
+    <!-- 前日数据 -->
+    <select id="findBeforeYestoday" resultType="s2jh.biz.shop.crm.data.entity.ShopDataStatistics">
+     SELECT SUM(s.`CHANGEQUANTITY`) changeQuantity,s.`CTIME` cTime,s.`USERID` userId,
+		CASE  s.`DATA_TYPE`
+			WHEN 1 THEN '订单数' 
+			WHEN 2 THEN '退款中'
+			WHEN 3 THEN '待付款'
+			WHEN 4 THEN '待发货'
+			WHEN 5 THEN '出售中'
+			WHEN 6 THEN '成交额'
+			WHEN 7 THEN '购物车宝贝'
+			WHEN 8 THEN '被收藏宝贝'
+			WHEN 9 THEN '被浏览宝贝'
+			WHEN 10 THEN '总访客'
+			WHEN 11 THEN 'PC流量'
+			WHEN 12 THEN '无线流量'
+			WHEN 13 THEN '聚划算成交额'
+			WHEN 14 THEN 'PC订单数'
+			WHEN 15 THEN 'PC成交额'
+			WHEN 16 THEN '无线成交额'
+			WHEN 17 THEN '无线订单数'
+			WHEN 18 THEN '已厨窗推荐'
+			WHEN 19 THEN '直通车点击转化率'
+			WHEN 20 THEN '直通车账户余额'
+			WHEN 21 THEN '直通车展现量'
+			WHEN 22 THEN '直通车花费'
+			END
+			AS dataType
+			FROM CRM_SHOP_DATA_STATISTICS s WHERE 
+			DATE_FORMAT(`cTime`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+			<if test="dataType != null and dataType !='' ">
+				and s.`DATA_TYPE` = #{dataType}
+		    </if>
+		    <if test="bTime !=null ">
+				and DATE_FORMAT(cTime,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime !=null ">
+				and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(cTime, '%Y-%m-%d')   
+			</if>
+			  and s.`USERID`= #{userId}
+			GROUP BY s.`DATA_TYPE`
+    </select>
+    
+    <!-- 历史数据查询 -->
+    <select id="findhistoryData" resultType="s2jh.biz.shop.crm.data.entity.ShopDataStatistics">
+   	  SELECT SUM(s.`CHANGEQUANTITY`) changeQuantity,s.`CTIME` cTime,s.`USERID` userId,
+			CASE  s.`DATA_TYPE`
+			WHEN 1 THEN '订单数' 
+			WHEN 2 THEN '退款中'
+			WHEN 3 THEN '待付款'
+			WHEN 4 THEN '待发货'
+			WHEN 5 THEN '出售中'
+			WHEN 6 THEN '成交额'
+			WHEN 7 THEN '购物车宝贝'
+			WHEN 8 THEN '被收藏宝贝'
+			WHEN 9 THEN '被浏览宝贝'
+			WHEN 10 THEN '总访客'
+			WHEN 11 THEN 'PC流量'
+			WHEN 12 THEN '无线流量'
+			WHEN 13 THEN '聚划算成交额'
+			WHEN 14 THEN 'PC订单数'
+			WHEN 15 THEN 'PC成交额'
+			WHEN 16 THEN '无线成交额'
+			WHEN 17 THEN '无线订单数'
+			WHEN 18 THEN '已厨窗推荐'
+			WHEN 19 THEN '直通车点击转化率'
+			WHEN 20 THEN '直通车账户余额'
+			WHEN 21 THEN '直通车展现量'
+			WHEN 22 THEN '直通车花费'
+			END
+			AS dataType
+			FROM CRM_SHOP_DATA_STATISTICS s 
+			<where>
+			<if test="dataType != null and dataType !='' ">
+				and s.`DATA_TYPE` = #{dataType}
+		    </if>
+		    <if test="bTime !=null and bTime!=''  ">
+				and DATE_FORMAT(cTime,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime !=null and eTime!=''   ">
+				and DATE_FORMAT(#{eTime}, '%Y-%m-%d')  >= DATE_FORMAT(cTime, '%Y-%m-%d')   
+			</if>
+			 	and s.`USERID` = #{userId}
+			</where>
+			GROUP BY s.`DATA_TYPE`
+    </select>
+    
+    
+    <!-- 首页昨日数据查询 -->
+    <select id="findYesterDayNums" resultType="s2jh.biz.shop.crm.data.entity.ShopDataStatistics">
+      SELECT SUM(s.`CHANGEQUANTITY`) changeQuantity,
+      CASE s.`DATA_TYPE`
+      WHEN 1 THEN '订单数' 
+      WHEN 2 THEN '退款中'
+      WHEN 3 THEN '待付款'
+      WHEN 4 THEN '待发货'
+      WHEN 5 THEN '出售中'
+      WHEN 6 THEN '成交额'
+      WHEN 13 THEN '聚划算成交额'
+      WHEN 14 THEN 'PC订单数'
+      WHEN 17 THEN '无线订单数'
+      WHEN 15 THEN 'PC成交额'
+      WHEN 16 THEN '无线成交额'
+      END
+	  AS dataType
+      FROM CRM_SHOP_DATA_STATISTICS s,(select id from CRM_SHOP_DATA_STATISTICS 
+ 		<where>
+            userId= #{userId}
+          and cTime=#{cTime}
+        </where>
+	) a where s.id = a.id GROUP BY s.`DATA_TYPE`
+   </select>
+    
+    
+    <!-- 首页前日数据查询 -->
+    <select id="findBeforeYesterDayNums" resultType="s2jh.biz.shop.crm.data.entity.ShopDataStatistics">
+      SELECT SUM(s.`CHANGEQUANTITY`) changeQuantity,
+      CASE s.`DATA_TYPE`
+      WHEN 1 THEN '订单数' 
+      WHEN 2 THEN '退款中'
+      WHEN 3 THEN '待付款'
+      WHEN 4 THEN '待发货'
+      WHEN 5 THEN '出售中'
+      WHEN 6 THEN '成交额'
+      WHEN 13 THEN '聚划算成交额'
+      WHEN 14 THEN 'PC订单数'
+      WHEN 17 THEN '无线订单数'
+      WHEN 15 THEN 'PC成交额'
+      WHEN 16 THEN '无线成交额'
+      END
+	  AS dataType
+      FROM CRM_SHOP_DATA_STATISTICS s,(select id from CRM_SHOP_DATA_STATISTICS 
+ 		<where>
+    
+            userId= #{userId}
+          and cTime=#{cTime}
+        </where>
+	) a where s.id = a.id GROUP BY s.`DATA_TYPE`
+   </select>
+</mapper>

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.OrderSetup">
+
+	<resultMap type="s2jh.biz.shop.crm.order.entity.OrderSetup" id="orderSetup_map">
+		<result column="START_TIME" property="startTime"/>
+		<result column="END_TIME" property="endTime"/>
+		<result column="PAY_AMT_ONE" property="payAmtOne"/>
+		<result column="PAY_AMT_TWO" property="payAmtTwo"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="REMINDER_TIME" property="reminderTime"/>
+		<result column="FILTING_CONDITIONS" property="filtingConditions"/>
+		<result column="NOTSIGNIN_TIMEOUT" property="notSignInTimeout"/>
+		<result column="NOTUPDATE_TIEMOUT" property="notUpdateTiemout"/>
+		<result column="ORDERSCOPE_ONE" property="orderScopeOne"/>
+		<result column="ORDERSCOPE_TWO" property="orderScopeTwo"/>
+		<result column="EXECUTEGENRE" property="executeGenre"/>
+		<result column="ORDER_ID" property="orderId"/>
+		<result column="status" property="status"/>
+		<result column="setting_type" property="settingType"/>
+		
+	</resultMap>
+	<select id="findByUserAndSettiType" parameterType="s2jh.biz.shop.crm.order.entity.OrderSetup" resultType="java.lang.Long">
+		SELECT ID
+		FROM crm_order_setup
+		WHERE USER_ID=#{userId} AND SETTING_TYPE=#{settingType}
+	</select>
+	<!-- 根据卖家id与操作类型查询基本信息 -->
+	<select id="findOrderSetupByUserIdAndSettingType" resultMap="orderSetup_map">
+		SELECT id,
+				START_TIME,
+				END_TIME,
+				PAY_AMT_ONE,
+				PAY_AMT_TWO,
+				USER_ID,
+				ORDER_ID,
+				REMINDER_TIME,
+				FILTING_CONDITIONS,
+				NOTSIGNIN_TIMEOUT,
+				NOTUPDATE_TIEMOUT,
+				ORDERSCOPE_ONE,
+				ORDERSCOPE_TWO,
+				EXECUTEGENRE,
+				status,
+				setting_type
+		FROM crm_order_setup 
+		where user_id=#{userId} and SETTING_TYPE = #{settingType}
+	</select>
+	
+	<!-- 根据卖家id与操作类型查询基本信息 -->
+	<select id="findOrderSetupByUserIdAndSettingTypeSend" flushCache="true" useCache="false" resultMap="orderSetup_map">
+		SELECT *
+		FROM crm_order_setup 
+		<where>
+			<if test="settingType != null and settingType != ''">
+			 SETTING_TYPE = #{settingType} AND
+			</if>
+				user_id=#{sellerName} 
+		</where>
+	</select>
+	
+	<!-- 根据id修改基本设置条件 -->
+	<update id="updateOrderSetupByIdToXDGH">
+		update crm_order_setup
+		<set>
+			<if test="startTime !=null">
+				START_TIME=#{startTime},
+			</if>
+			<if test="endTime !=null">
+				END_TIME=#{endTime},
+			</if>
+				PAY_AMT_ONE=#{payAmtOne},
+				PAY_AMT_TWO=#{payAmtTwo},
+			<if test="reminderTime !=null">
+				REMINDER_TIME=#{reminderTime},
+			</if>
+			<if test="notSignInTimeout !=null">
+				NOTSIGNIN_TIMEOUT=#{notSignInTimeout},
+			</if>
+			<if test="notUpdateTiemout !=null">
+				NOTUPDATE_TIEMOUT=#{notUpdateTiemout},
+			</if>
+			<if test="status !=null">
+				status=#{status},
+			</if>
+				ORDERSCOPE_ONE=#{orderScopeOne},
+				ORDERSCOPE_TWO=#{orderScopeTwo},
+			<if test="executeGenre !=null">
+				EXECUTEGENRE=#{executeGenre},
+			</if>
+			<if test="lastModifiedDate !=null">
+				lastModifiedDate = #{lastModifiedDate},
+			</if>
+			<if test="filtingConditions != null">
+				FILTING_CONDITIONS = #{filtingConditions}
+			</if>
+		</set>
+			where id=#{id}
+	
+	</update>
+	
+	<!-- 根据id修改基本设置条件 -->
+	<update id="updateOrderSetupStatus">
+		update crm_order_setup
+		<set>
+			<if test="status !=null and status !='' ">
+				status=#{status},
+			</if>
+			<if test="lastModifiedDate !=null">
+				lastModifiedDate = #{lastModifiedDate},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 买家申请基本设置修改 -->
+	<update id="updateBuyerRefundSetting">
+		update crm_order_setup
+		<set>
+			<if test="startTime !=null  ">
+				START_TIME=#{startTime},
+			</if>
+			<if test="endTime !=null  ">
+				END_TIME=#{endTime},
+			</if>
+			<if test="payAmtOne !=null ">
+				PAY_AMT_ONE=#{payAmtOne},
+			</if>
+			<if test="payAmtTwo !=null ">
+			   PAY_AMT_TWO=#{payAmtTwo},
+			</if>
+			<if test="status !=null and status !='' ">
+				status=#{status},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	
+	
+	<!-- 查询买家申请基本设置 -->
+	<select id="findBuyerRefund" resultMap="orderSetup_map">
+		SELECT s.`id` id,s.`USER_ID` userId,s.`START_TIME` startTime,s.`END_TIME` endTime,
+		s.`PAY_AMT_ONE` payAmtOne,s.`PAY_AMT_TWO` payAmtTwo,s.`status` status FROM CRM_ORDER_SETUP s 
+		WHERE s.`SETTING_TYPE`=29
+		AND USER_ID=#{userId} 
+		
+	</select>
+	
+	
+	
+	<!-- 退款成功基本设置修改 -->
+	<update id="updateRefundSuccess">
+	  update crm_order_setup
+		<set>
+			<if test="startTime !=null  ">
+				START_TIME=#{startTime},
+			</if>
+			<if test="endTime !=null  ">
+				END_TIME=#{endTime},
+			</if>
+			<if test="payAmtOne !=null">
+				PAY_AMT_ONE=#{payAmtOne},
+			</if>
+			<if test="payAmtTwo !=null">
+				PAY_AMT_TWO=#{payAmtTwo},
+			</if>
+			<if test="status !=null and status !='' ">
+				status=#{status},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 查询退款成功基本设置 -->
+	<select id="findRefundSuccess" resultType="s2jh.biz.shop.crm.order.entity.OrderSetup">
+	    SELECT s.`id` id,s.`USER_ID` userId,s.`START_TIME` startTime,s.`END_TIME` endTime,
+		s.`PAY_AMT_ONE` payAmtOne,s.`PAY_AMT_TWO` payAmtTwo,s.`status` status FROM CRM_ORDER_SETUP s 
+		WHERE s.`SETTING_TYPE`=30
+		AND USER_ID=#{userId} 
+	</select>
+	
+	
+	<!-- 等待退货 基本设置 修改 -->
+	<update id="updateWaitingRefund">
+	    update crm_order_setup
+		<set>
+			<if test="startTime !=null ">
+				START_TIME=#{startTime},
+			</if>
+			<if test="endTime !=null   ">
+				END_TIME=#{endTime},
+			</if>
+			<if test="payAmtOne !=null ">
+				PAY_AMT_ONE=#{payAmtOne},
+			</if>
+			<if test="payAmtTwo !=null ">
+				PAY_AMT_TWO=#{payAmtTwo},
+			</if>
+			<if test="status !=null and status !='' ">
+				status=#{status},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 等待退货 基本设置 查询 -->
+	<select id="findWaitingRefund" resultType="s2jh.biz.shop.crm.order.entity.OrderSetup">
+	 	SELECT s.`id` id,s.`USER_ID` userId,s.`START_TIME` startTime,s.`END_TIME` endTime,
+		s.`PAY_AMT_ONE` payAmtOne,s.`PAY_AMT_TWO` payAmtTwo,s.`status` status FROM CRM_ORDER_SETUP s 
+		WHERE s.`SETTING_TYPE`=31
+		AND USER_ID=#{userId} 
+	</select>
+	
+	<!-- 拒绝退款 基本设置 修改 -->
+	<update id="updateRefusedRefund">
+	  update crm_order_setup
+		<set>
+			<if test="startTime !=null   ">
+				START_TIME=#{startTime},
+			</if>
+			<if test="endTime !=null   ">
+				END_TIME=#{endTime},
+			</if>
+			<if test="payAmtOne !=null ">
+				PAY_AMT_ONE=#{payAmtOne},
+			</if>
+			<if test="payAmtTwo !=null ">
+				PAY_AMT_TWO=#{payAmtTwo},
+			</if>
+			<if test="status !=null and status !='' ">
+				status=#{status},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 拒绝退款 基本设置 查询 -->
+	<select id="findrefusedRefund" resultType="s2jh.biz.shop.crm.order.entity.OrderSetup">
+	    SELECT s.`id` id,s.`USER_ID` userId,s.`START_TIME` startTime,s.`END_TIME` endTime,
+		s.`PAY_AMT_ONE` payAmtOne,s.`PAY_AMT_TWO` payAmtTwo,s.`status` status FROM CRM_ORDER_SETUP s 
+		WHERE s.`SETTING_TYPE`=32
+		AND USER_ID=#{userId} 
+	</select>
+		<!-- 修改基本设置的状态 -->
+	<update id="updateSetupStatus">
+		update crm_order_setup
+		<set>
+			<if test="status !=null and status !='' ">
+				status = #{status},
+			</if>
+			<if test="lastModifiedBy != null and lastModifiedBy != ''">
+				lastModifiedBy = #{lastModifiedBy},
+			</if>
+			<if test="lastModifiedDate != null">
+				lastModifiedDate = #{lastModifiedDate},
+			</if>
+		</set>
+		<where>
+			id = #{id} and user_id = #{userId} 
+			<if test="settingType != null and settingType != ''">
+				and setting_type = #{settingType}
+			</if>
+		</where>
+	</update>
+	
+	<update id="updateStatus">
+		update crm_order_setup
+		<set>
+			<if test="status !=null and status !='' ">
+				status = #{status},
+			</if>
+		</set>
+		<where>
+			user_id = #{userId} 
+			and setting_type = #{settingType}
+		</where>
+	</update>
+	<select id="findById" resultMap="orderSetup_map">
+		select * from crm_order_setup
+		<where>
+				id = #{id}
+		</where>
+	</select> 
+	<select id="findAllDelayRemind" resultMap="orderSetup_map" parameterType="s2jh.biz.shop.crm.order.entity.OrderSetup">
+		select * from crm_order_setup
+		<where>
+			<if test="settingType !=null and settingType !=''">
+				and SETTING_TYPE = #{settingType}
+			</if>
+			<if test="status !=null and status !=''">
+				and STATUS = #{status}
+			</if>
+			<if test="executeGenre !=null and executeGenre !=''">
+				and EXECUTEGENRE = #{executeGenre}
+			</if>
+			<if test="userId !=null and userId !=''">
+				and user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询status状态到top.jsp页面中 -->
+	<select id="findOrderSetupOfStatus" resultMap="orderSetup_map" >
+	SELECT id,
+		SETTING_TYPE,
+		STATUS 
+	FROM 
+	crm_order_setup 
+	<where>
+		USER_ID = #{userId}
+		<if test="status != null and status != ''">
+			and status = #{status}
+		</if>
+	</where> 
+	</select>
+	
+	<!-- 添加基本设置 -->
+	<insert id="insertOrderSetup" parameterType="s2jh.biz.shop.crm.order.entity.OrderSetup" useGeneratedKeys="true" keyProperty="id">
+		insert into crm_order_setup
+		(USER_ID,START_TIME,END_TIME,PAY_AMT_ONE,PAY_AMT_TWO,REMINDER_TIME,FILTING_CONDITIONS,SETTING_TYPE,status,NOTSIGNIN_TIMEOUT,
+		NOTUPDATE_TIEMOUT,ORDERSCOPE_ONE,ORDERSCOPE_TWO,EXECUTEGENRE,optlock,createdBy,createdDate,lastModifiedBy,lastModifiedDate)
+		values
+		(#{userId},#{startTime},#{endTime},#{payAmtOne},#{payAmtTwo},#{reminderTime},#{filtingConditions},#{settingType},#{status},#{notSignInTimeout},
+		#{notUpdateTiemout},#{orderScopeOne},#{orderScopeTwo},#{executeGenre},0,#{createdBy},#{createdDate},#{lastModifiedBy},#{lastModifiedDate})
+	</insert>
+	
+	<!-- 查询orderSetup中状态开启的模块 -->
+	<select id="findOrderSetupIsOpen" resultType="String">
+		select setting_type from crm_order_setup
+		<where>
+			user_id = #{userId} and status = #{status}
+		</where>
+	</select>
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllSettingCount" resultType="Long">
+		SELECT COUNT(1)
+		FROM crm_order_setup 
+	</select>
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllLimitSetting" resultMap="orderSetup_map">
+		SELECT *
+		FROM crm_order_setup 
+		Order by id asc
+		limit #{startRows},#{pageSize}
+	</select>
+	
+	
+</mapper>

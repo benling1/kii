@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.data.entity.DataStatis">
+
+	<!-- 昨日订单数 -->
+	<select id="findYesterDayOrderNum" resultType="java.lang.Integer">
+	 SELECT SUM(d.`order_num`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 昨日退款中 -->
+	<select id="findYesterDayRefundment" resultType="java.lang.Integer">
+	 SELECT SUM(d.`refundment`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 待付款 -->
+	<select id="findYesterDayPendingPayment" resultType="java.lang.Integer">
+	 SELECT SUM(d.`pending_payment`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 待发货 -->
+	<select id="findYesterDayPendingConsignment" resultType="java.lang.Integer">
+	 SELECT SUM(d.`pending_consignment`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 购物车宝贝 -->
+	<select id="findYesterDayShoppingCartCommodity" resultType="java.lang.Integer">
+	 SELECT SUM(d.`shopping_cart_commodity`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 直通车账户余额 -->
+	<select id="findYesterDayZtcAccountBalance" resultType="BigDecimal">
+	 SELECT SUM(d.`ztc_account_balance`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 被浏览的宝贝 -->
+	<select id="findYesterDayBrowseCommodity" resultType="java.lang.Integer">
+	 SELECT SUM(d.`browse_commodity`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 总访客 -->
+	<select id="findYesterDayAccessAmount" resultType="java.lang.Integer">
+	 SELECT SUM(d.`access_amount`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- PC流量 -->
+	<select id="findYesterDayPcFlow" resultType="String">
+     SELECT SUM(d.`pc_flow`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 无线流量 -->
+	<select id="findYesterDayWapFlow" resultType="String">
+	 SELECT SUM(d.`wap_flow`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 成交金额 -->
+	<select id="findYesterDayTransactionPrice" resultType="BigDecimal">
+	 SELECT SUM(d.`transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	
+	<!-- 《========================= 前日数据查询 =========================》 -->
+	
+	<!-- 订单数量 -->
+	<select id="findBeforeYesterDayOrderNum" resultType="java.lang.Integer">
+	 SELECT SUM(d.`order_num`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 退款中 -->
+	<select id="findBeforeYesterDayRefundment" resultType="java.lang.Integer">
+	 SELECT SUM(d.`refundment`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 待付款 -->
+	<select id="findBeforeYesterDayPendingPayment" resultType="java.lang.Integer">
+	 SELECT SUM(d.`pending_payment`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 待发货 -->
+	<select id="findBeforeYesterDayPendingConsignment" resultType="java.lang.Integer">
+	 SELECT SUM(d.`pending_consignment`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 购物车宝贝 -->
+	<select id="findBeforeYesterDayShoppingCartCommodity" resultType="java.lang.Integer">
+	 SELECT SUM(d.`shopping_cart_commodity`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 直通车账户余额 -->
+	<select id="findBeforeYesterDayZtcAccountBalance" resultType="BigDecimal">
+	 SELECT SUM(d.`ztc_account_balance`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 被浏览的宝贝 -->
+	<select id="findBeforeYesterDayBrowseCommodity" resultType="java.lang.Integer">
+	 SELECT SUM(d.`browse_commodity`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 总访客 -->
+	<select id="findBeforeYesterDayAccessAmount" resultType="java.lang.Integer">
+	 SELECT SUM(d.`access_amount`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- PC流量 -->
+	<select id="findBeforeYesterDayPcFlow" resultType="String">
+     SELECT SUM(d.`pc_flow`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!--无线流量 -->
+	<select id="findBeforeYesterDayWapFlow" resultType="String">
+	 SELECT SUM(d.`wap_flow`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 成交金额 -->
+	<select id="findBeforeYesterDayTransactionPrice" resultType="BigDecimal">
+	 SELECT SUM(d.`transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 《========================= 店铺昨日数据 =========================》 -->
+	<!-- 出售中 -->
+	<select id="findYesterDaySale" resultType="java.lang.Integer">
+	 SELECT SUM(d.`sale`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 被收藏宝贝 -->
+	<select id="findYesterDayCollectionCommodity" resultType="java.lang.Integer">
+	 SELECT SUM(d.`collection_commodity`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 聚划算成交额 -->
+	<select id="findYesterDayJhsTransactionPrice" resultType="BigDecimal">
+	 SELECT SUM(d.`JHS_transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- pc订单数 -->
+	<select id="findYesterDayPcOrderNum" resultType="java.lang.Integer">
+     SELECT SUM(d.`pc_order_num`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 无线订单数 -->
+	<select id="findYesterDayWapOrderNum" resultType="java.lang.Integer">
+	 SELECT SUM(d.`wap_order_num`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- pc成交额 -->
+	<select id="findYesterDayPcTransactionPrice" resultType="java.lang.Integer">
+	 SELECT SUM(d.`pc_transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 无线成交额 -->
+	<select id="findYesterDayWapTransactionPrice" resultType="java.lang.Integer">
+	 SELECT SUM(d.`wap_transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 《========================= 店铺前日数据 =========================》 -->
+	<!-- 出售中 -->
+	<select id="findBeforeYesterDaySale" resultType="java.lang.Integer">
+	 SELECT SUM(d.`sale`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 被收藏宝贝 -->
+	<select id="findBeforeYesterDayCollectionCommodity" resultType="java.lang.Integer">
+	 SELECT SUM(d.`collection_commodity`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 聚划算成交额 -->
+	<select id="findBeforeYesterDayJhsTransactionPrice" resultType="BigDecimal">
+	 SELECT SUM(d.`JHS_transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- pc订单数 -->
+	<select id="findBeforeYesterDayPcOrderNum" resultType="java.lang.Integer">
+     SELECT SUM(d.`pc_order_num`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 无线订单数 -->
+	<select id="findBeforeYesterDayWapOrderNum" resultType="java.lang.Integer">
+	 SELECT SUM(d.`wap_order_num`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- pc成交额 -->
+	<select id="findBeforeYesterDayPcTransactionPrice" resultType="java.lang.Integer">
+	 SELECT SUM(d.`pc_transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+	
+	<!-- 无线成交额 -->
+	<select id="findBeforeYesterDayWapTransactionPrice" resultType="java.lang.Integer">
+	 SELECT SUM(d.`wap_transaction_price`) FROM CRM_data_statis d 
+	 WHERE DATE_FORMAT(`createdDate`,'%Y/%m/%d') =  DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 2 DAY),'%Y/%m/%d')
+	</select>
+</mapper>

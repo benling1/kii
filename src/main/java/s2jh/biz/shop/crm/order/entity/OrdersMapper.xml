@@ -1,0 +1,1212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.Orders">
+	<resultMap type="s2jh.biz.shop.crm.order.entity.Orders" id="orders">
+		<result column="oid" property="oid"/>
+		<result column="tid" property="tid"/>
+		<result column="num_iid" property="numIid"/>
+		<result column="item_meal_id" property="itemMealId"/>
+		<result column="sku_id" property="skuId"/>
+		<result column="refund_id" property="refundId"/>
+		<result column="bind_oid" property="bindOid"/>
+		<result column="item_meal_name" property="itemMealName"/>
+		<result column="pic_path" property="picPath"/>
+		<result column="seller_nick" property="sellerNick"/>
+		<result column="buyer_nick" property="buyerNick"/>
+		<result column="refund_status" property="refundStatus"/>
+		<result column="outer_iid" property="outeriid"/>
+		<result column="snapshot_url" property="snapshotUrl"/>
+		<result column="snapshot" property="snapshot"/>
+		<result column="timeout_action_time" property="timeoutActionTime"/>
+		<result column="buyer_rate" property="buyerRate"/>
+		<result column="seller_rate" property="sellerRate"/>
+		<result column="seller_type" property="sellerType"/>
+		<result column="sub_order_tax_fee" property="subOrderTaxFee"/>
+		<result column="sub_order_tax_rate" property="subOrderTaxRate"/>
+		<result column="status" property="status"/>
+		<result column="title" property="title"/>
+		<result column="type" property="type"/>
+		<result column="iid" property="iid"/>
+		<result column="price" property="price"/>
+		<result column="num" property="num"/>
+		<result column="outer_sku_id" property="outerSkuId"/>
+		<result column="order_from" property="orderFrom"/>
+		<result column="total_fee" property="totalFee"/>
+		<result column="payment" property="payment"/>
+		<result column="discount_fee" property="discountFee"/>
+		<result column="adjust_fee" property="adjustFee"/>
+		<result column="modified" property="modified"/>
+		<result column="sku_properties_name" property="skuPropertiesName"/>
+		<result column="is_oversold" property="isOversold"/>
+		<result column="is_service_order" property="isServiceOrder"/>
+		<result column="end_time" property="endTime"/>
+		<result column="consign_time" property="consignTime"/>
+		<result column="order_attr" property="orderAttr"/>
+		<result column="shipping_type" property="shippingType"/>
+		<result column="logistics_company" property="logisticsCompany"/>
+		<result column="invoice_no" property="invoiceNo"/>
+		<result column="is_daixiao" property="isdaixiao"/>
+		<result column="divide_order_fee" property="divideOrderFee"/>
+		<result column="part_mjz_discount" property="partMjzDiscount"/>
+		<result column="ticket_outer_id" property="ticketOuterId"/>
+		<result column="ticket_expdate_key" property="ticketExpdateKey"/>
+		<result column="store_code" property="storeCode"/>
+		<result column="is_www" property="isWww"/>
+		<result column="tmser_spu_code" property="tmserSpuCode"/>
+		<result column="bind_oids" property="bindOids"/>
+		<result column="zhengji_status" property="zhengjiStatus"/>
+		<result column="md_qualification" property="mdQualification"/>
+		<result column="md_fee" property="mdFee"/>
+		<result column="customization" property="customization"/>
+		<result column="inv_type" property="invType"/>
+		<result column="is_sh_ship" property="isShShip"/>
+		<result column="shipper" property="shipper"/>
+		<result column="f_type" property="fType"/>
+		<result column="f_status" property="fStatus"/>
+		<result column="F_TERM" property="FTERM"/>
+		<result column="COMBO_ID" property="comboId"/>
+		<result column="ASSEMBLY_RELA" property="assemblyRela"/>
+		<result column="ASSEMBLY_PRICE" property="assemblyPrice"/>
+		<result column="ASSEMBLY_ITEM" property="assemblyItem"/>
+		<result column="receiver_district" property="receiverDistrict"/>
+		<result column="receiver_city" property="receiverCity"/>
+		<result column="step_trade_status" property="stepTradeStatus"/>
+		<result column="created" property="created"/>
+		<result column="receiver_name" property="receiverName"/>
+		<result column="receiver_mobile" property="receiverMobile"/>
+		<result column="buyer_flag" property="buyerFlag"/>
+		<result column="seller_flag" property="sellerFlag"/>
+		<result column="receiver_state" property="receiverState"/>
+		<result column="orderItems" property="orderItems"/>
+		
+		<association property="transactionOrder" javaType="s2jh.biz.shop.crm.order.entity.TransactionOrder" column="tid">  
+            <result column="tid" property="tid"/>
+        </association>  
+		
+	</resultMap>
+	
+	
+	<resultMap type="s2jh.biz.shop.crm.order.entity.Orders" id="orderTitleResultMap">
+		<result column="tid" property="tid"/>
+		<result column="title" property="title"/>
+	</resultMap>
+	
+	<!-- 手动统计卖家 查询退款中的订单数 -->
+	<select id="findAllUserRefundByManual" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM crm_orders
+		WHERE seller_nick=#{sellerName} AND #{startDate}> modified  AND modified >#{endDate} AND refund_status IN ('WAIT_SELLER_AGREE','WAIT_BUYER_RETURN_GOODS','WAIT_SELLER_CONFIRM_GOODS')
+	</select>
+	<!-- 手动统计卖家 根据订单的状态，统计商铺等待发货和待付款的订单数统计 -->
+	<select id="findAllUserOrderCountStatusByManual" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT status,COUNT(status) count,ROUND(SUM(payment),2) total
+		FROM crm_orders
+		WHERE seller_nick=#{sellerName} AND #{startDate}> modified  AND modified >#{endDate}
+		GROUP BY status
+	</select>
+	
+	<!-- 查询卖家的具体订单数据 -->
+	<select id="findOrderBySellerNickAndBuyerNick" parameterType="java.util.Map" resultMap="orders">
+		SELECT *
+		FROM crm_orders
+		WHERE seller_nick=#{sellerName} AND buyer_nick=#{buyerName}
+		ORDER BY created DESC limit 0,1
+	</select>
+	
+	 
+	<!-- 查询退款中的订单数 -->
+	<select id="findAllUserRefund" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT seller_nick sellerNick,COUNT(*) count
+		FROM crm_orders
+		WHERE refund_status='WAIT_SELLER_AGREE' OR refund_status='WAIT_BUYER_RETURN_GOODS' OR refund_status='WAIT_SELLER_CONFIRM_GOODS' AND
+				#{endDate}> modified  AND modified >#{startDate}
+		GROUP BY seller_nick		
+				
+	</select>
+	<!-- 根据订单的状态，统计商铺等待发货的订单数统计 -->
+	<select id="findAllUserOrderCountStatus" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT seller_nick,COUNT(status) count
+		FROM crm_orders
+		WHERE status='WAIT_SELLER_SEND_GOODS' AND #{endDate}> modified  AND modified >#{startDate}
+		GROUP BY seller_nick
+	</select>
+	<!-- 查询卖家交易成功且未评价的所有订单,订单结束时间不能大于15天 -->
+	<select id="findAllByAutoRateOrder" parameterType="java.lang.String" resultMap="orders">
+		SELECT * 
+		FROM crm_orders	
+		WHERE 	seller_rate=0 AND 
+				status = 'TRADE_FINISHED' AND
+				end_time BETWEEN date_sub(now(),interval 15 day) AND now() AND
+				seller_nick=#{sllerNick}
+	</select>
+	
+	<!-- sql片段  根据卖家条件查询订单列表 -->
+	<sql id="findOrdersListByQuery">
+		<where>
+			o.tid = t.tid 
+			<!-- 订单状态为订单关闭状态包括TRADE_CLOSED，TRADE_CLOSED_BY_TAOBAO -->
+			<if test="status1 != null and status1 != '' and status2 != null and status2 != ''">
+				and (o.status = #{status1} or o.status = #{status2})
+			</if>
+			and o.seller_nick = #{sellerNick} 
+			<!-- 子订单id -->
+			<if test="tid != null and tid != ''">
+				and o.tid = #{tid}
+			</if>
+			<!-- 买家昵称 -->
+			<if test="buyerNick != null and buyerNick != ''">
+				and o.buyer_nick = #{buyerNick}
+			</if>
+			<!-- 订单状态 -->
+			<if test="status != null and status != ''">
+				and o.status = #{status}
+			</if>
+			<!-- 买家是否已评价 -->
+			<if test="buyerRate != null">
+				and o.buyer_rate = #{buyerRate}
+			</if>
+			<!-- 卖家是否评价 -->
+			<if test="sellerRate != null">
+				and o.seller_rate = #{sellerRate}
+			</if>
+			<!-- 下单时间 -->
+			<if test="startOrderDate != null">
+				and DATE_FORMAT(o.created,'%Y-%m-%d') >= DATE_FORMAT(#{startOrderDate},'%Y-%m-%d') 
+			</if>
+			<!-- 下单时间 -->
+			<if test="endOrderDate != null">
+				and DATE_FORMAT(#{endOrderDate},'%Y-%m-%d') >= DATE_FORMAT(o.created,'%Y-%m-%d')
+			</if>
+			<!-- 订单来源 -->
+			<if test="orderFrom != null and orderFrom != ''">
+				and o.order_from = #{orderFrom}
+			</if>
+			<!-- 退款状态 -->
+			<if test="refundStatus != null and refundStatus != ''">
+				and o.refund_status = #{refundStatus}
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeBefore != null">
+				and DATE_FORMAT(o.consign_time,'%Y-%m-%d') >= DATE_FORMAT(#{consignTimeBefore},'%Y-%m-%d')
+			</if>
+			<!-- 发货时间 -->
+			<if test="consignTimeAfter != null">
+				and DATE_FORMAT(#{consignTimeAfter},'%Y-%m-%d') >= DATE_FORMAT(o.consign_time,'%Y-%m-%d')
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentBefore != null and paymentBefore != ''">
+				and o.payment >= #{paymentBefore}
+			</if>
+			<!-- 订单金额 -->
+			<if test="paymentAfter != null and paymentAfter != ''">
+				and #{paymentAfter} >= o.payment
+			</if>
+			<!-- 所属地区 -->
+			<if test="receiverDistrict != null and receiverDistrict != ''">
+				and t.receiver_district = #{receiverDistrict}
+			</if>
+			<!-- 确认时间（交易结束时间） -->
+			<if test="endTimeBefore != null">
+				and DATE_FORMAT(o.end_time,'%Y-%m-%d') >= DATE_FORMAT(#{endTimeBefore},'%Y-%m-%d')
+			</if>
+			<!-- 确认时间 -->
+			<if test="endTimeAfter != null">
+				and DATE_FORMAT(#{endTimeAfter},'%Y-%m-%d') >= DATE_FORMAT(o.end_time,'%Y-%m-%d')
+			</if>
+			<!-- 订单类型（分段付款） -->
+			<if test="stepTradeStatus != null and stepTradeStatus !=''">
+				and o.step_trade_status = #{stepTradeStatus}
+			</if>
+			<!-- 商品id -->
+			<if test="numIidList != null">
+				and o.num_iid IN
+				<foreach collection="numIidList" item="numIidList" open="(" separator="," close=")">
+					#{numIidList}
+				</foreach>
+			</if>
+			<!-- 卖家备注旗帜 -->
+			<if test="sellerFlagList != null and sellerFlagList != ''">
+				and t.seller_flag IN
+				<foreach collection="sellerFlagList" item="sellerFlagList" open="(" separator="," close=")">
+					#{sellerFlagList}
+				</foreach>
+			</if>
+			<if test="orderList != null">
+				and o.oid NOT IN
+				<foreach collection="orderList" item="orderList" open="(" separator="," close=")">  
+        			#{orderList}  
+     			</foreach> 
+			</if>
+			<if test="stateList != null">	
+				and t.receiver_state IN
+				<foreach collection="stateList" item="stateList" open="(" separator="," close=")">
+					#{stateList}
+				</foreach>
+			</if>
+			<!-- 短信发送时间过滤 -->
+			<!-- <if test="sendTime != null and sendTime != ''">
+				and DATE_FORMAT(#{sendTime},'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(,'%Y-%m-%d %H:%i:%s')
+			</if> -->
+		</where>
+	</sql>
+	<!-- 根据订单id查询订单信息 -->
+	<!-- <select id="findCreatedById" resultMap="orders">
+		select created from crm_orders where oid = #{oid} 
+		<if test="sellerNick != null and sellerNick != ''">
+			and seller_nick = #{sellerNick}
+		</if>
+	</select> -->
+	
+	<!-- 根据订单id查询订单详细信息 -->
+	<select id="findById" resultMap="orders">
+		select * from crm_orders where oid = #{oid} 
+		and seller_nick = #{sellerNick}
+	</select>
+	
+	<!-- 根据订单id查询订单详细信息 -->
+	<select id="findByIdBySend" parameterType="String" resultMap="orders">
+		select * from crm_orders where oid = #{oid} 
+	</select>
+	
+	<!-- 根据卖家查询条件查询订单列表 -->
+	<!--<select id="findOrdersBycondition" parameterType="s2jh.biz.shop.crm.vo.OrdersVo" resultMap="orders">
+		select o.oid,t.created,o.order_from,o.title,o.price,o.num,o.buyer_nick,t.receiver_name,o.status,t.receiver_mobile,o.refund_status,o.pic_path
+		from crm_orders o,crm_trade t
+		<include refid="findOrdersListByQuery"></include>
+		order by t.created desc
+		<if test="startRows != null and currentRows != null">
+			limit #{startRows},#{currentRows}
+		</if>
+	</select> -->
+	<!-- <select id="findOrdersBycondition" parameterType="s2jh.biz.shop.crm.vo.OrdersVo" resultMap="orders">
+		select oid,created,order_from,title,price,num,buyer_nick,receiver_name,receiver_mobile,status,receiver_mobile from crm_orders
+		<include refid="findOrdersListByQuery"></include>
+		<if test="startRows != null and currentRows != null">
+			limit #{startRows},#{currentRows}
+		</if>
+	</select> -->
+	
+	<!-- 根据条件查询orders,shopdata与trade联表的总条数-->
+	<select id="queryOrdersCount" resultType="long">
+		SELECT COUNT(1) FROM CRM_ORDERS O
+		<where>
+			<!-- 交易创建时间开始-->
+			<if test="b_created != null">
+				  and DATE_FORMAT(O.created,'%Y-%m-%d') >= DATE_FORMAT(#{b_created},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_created != null">
+				  and DATE_FORMAT(#{e_created},'%Y-%m-%d') >= DATE_FORMAT(O.created,'%Y-%m-%d')
+			</if>
+			<!-- 付款时间开始-->
+			<if test="b_payTime != null and e_payTime != null ">
+				   and O.tid in (
+						SELECT T.TID FROM CRM_TRADE T
+					 	where 
+						DATE_FORMAT(T.pay_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_payTime},'%Y-%m-%d')
+						and DATE_FORMAT(#{e_payTime},'%Y-%m-%d') >= DATE_FORMAT(T.pay_time,'%Y-%m-%d')
+				)
+			</if>
+			<!-- 付款时间结束-->
+			<if test="b_payTime == null and e_payTime !=null">
+			 	and O.tid in (
+						SELECT T.TID FROM CRM_TRADE T
+					 where 
+						DATE_FORMAT(#{e_payTime},'%Y-%m-%d') >= DATE_FORMAT(T.pay_time,'%Y-%m-%d')
+				)
+			</if>
+			<!-- 付款时间开始-->
+			<if test="b_payTime != null and e_payTime == null ">
+			  	and O.tid in (
+						SELECT T.TID FROM CRM_TRADE T
+					 where 
+						DATE_FORMAT(T.pay_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_payTime},'%Y-%m-%d')
+				)
+			</if>
+			
+			<!-- 发货时间开始-->
+			<if test="b_consignTtime != null">
+				and DATE_FORMAT(O.consign_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_consignTtime},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_consignTtime != null">
+				and DATE_FORMAT(#{e_consignTtime},'%Y-%m-%d') >= DATE_FORMAT(O.consign_time,'%Y-%m-%d')
+			</if>
+			
+			<!-- 交易变更时间开始-->
+			<if test="b_modified != null">
+				and DATE_FORMAT(O.modified,'%Y-%m-%d') >= DATE_FORMAT(#{b_modified},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_modified != null">
+				and DATE_FORMAT(#{e_modified},'%Y-%m-%d') >= DATE_FORMAT(O.modified,'%Y-%m-%d')
+			</if>
+			
+			<!-- 交易结束时间开始-->
+			<if test="b_endTime != null">
+				and DATE_FORMAT(O.end_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_endTime},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_endTime != null">
+				and DATE_FORMAT(#{e_endTime},'%Y-%m-%d') >= DATE_FORMAT(O.end_time,'%Y-%m-%d')
+			</if>
+			
+			<!-- 买家昵称/模糊查询-->
+			<if test="buyerNick != null and buyerNick != ''">
+			  	and  O.buyer_nick like CONCAT('%',#{buyerNick},'%')
+			</if>
+			<!-- 订单编号-->
+			<if test="orderId != null and orderId != ''">
+			  	and  O.oid = #{orderId}
+			</if>
+			<!-- 订单状态-->
+			<if test="status != null and status.length>0">
+				and O.status
+				<foreach  collection="status" item="item" open="in (" close=")" separator=",">   
+           		 #{item}  
+        		</foreach>
+			</if>
+			<!-- 用户的淘宝昵称-->
+			  and  O.seller_nick = #{userId}
+			<!-- 订单来源-->
+			<if test="orderFrom != null">
+			   	and  O.order_from 
+				<foreach  collection="orderFrom" item="orderf" open="in (" close=")" separator=",">   
+           		 #{orderf}  
+        		</foreach>
+			</if>
+		</where> 
+	</select>
+	
+	 
+	
+	<!-- 根据条件查询orders与trade联表的分页list集合-->
+	<select id="queryOrdersPagination" resultMap="ordersList">
+		SELECT 
+		<!-- 字段 -->
+		 O.oid, O.status, O.payment, O.buyer_nick, O.receiver_name , O.receiver_mobile,O.order_from ,
+		O.receiver_city, O.created,  O.modified, O.end_time, O.consign_time, O.num_iid ,O.title AS itemName
+		
+		 FROM CRM_ORDERS O
+		<where>
+			
+			<!-- 交易创建时间开始-->
+			<if test="b_created != null">
+				and DATE_FORMAT(O.created,'%Y-%m-%d') >= DATE_FORMAT(#{b_created},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_created != null">
+				and DATE_FORMAT(#{e_created},'%Y-%m-%d') >= DATE_FORMAT(O.created,'%Y-%m-%d')
+			</if>
+			
+			<!-- 付款时间开始-->
+			<!-- <if test="b_payTime != null">
+				and DATE_FORMAT(T.pay_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_payTime},'%Y-%m-%d')
+			</if> -->
+			<!-- 结束-->
+			<if test="e_payTime != null">
+				and DATE_FORMAT(#{e_payTime},'%Y-%m-%d') >= DATE_FORMAT(T.pay_time,'%Y-%m-%d')
+			</if>
+			
+			<!-- 发货时间开始-->
+			<if test="b_consignTtime != null">
+				and DATE_FORMAT(O.consign_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_consignTtime},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_consignTtime != null">
+				and DATE_FORMAT(#{e_consignTtime},'%Y-%m-%d') >= DATE_FORMAT(O.consign_time,'%Y-%m-%d')
+			</if>
+			
+			<!-- 交易变更时间开始-->
+			<if test="b_modified != null">
+				and DATE_FORMAT(O.modified,'%Y-%m-%d') >= DATE_FORMAT(#{b_modified},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_modified != null">
+				and DATE_FORMAT(#{e_modified},'%Y-%m-%d') >= DATE_FORMAT(O.modified,'%Y-%m-%d')
+			</if>
+			
+			<!-- 交易结束时间开始-->
+			<if test="b_endTime != null">
+				and DATE_FORMAT(O.end_time,'%Y-%m-%d') >= DATE_FORMAT(#{b_endTime},'%Y-%m-%d')
+			</if>
+			<!-- 结束-->
+			<if test="e_endTime != null">
+				and DATE_FORMAT(#{e_endTime},'%Y-%m-%d') >= DATE_FORMAT(O.end_time,'%Y-%m-%d')
+			</if>
+			
+			<!-- 买家昵称/模糊查询-->
+			<if test="buyerNick != null and buyerNick != ''">
+				and  O.buyer_nick like CONCAT('%',#{buyerNick},'%')
+			</if>
+			<!-- 订单编号-->
+			<if test="orderId != null and orderId != ''">
+				and  O.oid = #{orderId}
+			</if>
+			<!-- 订单状态-->
+			<if test="status != null and status.length>0">
+				and  O.status 
+					<foreach  collection="status" item="item" open="in (" close=")" separator=",">   
+           				 #{item}  
+        			</foreach>
+			</if>
+			<!-- 用户的淘宝昵称-->
+				and  O.seller_nick = #{userId}
+			<!-- 订单来源-->
+			<if test="orderFrom != null">
+				and  O.order_from 
+				<foreach  collection="orderFrom" item="orderf" open="in (" close=")" separator=",">   
+           		 #{orderf}  
+        		</foreach>
+			</if>
+		</where> 
+		Order by O.created DESC
+		limit #{startRows},#{currentRows}
+	</select>
+	
+	
+	<!-- 字段 -->
+	<!-- 	
+	String shopName; String orderId; String status; String actualMoney; String buyerNick; String receiverName;
+	String receiverMobile; String receiverTown; Date created; Date pay_time;  Date modified;  end_time; consign_time; 
+		
+	S.title, O.oid, O.status, O.payment, T.buyer_nick, O.receiver_name , O.receiver_mobile ,
+	O.receiver_city, O.created, O.pay_time, O.modified, O.end_time, O.consign_time, O.num_iid -->
+	<resultMap type="s2jh.biz.shop.crm.order.entity.OrdersList" id="ordersList">
+		<result column="title" property="shopName"/>
+		<result column="oid" property="orderId"/>
+		<result column="status" property="status"/>
+		<result column="payment" property="actualMoney"/>
+		<result column="buyer_nick" property="buyerNick"/>
+		<result column="receiver_name" property="receiverName"/>
+		<result column="receiver_mobile" property="receiverMobile"/>
+		<result column="receiver_city" property="receiverCity"/>
+		<result column="created" property="created"/>
+		<result column="pay_time" property="payTime"/>
+		<result column="modified" property="modified"/>
+		<result column="end_time" property="endTime"/>
+		<result column="consign_time" property="consignTime"/>
+		<result column="num_iid" property="itemId"/>
+		<result column="order_from" property="orderFrom"/>
+		<result column="itemName" property="itemName"/>
+	</resultMap>
+	
+	
+	<!-- 根据条件查询orders与trade联表的分页list集合-->
+	<select id="queryOrdersItem"  resultType="s2jh.biz.shop.crm.order.entity.OrdersList">
+		SELECT 
+		<!-- 字段 -->
+		<!-- I.name as itemName, P.name as productName -->
+		P.name as productName
+		FROM CRM_PRODUCT P,CRM_ITEM I
+		<where>
+			and I.brand_id  = P.product_id      
+			<!-- 订单来源-->
+			<!-- <if test="itemId != null"> -->
+				and I.commodity_id = #{itemId} 
+		</where> 
+	</select>
+	
+	<!-- 订单中心批量评价根据时间升序查询列表 -->
+	<select id="findOrdersByCreatedAsc" resultMap="orders">
+		select id,oid,tid,title,pic_path,buyer_nick,payment,end_time,buyer_rate from CRM_ORDERS
+		<where>
+			<if test="buyerRate != null and buyerRate != ''">
+				and buyer_rate = #{buyerRate}
+			</if>
+			<if test="bTime != null">
+				and DATE_FORMAT(end_time,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(end_time,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(end_time,'%Y-%m-%d') = DATE_FORMAT(#{dueTime},'%Y-%m-%d')
+			</if>
+			<if test="buyerNick != null and buyerNick != ''">
+				and buyer_nick = #{buyerNick}
+			</if>
+			<if test="tarTime != null">
+				and now() BETWEEN date_add(end_time,interval #{tarTime} HOUR) and date_add(end_time,interval 15 day)
+			</if>
+				and seller_nick = #{sellerNick}
+				and seller_rate = #{sellerRate}
+				and status = 'TRADE_FINISHED'
+		</where>
+		order by end_time ASC
+		limit #{startRows},#{currentRows};
+	</select>
+	<!-- 订单中心批量评价根据时间升序查询列表总个数 -->
+	<select id="findOrdersByCreatedAscCount" resultType="int">
+		select count(*) from CRM_ORDERS
+		<where>
+			<if test="bTime != null">
+				and DATE_FORMAT(end_time,'%Y-%m-%d') >= DATE_FORMAT(#{bTime},'%Y-%m-%d')
+			</if>
+			<if test="eTime != null">
+				and DATE_FORMAT(#{eTime},'%Y-%m-%d') >= DATE_FORMAT(end_time,'%Y-%m-%d')
+			</if>
+			<if test="dueTime != null">
+				and DATE_FORMAT(end_time,'%Y-%m-%d') = DATE_FORMAT(#{dueTime},'%Y-%m-%d')
+			</if>
+			<if test="buyerNick != null and buyerNick != ''">
+				and buyer_nick = #{buyerNick}
+			</if>
+			<if test="buyerRate != null and buyerRate != ''">
+				and buyer_rate = #{buyerRate}
+			</if>
+			<if test="tarTime != null">
+				and now() BETWEEN date_add(end_time,interval #{tarTime} HOUR) and date_add(end_time,interval 15 day)
+			</if>
+				and seller_nick = #{sellerNick}
+				and seller_rate = #{sellerRate}
+				and status = 'TRADE_FINISHED'
+		</where>
+	</select>
+	
+	
+	<!-- 通过订单id查询电话号码 -->
+	<select id="queryPhoneByOrderId" resultMap="orders">
+		select receiver_mobile,buyer_nick from CRM_ORDERS
+		<where>
+			<if test="orderId != null and orderId != ''">
+				oid = #{orderId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 通过订单id查询电话号码 -->
+	<select id="getTidList" resultType="String">
+		SELECT  tid  from crm_tid
+	</select>
+	
+	<delete id="deleteTidList">
+		delete from crm_tid
+		<where>
+			<if test="tidList !=null">
+				and tid
+				<foreach  collection="tidList" item="tid" open="in (" close=")" separator=",">   
+           		 #{tid}  
+        		</foreach>
+			</if>
+			and  <![CDATA[#{currentTimeMillis}  >=  creat_time ]]>
+		</where> 
+	</delete>
+	
+	<!-- 通过tid查询orders-->
+	<select id="findOrdersByTid" resultType="String">
+		select refund_status from CRM_ORDERS where tid = #{tid}
+	</select>
+
+	
+	<!-- 更新订单状态 -->
+	<update id="updateOrdersById">
+		update CRM_ORDERS 
+		<set>
+			<if test="sellerRate != null and sellerRate != ''">
+				seller_rate = #{sellerRate}
+			</if>
+		</set>
+		<where>
+			<if test="oid != null and oid != ''">
+				and oid = #{oid}
+			</if>
+			<if test="tid != null and tid != ''">
+				and tid = #{tid}
+			</if>
+			AND
+			seller_nick = #{sellerNick}
+		</where>
+	</update>
+	<!-- 查询要延迟发货的订单 -->
+	<select id="findOrdersByTimeAndStatus" parameterType="map" resultMap="orders">
+		select * from CRM_ORDERS
+		<where>
+			<if test="status !=null and status != ''">
+				and status = #{status}
+			</if>
+			<if test="seller_nick !=null and seller_nick != ''">
+				and seller_nick = #{seller_nick}
+			</if>
+			<if test="startTime != null">
+				and DATE_FORMAT(#{created},'%Y-%m-%d') >= DATE_FORMAT(startTime,'%Y-%m-%d')
+			</if>
+			<if test="startTime != null">
+				and DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+		</where>
+	</select>
+
+	
+	
+	<!-- 保存tid&故障信息  订单数据同步-->
+	<insert id="saveExceptionMap">
+		insert into crm_tid
+		 (tid,creat_time,message,type) values(#{tid},NOW(),#{message},'synchronized')
+	</insert>
+	
+	<!-- 保存tid&异常信息历史订单导入 -->
+	<insert id="insertExceptionMap">
+		insert into crm_tid
+		 (tid,creat_time,message,type) values(#{tid},NOW(),#{message},'import')
+	</insert>
+	
+	
+	
+	<!-- 查询出退过款的客户昵称集合 -->
+	<select id="queryRefundNicks" resultType="java.lang.String">
+		select DISTINCT(buyer_nick) from CRM_ORDERS
+		<where>
+				refund_status = "SUCCESS"
+				and seller_nick = #{userId}
+		</where>
+	</select>
+	
+	<!-- 订单短信群发根据卖家查询条件查询 （赵天奎 2017/2/22） -->
+	<select id="findOrdersBycondition" parameterType="s2jh.biz.shop.crm.vo.OrdersVo" resultMap="orders">
+		select t.tid,o.oid,o.created,o.order_from,o.title,o.price,o.num,o.buyer_nick,o.receiver_name,o.status,o.receiver_mobile,o.refund_status,o.pic_path,o.total_fee
+		from crm_orders o,crm_trade t
+		<include refid="findOrdersListByQuery"></include>
+		order by o.created desc
+		<if test="startRows != null and currentRows != null">
+			limit #{startRows},#{currentRows}
+		</if>
+	</select>
+	
+	<!-- 根据卖家查询条件查询订单列表的总条数 -->
+	<select id="findOrdersByconditionCount" resultType="int">
+		select count(*)
+		from crm_orders o,crm_trade t
+		<include refid="findOrdersListByQuery"></include>
+	</select>
+	
+	<!-- 根据订单oid查询orders -->
+	<select id="findOrderByOid" resultMap="orders">
+		select created,buyer_nick,receiver_city,total_fee,oid,receiver_name from crm_orders
+		<where>
+			<if test="oid != null and oid != ''">
+				oid = #{oid}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据条件查询所需的所有数据集合   -->
+	<select id="findOrdersByQuery"  resultMap="orders">
+		select o.oid,o.created,o.order_from,o.title,o.price,o.num,o.buyer_nick,t.receiver_name,o.status,t.receiver_mobile,o.refund_status,o.pic_path,o.total_fee
+		from crm_orders o,crm_trade t
+		<where>
+			o.tid = t.tid 
+			and o.seller_nick = #{userId}
+			<!-- 下单时间 -->
+			<if test="startOrderDate != null">
+				and DATE_FORMAT(o.created,'%Y-%m-%d') >= DATE_FORMAT(#{startOrderDate},'%Y-%m-%d') 
+			</if>
+			<!-- 下单时间 -->
+			<if test="endOrderDate != null">
+				and DATE_FORMAT(#{endOrderDate},'%Y-%m-%d') >= DATE_FORMAT(o.created,'%Y-%m-%d')
+			</if>
+			<if test="endOrderDate != null">
+				and DATE_FORMAT(#{endOrderDate},'%Y-%m-%d') >= DATE_FORMAT(o.created,'%Y-%m-%d')
+			</if>
+			<!-- 订单状态 -->
+			<if test="status != null and status != ''">
+				and o.status = #{status}
+			</if>
+		</where>
+		
+	</select>
+	
+	
+	<!-- 根据条件查询出订单的数量-到延时发货提醒   -->
+	<select id="findOrdersToDelayRemind"  resultMap="orders">
+		select o.oid
+		from crm_orders o,crm_trade t
+		<where>
+			o.tid = t.tid 
+			and t.seller_nick = #{userId}
+			<!-- 下单时间 -->
+			<if test="startOrderDate != null">
+				and DATE_FORMAT(t.created,'%Y-%m-%d') >= DATE_FORMAT(#{startOrderDate},'%Y-%m-%d') 
+			</if>
+			<!-- 下单时间 -->
+			<if test="endOrderDate != null">
+				and DATE_FORMAT(#{endOrderDate},'%Y-%m-%d') >= DATE_FORMAT(t.created,'%Y-%m-%d')
+			</if>
+			<!-- 订单状态 -->
+			<if test="status != null and status != ''">
+				and t.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据tid查询对应的orderList -->
+	<select id="findOrderByTid" resultMap="orders">
+		select id,refund_status,num,num_iid,payment from crm_orders where tid = #{tid}
+	</select>
+	
+	<!-- 根据tid查询对应子订单所有的商品数量 -->
+	<select id="findNumsByTid" resultType="int">
+		select sum(num) from crm_orders where tid in
+		<foreach collection="tidList" open="(" separator="," close=")">
+			#{tidList}
+		</foreach>
+	</select>
+	
+	<!-- 效果分析主页面resultMap -->
+	<resultMap type="s2jh.biz.shop.crm.order.entity.Orders" id="orderNum">
+		<result column="num" property="num"/>
+		<result column="payment" property="payment"/>
+		<result column="tid" property="tid"/>
+		<result column="receiver_mobile" property="receiverMobile"/>
+	</resultMap>
+	<!-- 效果分析客户详情resultMap -->
+	<resultMap type="s2jh.biz.shop.crm.order.entity.Orders" id="orderCustomerDetail">
+		<result column="buyer_nick" property="buyerNick"/>
+		<result column="receiver_name" property="receiverName"/>
+		<result column="receiver_mobile" property="receiverMobile"/>
+		<result column="payment" property="payment"/>
+		<result column="num" property="num"/>
+		<result column="receiver_district" property="receiverDistrict"/>
+		<result column="tid" property="tid"/>
+	</resultMap>
+	<!-- 会员短信群发效果分析查询下单总客户数，总金额，订单总数，商品总数 -->
+	<select id="findTotalOrderNum" resultMap="orderNum">
+		select sum(num) num,sum(payment) payment,count(distinct tid) tid,count(distinct receiver_mobile) receiver_mobile from crm_orders
+		<where>
+			seller_nick = #{userId} 
+			<if test="phoneList != null">
+				and receiver_mobile in 
+				<foreach collection="phoneList" open="(" separator="," close=")">
+					#{phoneList}
+				</foreach>
+			</if>
+			<if test="statusList != null">
+				and status in 
+				<foreach collection="statusList" open="(" separator="," close=")">
+					#{statusList}
+				</foreach>
+			</if>
+			<if test="bTime != null">
+				and created >= #{bTime}
+			</if>
+			<if test="eTime != null">
+				and #{eTime} >= created
+			</if>
+			<if test="orderSource != null and orderSource != ''">
+				and order_from = #{orderSource}
+			</if>
+			<if test="refundStatus != null and refundStatus != ''">
+				and refund_status = #{refundStatus}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 会员短信群发效果分析统计每天成交总客户数，成交总金额，成交订单总数，成交商品总数 -->
+	<select id="findSuccessOrderNum" resultMap="orderNum">
+		select sum(num) num,sum(payment) payment,count(distinct tid) tid,count(distinct receiver_mobile) receiver_mobile from crm_orders
+		<where>
+			seller_nick = #{userId}
+			<if test="phoneList != null">
+				 and receiver_mobile in 
+				<foreach collection="phoneList" open="(" separator="," close=")">
+					#{phoneList}
+				</foreach>
+			</if>
+			<if test="statusList != null">
+				and status in 
+				<foreach collection="statusList" open="(" separator="," close=")">
+					#{statusList}
+				</foreach>
+			</if>
+			<if test="successDay != null">
+				and DATE_FORMAT(modified,'%Y-%m-%d') = DATE_FORMAT(#{successDay},'%Y-%m-%d') 
+			</if>
+			<if test="orderSource != null and orderSource != ''">
+				and order_from = #{orderSource}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 会员效果分析客户详情 -->
+	<select id="memberCustomerDetail" resultMap="orderCustomerDetail">
+		select buyer_nick,receiver_name,receiver_mobile,sum(payment) payment,count(distinct tid) tid,sum(num) num,receiver_district
+		<where>
+			seller_nick = #{userId}
+			<if test="orderSource != null and orderSource != ''">
+				and order_from = #{orderSource}
+			</if>
+			<if test="buyerNick != null and buyerNick != ''">
+				and buyer_nick = #{buyerNick}
+			</if>
+			<if test="phone != null and phone != ''">
+				and receiver_mobile = #{phone}
+			</if>
+			<if test="itemId != null and itemId != ''">
+				and num_iid like '%${itemId}%'
+			</if>
+			<if test="statusList != null">
+				and status in
+				<foreach collection="statusList" open="(" separator="," close=")">
+					#{statusList}
+				</foreach>
+			</if>
+			<if test="refundStatusList != null">
+				and refund_status in
+				<foreach collection="refundStatusList" open="(" separator="," close=")">
+					#{refundStatusList}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	 <!-- ======================================其他方法请写在此线上面,谢谢合作!@author:jackstraw_yu================================================= -->
+	 
+	 <!-- 通过tid查询orders-->
+	<select id="isExistOrdersEnhance" resultType="java.lang.String">
+		select oid from CRM_ORDERS where oid = #{oid}
+	</select>
+	 
+	 <!-- 增强方法:批量更新Orders @author:jackstraw_yu parameterType="s2jh.biz.shop.crm.order.entity.Orders"-->
+	<update id="updateOrdersEnhance"  parameterType="Map">
+		update CRM_ORDERS 
+		<set>
+			<if test="orders.tid != null and orders.tid != ''">
+				tid = #{orders.tid},
+			</if>
+			<if test="orders.numIid != null and orders.numIid != ''">
+				num_iid = #{orders.numIid},
+			</if>
+			<if test="orders.itemMealId != null and orders.itemMealId != ''">
+				item_meal_id = #{orders.itemMealId},
+			</if>
+			<if test="orders.skuId != null and orders.skuId != ''">
+				sku_id = #{orders.skuId},
+			</if>
+			<if test="orders.refundId != null and orders.refundId != ''">
+				refund_id = #{orders.refundId},
+			</if>
+			<if test="orders.bindOid != null and orders.bindOid != ''">
+				bind_oid = #{orders.bindOid},
+			</if>
+			<if test="orders.itemMealName != null and orders.itemMealName != ''">
+				item_meal_name = #{orders.itemMealName},
+			</if>
+			<if test="orders.picPath != null and orders.picPath != ''">
+				pic_path = #{orders.picPath},
+			</if>
+			<if test="orders.sellerNick != null and orders.sellerNick != ''">
+				seller_nick = #{orders.sellerNick},
+			</if>
+			<if test="orders.buyerNick != null and orders.buyerNick != ''">
+				buyer_nick = #{orders.buyerNick},
+			</if>
+			<if test="orders.refundStatus != null and orders.refundStatus != ''">
+				refund_status = #{orders.refundStatus},
+			</if>
+			<if test="orders.outeriid != null and orders.outeriid != ''">
+				outer_iid = #{orders.outeriid},
+			</if>
+			<if test="orders.snapshotUrl != null and orders.snapshotUrl != ''">
+				snapshot_url = #{orders.snapshotUrl},
+			</if>
+			<if test="orders.snapshot != null and orders.snapshot != ''">
+				snapshot = #{orders.snapshot},
+			</if>
+			<if test="orders.timeoutActionTime != null  "> 
+				timeout_action_time = #{orders.timeoutActionTime},
+			</if>
+			<if test="orders.buyerRate != null ">     
+				buyer_rate = #{orders.buyerRate},
+			</if>
+			<if test="orders.sellerRate != null ">
+				seller_rate = #{orders.sellerRate},
+			</if>
+			<if test="orders.sellerType != null and orders.sellerType != ''">   
+				seller_type = #{orders.sellerType},
+			</if>
+			<if test="orders.subOrderTaxFee != null and orders.subOrderTaxFee != ''">   
+				sub_order_tax_fee = #{orders.subOrderTaxFee},
+			</if>
+			<if test="orders.subOrderTaxRate != null and orders.subOrderTaxRate != ''">     
+				sub_order_tax_rate = #{orders.subOrderTaxRate},
+			</if>
+			<if test="orders.status != null and orders.status != ''">     
+				status = #{orders.status},
+			</if>
+			<if test="orders.title != null and orders.title != ''">
+				title = #{orders.title},
+			</if>
+			<if test="orders.type != null and orders.type != ''">
+				type = #{orders.type},
+			</if>
+			<if test="orders.iid != null and orders.iid != ''">
+				iid = #{orders.iid},
+			</if>
+			<if test="orders.price != null and orders.price != ''">
+				price = #{orders.price},
+			</if>
+			<if test="orders.num != null and orders.num != ''">
+				num = #{orders.num},
+			</if>
+			<if test="orders.outerSkuId != null and orders.outerSkuId != ''">
+				outer_sku_id = #{orders.outerSkuId},
+			</if>
+			<if test="orders.orderFrom != null and orders.orderFrom != ''">
+				order_from = #{orders.orderFrom},
+			</if>
+			<if test="orders.totalFee != null and orders.totalFee != ''">
+				total_fee = #{orders.totalFee},
+			</if>
+			<if test="orders.payment != null and orders.payment != ''">
+				payment = #{orders.payment},
+			</if>
+			<if test="orders.discountFee != null and orders.discountFee != ''">   
+				discount_fee = #{orders.discountFee},
+			</if>
+			<if test="orders.adjustFee != null and orders.adjustFee != ''">    
+				adjust_fee = #{orders.adjustFee},
+			</if>
+			<if test="orders.modified != null ">
+				modified = #{orders.modified},
+			</if>
+			<if test="orders.skuPropertiesName != null and orders.skuPropertiesName != ''">
+				sku_properties_name = #{orders.skuPropertiesName},
+			</if>
+			<if test="orders.isOversold != null ">
+				is_oversold = #{orders.isOversold},
+			</if>
+			<if test="orders.isServiceOrder != null ">
+				is_service_order = #{orders.isServiceOrder},
+			</if>
+			<if test="orders.endTime != null  ">
+				end_time = #{orders.endTime},
+			</if>
+			<if test="orders.consignTime != null  ">
+				consign_time = #{orders.consignTime},
+			</if>
+			<if test="orders.orderAttr != null and orders.orderAttr != ''">
+				order_attr = #{orders.orderAttr},
+			</if>
+			<if test="orders.shippingType != null and orders.shippingType != ''">
+				shipping_type = #{orders.shippingType},
+			</if>
+			<if test="orders.logisticsCompany != null and orders.logisticsCompany != ''">
+				logistics_company = #{orders.logisticsCompany},
+			</if>
+			<if test="orders.invoiceNo != null and orders.invoiceNo != ''">
+				invoice_no = #{orders.invoiceNo},
+			</if>
+			<if test="orders.isdaixiao != null ">
+				is_daixiao = #{orders.isdaixiao},
+			</if>
+			<if test="orders.divideOrderFee != null and orders.divideOrderFee != ''">
+				divide_order_fee = #{orders.divideOrderFee},
+			</if>
+			<if test="orders.partMjzDiscount != null and orders.partMjzDiscount != ''">
+				part_mjz_discount = #{orders.partMjzDiscount},
+			</if>
+			<if test="orders.ticketOuterId != null and orders.ticketOuterId != ''">
+				ticket_outer_id = #{orders.ticketOuterId},
+			</if>
+			<if test="orders.ticketExpdateKey != null and orders.ticketExpdateKey != ''">
+				ticket_expdate_key = #{orders.ticketExpdateKey},
+			</if>
+			<if test="orders.storeCode != null and orders.storeCode != ''">
+				store_code = #{orders.storeCode},
+			</if>
+			<if test="orders.isWww != null ">
+				is_www = #{orders.isWww},
+			</if>
+			<if test="orders.tmserSpuCode != null and orders.tmserSpuCode != ''">
+				tmser_spu_code = #{orders.tmserSpuCode},
+			</if>
+			<if test="orders.bindOids != null and orders.bindOids != ''">
+				bind_oids = #{bindOids},
+			</if>
+			<if test="orders.zhengjiStatus != null and orders.zhengjiStatus != ''">
+				zhengji_status = #{orders.zhengjiStatus},
+			</if>
+			<if test="orders.mdQualification != null and orders.mdQualification != ''">
+				md_qualification = #{orders.mdQualification},
+			</if>
+			<if test="orders.mdFee != null and orders.mdFee != ''">
+				md_fee = #{orders.mdFee},
+			</if>
+			<if test="orders.customization != null and orders.customization != ''">
+				customization = #{orders.customization},
+			</if>
+			<if test="orders.invType != null and orders.invType != ''">
+				inv_type = #{orders.invType},
+			</if>
+			<if test="orders.isShShip != null ">
+				is_sh_ship = #{orders.isShShip},
+			</if>
+			<if test="orders.shipper != null and orders.shipper != ''">
+				shipper = #{orders.shipper},
+			</if>
+			<if test="orders.fType != null and orders.fType != ''">
+				f_type = #{orders.fType},
+			</if>
+			<if test="orders.fStatus != null and orders.fStatus != ''">
+				f_status = #{orders.fStatus},
+			</if>
+			<if test="orders.FTERM != null and orders.FTERM != ''">
+				F_TERM = #{orders.FTERM},
+			</if>
+			<if test="orders.comboId != null and orders.comboId != ''">
+				COMBO_ID = #{orders.comboId},
+			</if>
+			<if test="orders.assemblyRela != null and orders.assemblyRela != ''">
+				ASSEMBLY_RELA = #{orders.assemblyRela},
+			</if>
+			<if test="orders.assemblyPrice != null and orders.assemblyPrice != ''">
+				ASSEMBLY_PRICE = #{orders.assemblyPrice},
+			</if>
+			<if test="orders.assemblyItem != null and orders.assemblyItem != ''">
+				ASSEMBLY_ITEM = #{orders.assemblyItem},
+			</if>
+			<if test="orders.receiverDistrict != null and orders.receiverDistrict != ''">
+				receiver_district = #{orders.receiverDistrict},
+			</if>
+			<if test="orders.receiverCity != null and orders.receiverCity != ''">
+				receiver_city = #{orders.receiverCity},
+			</if>
+			<if test="orders.stepTradeStatus != null and orders.stepTradeStatus != ''">
+				step_trade_status = #{orders.stepTradeStatus},
+			</if>
+			<if test="orders.created != null ">
+				created = #{orders.created},
+			</if>
+			<if test="orders.receiverName != null and orders.receiverName != ''">
+				receiver_name = #{orders.receiverName},
+			</if>
+			<if test="orders.receiverMobile != null and orders.receiverMobile != ''">
+				receiver_mobile = #{orders.receiverMobile},
+			</if>
+			<if test="orders.buyerFlag != null and orders.buyerFlag != ''">
+				buyer_flag = #{orders.buyerFlag},
+			</if>
+			<if test="orders.sellerFlag != null and orders.sellerFlag != ''">
+				seller_flag = #{orders.sellerFlag},
+			</if>
+		</set>
+		<where>
+			oid = #{orders.oid}
+		</where>
+	</update>
+	
+	
+	<!-- 添加数据 -->
+	<insert id="insertOrder" parameterType="s2jh.biz.shop.crm.order.entity.Orders">
+	INSERT INTO CRM_ORDERS(oid,tid,buyer_nick,price,total_fee,payment,status,receiver_name,receiver_city,receiver_mobile,created,title,num,seller_nick,type,order_from,createdDate,optlock) 
+		VALUE(#{oid},#{tid},#{buyerNick},#{price},#{totalFee},#{payment},#{status},#{receiverName},#{receiverCity},#{receiverMobile},#{created},#{title},#{num},#{sellerNick},#{type},#{orderFrom},now(),0);
+	</insert>
+	
+	<!-- 通过tid查询是否有数据 -->
+	<select id="queryOrdersToCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM CRM_ORDERS
+		WHERE tid = #{tid}
+	 </select>
+	
+	
+	
+	
+	<!-- 查询出上次同步订单全局任务的节点,后期该方法弃用@author:jackstraw_yu-->
+	<select id="getTaskNode" resultType="java.lang.Long">
+		SELECT task_node FROM CRM_TASKNODE
+		WHERE TYPE = 'repair'
+	 </select>
+	
+	<!-- 保存本次订单同步全局任务的节点,后期该方法弃用@author:jackstraw_yu -->
+	<update id="updateTaskNode">
+		UPDATE CRM_TASKNODE
+		SET task_node = #{node}
+		WHERE TYPE = 'repair'
+	</update>
+	
+	
+	<!-- 查询出上次同步订单任务的时间节点,@author:jackstraw_yu-->
+	<select id="getTaskEndTime" resultType="java.util.Date">
+		SELECT task_endTime FROM CRM_TASKNODE
+		WHERE TYPE = 'synchronized'
+	</select>
+	
+	
+	<!-- 保存本次订单同步任务的时间节点,@author:jackstraw_yu -->
+	<update id="updateTaskEndTime">
+		UPDATE CRM_TASKNODE
+		SET task_endTime = #{taskEndTime}
+		WHERE TYPE = 'synchronized'
+	</update>
+	
+	<!-- 根据商品编号查询购买过该商品的客户昵称 -->
+	<select id="getMemberInfoList" resultType="java.lang.String">
+		select DISTINCT(buyer_nick) from crm_orders
+		where seller_nick = #{userId}
+		and num_iid  in 
+			<foreach collection="itemIds" item="itemId" open="(" separator="," close=")" index="index">
+				 #{itemId}
+			</foreach>
+	</select>
+	
+	<!-- 邱洋     根据卖家昵称、开始结束时间、订单状态查询orders -->
+	<select id="findOrderList"  resultMap="orders">
+		select * from crm_orders 
+		where 
+		seller_nick = #{userId}
+		<if test="orderScopeOne !=null">
+		 and DATE_FORMAT(created, '%Y-%m-%d') >= #{orderScopeOne}
+		</if>
+		<if test="orderScopeTwo !=null">
+		 and #{orderScopeTwo} >= DATE_FORMAT(created, '%Y-%m-%d')
+		</if>
+		<if test="OrderStatus!=null">
+		 and status=#{OrderStatus}
+		</if>
+	</select>
+	
+	
+	
+	
+	<!-- 批量添加数据 -->
+	<insert id="insertOrderList" parameterType="java.util.List">
+	INSERT INTO CRM_ORDERS(oid,tid,buyer_nick,price,total_fee,payment,status,receiver_name,receiver_city,receiver_mobile,created,title,num,seller_nick,type,order_from,createdDate,optlock) 
+		VALUE
+		<foreach collection="list" item="itemId" index="index" separator=",">
+			(#{itemId.oid},#{itemId.tid},#{itemId.buyerNick},#{itemId.price},#{itemId.totalFee},#{itemId.payment},#{itemId.status},#{itemId.receiverName},#{itemId.receiverCity},#{itemId.receiverMobile},#{itemId.created},#{itemId.title},#{itemId.num},#{itemId.sellerNick},#{itemId.type},#{itemId.orderFrom},now(),0)
+		</foreach>
+	</insert>
+	
+	<!--  -->
+	<select id="findRefundStasus" resultMap="orders">
+		select refund_status,status,num,payment from crm_orders where tid = #{tid} and refund_status = 'SUCCESS'
+	</select>
+	
+	
+	<!-- 修改Order的退款状态 -->
+	<update id="updateOrdersRefundStatus" parameterType="map">
+		<foreach collection="orderList" item="order" index="index" separator=";"
+		  open="" close="">
+		  update CRM_ORDERS 
+		  	<set>				
+				refund_status = #{order.refundStatus}
+		  	</set>
+		    <where>
+		    	oid = #{order.oid}
+		    </where>
+		</foreach>
+	</update>
+	
+	
+	<select id="findOrdersByTids" resultMap="orderTitleResultMap">
+	    SELECT   TID,TITLE  FROM CRM_ORDERS WHERE TID IN
+	     <foreach item="item" index="index" collection="list"   open="(" separator="," close=")">
+	        #{item}
+	     </foreach>
+	 </select> 
+	
+	
+	
+</mapper>

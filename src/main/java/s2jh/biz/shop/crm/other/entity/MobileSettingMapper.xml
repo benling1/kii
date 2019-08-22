@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.other.entity.MobileSetting">
+	<resultMap type="s2jh.biz.shop.crm.other.entity.MobileSetting" id="mobileSetting">
+		<result column="id" property="id"/>
+		<result column="expediting" property="expediting"/>
+		<result column="message_remainder" property="messageRemainder"/>
+		<result column="message_count" property="messageCount"/>
+		<result column="service_expire" property="serviceExpire"/>
+		<result column="activity_notice" property="activityNotice"/>
+		<result column="phone_num" property="phoneNum"/>
+		<result column="user_id" property="userId"/>
+		<result column="flag" property="flag"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<!-- 超类中的属性 -->
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>		
+		<!-- 锁optlock -->
+		<result column="optlock" property="version"/>
+	</resultMap>
+	
+	<!-- 非正常的 MobileSetting类,仅限于关联CRM_USER/CRM_USER_ACCOUNT表 返回的实体,其他业务请勿随便调用 author:jackstraw-->
+	<resultMap type="s2jh.biz.shop.crm.other.entity.MobileSetting" id="myMobileSetting">
+		<result column="id" property="id"/>
+		<result column="expediting" property="expediting"/>
+		<result column="message_remainder" property="messageRemainder"/>
+		<result column="message_count" property="messageCount"/>
+		<result column="service_expire" property="serviceExpire"/>
+		<result column="activity_notice" property="activityNotice"/>
+		<result column="phone_num" property="phoneNum"/>
+		<result column="user_id" property="userId"/>
+		<result column="flag" property="flag"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<!-- 超类中的属性 -->
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>	
+		<!-- CRM_USER表中的用户过期时间 -->
+		<result column="expirationTime" property="expirationTime"/>	
+		<!-- CRM_USER_ACCOUNT表中的用户余额 -->
+		<result column="sms_num" property="smsNum"/>		
+		<!-- 锁optlock -->
+		<result column="optlock" property="version"/>
+	</resultMap>
+	
+	<!-- 根据手机号设置 author:jackstraw-->
+	<select id="findMobileSetting" resultMap="mobileSetting" parameterType="String">
+		SELECT *
+		FROM CRM_MOBILE_SETTING
+		WHERE
+		user_id = #{userId}
+	</select>
+	
+	<!-- 订单中心保存基本设置  author:jackstraw_yu-->
+   	<insert id="insertMobileSetting" parameterType="s2jh.biz.shop.crm.other.entity.MobileSetting" 
+   		useGeneratedKeys="true" keyProperty="id">
+   		insert into CRM_MOBILE_SETTING
+   		(
+   		 expediting,message_remainder,message_count,service_expire,
+		 activity_notice,phone_num,user_id,flag,start_time,end_time,	
+		 createdBy,createdDate,lastModifiedBy,lastModifiedDate,optlock
+		)
+   		 values(
+   			#{expediting},#{messageRemainder},#{messageCount},#{serviceExpire},
+			#{activityNotice},#{phoneNum},#{userId},#{flag},#{startTime},
+			#{endTime},#{userId},NOW(),#{userId},NOW(),0
+   		 )
+	</insert>
+	
+	
+	<!-- 更新后台设置 author:jackstraw_yu -->
+	<update id="updateMobileSetting" parameterType="java.util.Map">
+		UPDATE CRM_MOBILE_SETTING 
+		<set>
+			 <if test="expediting != null">
+				expediting = #{expediting},
+			 </if>
+			 <if test="messageRemainder != null">
+				message_remainder = #{messageRemainder},
+			 </if>
+			 <if test="messageCount != null">
+				message_count = #{messageCount},
+			 </if>
+			 <if test="serviceExpire != null">
+			 	service_expire = #{serviceExpire},
+			 </if>
+			 <if test="activityNotice != null">
+				activity_notice = #{activityNotice},
+			 </if>
+			 <if test="phoneNum != null and phoneNum !='' ">
+				phone_num = #{phoneNum},
+			 </if>
+			 lastModifiedDate = NOW(),
+			 lastModifiedBy = #{userId}
+		</set>
+		WHERE
+			user_id = #{userId}
+			AND 
+			id = #{id}
+	</update>
+	
+	
+	
+<!-- #####################################后台管理设置的功能实现##################################### -->
+<!-- #####################################后台管理设置的功能实现##################################### -->
+	
+	<!-- 用户充值满足充值+剩余条数大于余额提醒后>>短信余额提醒发送标记重置-->
+	<update id="resetFlagByUserId" >
+		UPDATE CRM_MOBILE_SETTING 
+			SET
+		 		flag = FALSE,
+		 		start_time = null,
+		 		end_time = null
+		WHERE
+			user_id = #{userId}
+	</update>
+	
+	
+	<!-- 后他管理关联功能:定时任务,每天晚上12点;短信余额提醒已发送标记重置 author:jackstraw-->
+	<update id="scheduleResetFlag">
+		UPDATE CRM_MOBILE_SETTING 
+			SET flag = FALSE
+		WHERE
+			flag = TRUE
+	</update>
+	
+	<!-- 通过用户昵称标记用户的余额提醒当天是否已经发送,需要发送余额提醒的时间段 author:jackstraw_yu-->
+	<update id="updateMobileSettingFlag" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";" open="" close="">
+			UPDATE CRM_MOBILE_SETTING
+			<set>
+				<if test="item.startTime != null">
+					start_time = #{item.startTime},
+				</if>
+				<if test="item.endTime != null">
+					end_time = #{item.endTime},
+				</if>
+					flag = #{item.flag}
+			</set>
+			<where>
+				user_id = #{item.userId}
+			</where>
+		</foreach>
+	</update>
+	
+
+	
+	<!--检索后台管理设置,实现设置的功能
+		催付效果，短信发送量和当前短信条数（每天9点发送前一天数据） 
+		软件过期提醒
+		最新促销活动通知(暂时没有该功能)  -->
+	<!--分批处理  查询总条数 author:jackstraw-->
+	<select id="querySettingCountJoinUser" resultType="java.lang.Long">
+		SELECT COUNT(1) 
+		FROM CRM_MOBILE_SETTING m ,CRM_USER u ,CRM_USER_ACCOUNT a
+		WHERE 
+			m.user_id = u.taobao_user_nick 
+			AND 
+			m.user_id = a.user_id
+			AND
+			u.expirationTime  &gt; NOW()
+	</select>
+	<!--检索后台管理设置,实现设置的功能
+		催付效果，短信发送量和当前短信条数（每天9点发送前一天数据） 
+		软件过期提醒
+		最新促销活动通知(暂时没有该功能)  -->
+	<!--分批处理  查询单页 author:jackstraw-->
+	<select id="querySettingPageJoinUser" resultMap="myMobileSetting" parameterType="java.util.Map">
+		SELECT m.*, u.expirationTime, a.sms_num
+		FROM CRM_MOBILE_SETTING m ,CRM_USER u ,CRM_USER_ACCOUNT a 
+		WHERE 
+			m.user_id = u.taobao_user_nick 
+			AND 
+			m.user_id = a.user_id
+			AND
+			u.expirationTime &gt; NOW()
+		ORDER BY m.id ASC
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	
+	
+	<!-- 定时 联表查询用户的后台管理设置,用户表和用户余额表
+	 	1,用户不能过期
+	 	2,余额不足提醒开启;且设置提醒条数大于实际余额  -->
+	<!-- 分批处理  查询总条数 author:jackstraw_yu -->
+	<select id="querySettingCountJoinUserAccount" resultType="java.lang.Long" >
+		SELECT COUNT(1) 
+		FROM CRM_MOBILE_SETTING m ,CRM_USER u ,CRM_USER_ACCOUNT a
+		WHERE 
+			m.user_id = u.taobao_user_nick 
+			AND 
+			m.user_id = a.user_id
+			AND
+			u.expirationTime &gt; NOW()
+			<!-- 余额不足提醒开启;且设置提醒条数大于实际余额 -->
+			AND
+			m.message_remainder = true
+			AND
+			a.sms_num &lt; m.message_count
+	</select>
+	<!-- 定时 联表查询用户的后台管理设置,用户表和用户余额表
+	 	1,用户不能过期
+	 	2,余额不足提醒开启;且设置提醒条数大于实际余额  -->
+	<!-- 分批处理  查询单页 author:jackstraw_yu -->
+	<select id="querySettingPageJoinUserAccount" resultMap="myMobileSetting" parameterType="java.util.Map">
+		SELECT m.*, u.expirationTime, a.sms_num 
+		FROM CRM_MOBILE_SETTING m ,CRM_USER u ,CRM_USER_ACCOUNT a
+		WHERE 
+			m.user_id = u.taobao_user_nick 
+			AND 
+			m.user_id = a.user_id
+			AND
+			u.expirationTime &gt; NOW()
+			<!-- 余额不足提醒开启;且设置提醒条数大于实际余额 -->
+			AND
+			m.message_remainder = true
+			AND
+			a.sms_num &lt; m.message_count
+		ORDER BY m.id ASC
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	
+	<!-- 每个一个小时
+	 	定时将过期的用户的余额不足提醒 起始时间,结束时间置空
+	 	联表更新! author:jackstraw_yu-->
+	<update id="scheduleResetSmsmRemider" >
+		UPDATE  CRM_MOBILE_SETTING m INNER JOIN CRM_USER u
+		ON 
+		m.user_id = u.taobao_user_nick 
+		AND
+		u.expirationTime &lt; NOW() 
+		SET  m.start_time = NULL ,m.end_time=NULL 
+	</update>
+	
+</mapper>

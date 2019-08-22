@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.order.entity.OrderRateCareSetup">
+	<resultMap type="s2jh.biz.shop.crm.order.entity.OrderRateCareSetup" id="orderRateCareSetup">
+		<result column="id" property="id"/>
+		<result column="oid" property="oid"/>
+		<result column="status" property="status"/>
+		<result column="result" property="result"/>
+		<result column="isblacklist" property="isBlacklist"/>
+		<result column="rate_choose" property="rateChoose"/>
+		<result column="blacklist_rate_type" property="blacklistRateType"/>
+		<result column="auto_addBlacklist" property="autoAddBlacklist"/>
+		<result column="content" property="content"/>
+		<result column="defer_rate_day" property="deferRateDay"/>
+		<result column="status_filtrate" property="statusFiltrate"/>
+		<result column="accept_sms_phone" property="acceptSmsPhone"/>
+		<result column="user_id" property="userId"/>
+		<result column="appraise_type" property="appraiseType"/>
+		<result column="send_time_one" property="sendTimeOne"/>
+		<result column="send_time_two" property="sendTimeTwo"/>
+		<result column="money_one" property="moneyOne"/>
+		<result column="money_two" property="moneyTwo"/>
+		<result column="flagcolor" property="flagcolor"/>
+		<result column="ORDER_SOURCE" property="orderSource"/>
+		<result column="locality" property="locality"/>
+		<result column="neutral_content" property="neutralContent"/>
+		<result column="bad_content" property="badContent"/>
+	</resultMap>
+	<insert id="doAutoCreateBySetIsNull" parameterType="s2jh.biz.shop.crm.order.entity.OrderRateCareSetup"  useGeneratedKeys="true" keyProperty="id"  >
+		INSERT INTO CRM_ORDER_RATECARE_SETUP(status,result,isblacklist,rate_choose,blacklist_rate_type,user_id,content,appraise_type,createdDate,optlock)
+		VALUE(1,'bad',1,1,1,#{userId},#{content},#{appraiseType},now(),0)
+	</insert>
+	
+	<!-- 添加数据 -->
+	<insert id="addOrderRateCareSetup" parameterType="s2jh.biz.shop.crm.order.entity.OrderRateCareSetup">
+		INSERT INTO	CRM_ORDER_RATECARE_SETUP(oid,status,result,isblacklist,rate_choose,blacklist_rate_type,auto_addBlacklist,content,defer_rate_day,status_filtrate,accept_sms_phone,user_id,send_time_one,send_time_two,money_one,money_two,flagcolor,ORDER_SOURCE,locality,createdBy,createdDate,lastModifiedBy,lastModifiedDate,neutral_content,bad_content)
+		VALUE(#{oid},#{status},#{result},#{isBlacklist},#{rateChoose},#{blacklistRateType},#{autoAddBlacklist},#{content},#{deferRateDay},#{statusFiltrate},#{acceptSmsPhone},#{userId},#{sendTimeOne},#{sendTimeTwo},#{moneyOne},#{moneyTwo},#{flagcolor},#{orderSource},#{locality},#{createdBy},#{createdDate},#{lastModifiedBy},#{lastModifiedDate},#{neutralContent},#{badContent});
+	</insert>
+	
+	<!-- 查询开启了定时任务的卖家用户 -->
+	<select id="findSelleNickByOpen" resultMap="orderRateCareSetup">
+		SELECT *
+		FROM CRM_ORDER_RATECARE_SETUP
+		WHERE status='0' AND rate_choose in ('抢评','延迟评')
+	</select>
+	<!-- 查询自动评价设置 -->
+	<select id="findRateCareByUserId" resultMap="orderRateCareSetup">
+		SELECT status,rate_choose,result,blacklist_rate_type,user_id,defer_rate_day,auto_addBlacklist,content,neutral_content,bad_content
+		FROM CRM_ORDER_RATECARE_SETUP
+		<where>
+			<if test="userId != null and userId != ''">
+				user_id = #{userId}
+			</if>
+			<if test="appraiseType != null and appraiseType != ''">
+				and appraise_type = #{appraiseType}
+			</if>
+			order by createdDate DESC;
+		</where>
+	</select>
+	
+	<!-- 通过id更新设置 -->
+	<update id="updateOrderRateCareSetup">
+		update CRM_ORDER_RATECARE_SETUP 
+		<set>
+			<if test="oid != null and oid != ''">
+				oid = #{oid},
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status},
+			</if>
+			<if test="result != null and result != ''">
+				result = #{result},
+			</if>
+			<if test="isBlacklist != null and isBlacklist != ''">
+				isblacklist = #{isBlacklist},
+			</if>
+			<if test="rateChoose != null and rateChoose != ''">
+				rate_choose = #{rateChoose},
+			</if>
+			<if test="blacklistRateType != null and blacklistRateType != ''">
+				blacklist_rate_type = #{blacklistRateType},
+			</if>
+			<if test="autoAddBlacklist != null">
+				auto_addBlacklist = #{autoAddBlacklist},
+			</if>
+			<if test="content != null and content != ''">
+				content = #{content},
+			</if>
+			<if test="deferRateDay != null and deferRateDay != ''">
+				defer_rate_day = #{deferRateDay},
+			</if>
+			
+			<if test="statusFiltrate != null">
+				status_filtrate = #{statusFiltrate},
+			</if>
+			<if test="acceptSmsPhone != null">
+				accept_sms_phone = #{acceptSmsPhone},
+			</if>
+			<if test="sendTimeOne != null">
+				send_time_one = #{sendTimeOne},
+			</if>
+			<if test="sendTimeTwo != null">
+				send_time_two = #{sendTimeTwo},
+			</if>	
+				money_one = #{moneyOne},
+				money_two = #{moneyTwo},
+				flagcolor = #{flagcolor},
+				ORDER_SOURCE = #{orderSource},
+				locality = #{locality},
+			<if test="neutralContent != null and neutralContent != ''">
+				neutral_content = #{neutralContent},
+			</if>	
+			<if test="badContent != null and badContent != ''">
+				bad_content = #{badContent}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	<!-- 通过userId和appraiseType查询数据 -->
+	<select id="findOrderRateCareSetup" resultMap="orderRateCareSetup">
+		select 
+			id,
+			oid,
+			status,
+			result,
+			isblacklist,
+			rate_choose,
+			blacklist_rate_type,
+			auto_addBlacklist,
+			content,
+			defer_rate_day,
+			status_filtrate,
+			accept_sms_phone, 
+			send_time_one,
+			send_time_two,
+			money_one,
+			money_two,
+			flagcolor,
+			ORDER_SOURCE,
+			locality,
+			neutral_content,
+			bad_content
+			from CRM_ORDER_RATECARE_SETUP
+		<where>
+			<if test="appraiseType != null and appraiseType != ''">
+				appraise_type = #{appraiseType} and
+			</if>
+				user_id = #{userId}
+		</where>
+	</select>
+	<!-- 通过userId和appraiseType 和status查询数据 -->
+	<select id="findOrderRateCareSetupandStatus" resultMap="orderRateCareSetup">
+		select 
+			id,
+			oid,
+			status,
+			result,
+			isblacklist,
+			rate_choose,
+			blacklist_rate_type,
+			auto_addBlacklist,
+			content,
+			defer_rate_day,
+			status_filtrate,
+			accept_sms_phone, 
+			send_time_one,
+			send_time_two,
+			money_one,
+			money_two,
+			flagcolor,
+			ORDER_SOURCE,
+			locality
+			from CRM_ORDER_RATECARE_SETUP
+		<where>
+			<if test="appraiseType != null and appraiseType != ''">
+				appraise_type = #{appraiseType} and
+			</if>
+				user_id = #{userId}
+				and
+				status = 0
+		</where>
+	</select>
+	
+	<!-- 查询中差评安抚的开启关闭状态 -->
+	<select id="findOrderRateOfStatus" resultMap="orderRateCareSetup">
+		SELECT id,
+			STATUS 
+		FROM CRM_ORDER_RATECARE_SETUP 
+		<where> 
+		USER_ID = #{userId} 
+		AND appraise_type = '2'
+		</where>
+	</select>
+	
+	<!-- 修改中差评安抚的开启关闭状态 -->
+	<update id="updateOrderRateStatus">
+		update CRM_ORDER_RATECARE_SETUP
+		<set>
+			<if test="status !=null and status !='' ">
+				status=#{status},
+			</if>
+			<if test="lastModifiedDate !=null">
+				lastModifiedDate = #{lastModifiedDate},
+			</if>
+		</set>
+			where id=#{id}
+	</update>
+	
+	<!-- 查询状态设置为开启的模块(0-自动评价  1-中差评监控  2-中差评安抚) -->
+	<select id="countTaskIsOpenByType" resultType="int">
+		select count(id)
+		from CRM_TRADE_SETUP
+		<where>
+			user_id = #{userId} and type in ('16','20','21') and in_use = '1' and status = '1'
+		</where>
+	</select>
+	
+	<!-- 查询状态设置为开启的模块(0-自动评价  1-中差评监控  2-中差评安抚) -->
+	<select id="orderRateCareSetupIsOpen" resultType="String">
+		SELECT appraise_type FROM CRM_ORDER_RATECARE_SETUP
+		<where>
+			user_id = #{userId} and status = '0'
+		</where>
+	</select>
+	
+	<!-- 根据评价类型查询评价内容 -->
+	<select id="queryContentByType" resultType="String">
+		select content from crm_order_ratecare_setup where
+		user_id = #{userId} and result = #{result} and appraise_type = '0'
+	</select>
+	
+	<!-- 拉取评价信息，查询用户是否开启中差评监控 -->
+	<select id="findStatusByUserId" resultType="String">
+		select status from crm_order_ratecare_setup where user_id = #{userId} and appraise_type = '1'
+	</select>
+	
+	
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllSettingCount" resultType="Long">
+		select count(1)
+		from crm_order_ratecare_setup
+	</select>
+	<!-- 同步订单中心设置后期直接删除,请勿调用 @author:jackstraw_yu -->
+	<select id="findAllLimitSetting" resultMap="orderRateCareSetup">
+		SELECT *
+		FROM crm_order_ratecare_setup 
+		Order by id asc
+		limit #{startRows},#{pageSize}
+	</select>
+</mapper>

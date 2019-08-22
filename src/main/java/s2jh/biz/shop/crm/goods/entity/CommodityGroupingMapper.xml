@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.goods.dao.CommodityGroupingDao">
+	<resultMap 	type="s2jh.biz.shop.crm.goods.entity.CommodityGrouping" id="commodityGrouping_Map">
+		<result column="USERID" property="userId"/>
+		<result column="GROUP_NAME" property="groupName"/>
+		<result column="COMMODITY_NUM" property="commodityNum"/>
+		<result column="REMARK" property="remark"/>
+		<result column="CTIME" property="cTime"/>
+		<result column="MODIFY_TIME" property="modifyTime"/>
+	</resultMap>
+	
+	<!-- 商品分组主页面数据查询 -->
+	<select id="findCommodityGrouping" resultMap="commodityGrouping_Map">
+	  SELECT * FROM crm_commodity_grouping
+	  <where>
+	    <if test="userId!=null and userId!=''">
+	      USERID=#{userId}
+	    </if>
+	  </where>
+	  ORDER BY CTIME DESC
+	  limit #{startRows},#{currentRows}
+	</select>
+	
+	<!-- 查询分组名是否已存在数据库 -->
+	<select id="findGroupName" resultType="int"  parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact">
+	   SELECT COUNT(*) FROM crm_commodity_grouping
+		  <where>
+		    <if test="groupName!=null and groupName!=''">
+		      GROUP_NAME=#{groupName}
+		    </if>
+		    <if test="userId!=null and userId!=''">
+		      and USERID=#{userId}
+		    </if>
+		  </where>
+	</select>
+	
+	<!-- 修改分组 查询分组 -->
+	<select id="findUpdateGroupName" resultMap="commodityGrouping_Map">
+	    SELECT * FROM crm_commodity_grouping
+		  <where>
+		    <if test="groupName!=null and groupName!=''">
+		      GROUP_NAME=#{groupName}
+		    </if>
+		    <if test="userId!=null and userId!=''">
+		      and USERID=#{userId}
+		    </if>
+		  </where>
+	</select>
+	
+	<!-- 修改分组 (新)-->
+	<update id="updateCommodityGroup" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact">
+	  UPDATE crm_commodity_grouping 
+	  <set>
+	    GROUP_NAME=#{groupName},
+	    REMARK=#{remark},
+	    COMMODITY_NUM=#{commodityNum},
+	    MODIFY_TIME=#{modifyTime}
+	  </set>
+	  <where>
+	      id=#{groupId}
+	      and 
+	      USERID=#{userId}
+	  </where>
+	</update>
+	
+	
+	<!-- 添加分组新 -->
+	<insert id="saveCommodityGroup" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact">
+		 INSERT INTO crm_commodity_grouping(USERID,GROUP_NAME,COMMODITY_NUM,REMARK,CTIME,MODIFY_TIME,optlock,lastModifiedBy
+	     ,lastModifiedDate,createdDate)VALUES
+	     (#{userId},#{groupName},#{commodityNum},#{remark},NOW(),NOW(),0,NOW(),NOW(),NOW())
+	</insert>
+	
+	<!-- 查询 grupId 新-->
+	<select id="findGroupId" resultType="java.lang.Long" parameterType="s2jh.biz.shop.crm.goods.vo.CommodityArtifact">
+	   SELECT id FROM crm_commodity_grouping
+		  <where>
+		    <if test="groupName!=null and groupName!=''">
+		      GROUP_NAME=#{groupName}
+		    </if>
+		    <if test="userId!=null and userId!=''">
+		      and USERID=#{userId}
+		    </if>
+		  </where>
+	</select>
+	
+	<!-- 查询分组的总条数 -->
+	<select id="findTotalCountBy" resultType="java.lang.Long">
+	  SELECT COUNT(1) FROM crm_commodity_grouping
+	  <where>
+	    <if test="userId!=null and userId!=''">
+	      USERID=#{userId}
+	    </if>
+	  </where>
+	</select>
+	
+	<!-- 设置页查询分组名称 -->
+	<select id="findCommName" resultMap="commodityGrouping_Map">
+	   SELECT GROUP_NAME,id FROM crm_commodity_grouping WHERE  USERID=#{userId}
+	</select>
+	
+	<!-- 删除分组 -->
+	<delete id="deleteGroup">
+	  DELETE FROM crm_commodity_grouping WHERE id=#{groupId}
+	</delete>
+	
+	<!-- 修改分组回显信息 -->
+	<select id="updateGroupEcho" resultMap="commodityGrouping_Map">
+	  SELECT * FROM crm_commodity_grouping WHERE USERID=#{userId} and id=#{groupId}
+	</select>
+	
+	<!-- 查询所有商品的分组(商品缩写页面) -->
+	<select id="listItemGroup" resultMap="commodityGrouping_Map">
+	  SELECT id,group_name FROM crm_commodity_grouping
+	  <where>
+	    <if test="userId!=null and userId!=''">
+	      USERID=#{userId}
+	    </if>
+	  </where>
+	  ORDER BY CTIME DESC
+	</select>
+</mapper>

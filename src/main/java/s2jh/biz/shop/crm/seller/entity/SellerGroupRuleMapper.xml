@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="s2jh.biz.shop.crm.seller.entity.SellerGroupRule">
+	<resultMap type="s2jh.biz.shop.crm.seller.entity.SellerGroupRule" id="sellerGroupRule">
+		<result column="GROUP_ID" property="groupId"/>
+		<result column="BUYER_NICKNAME" property="buyerNickname"/>
+		<result column="BUYER_NAME" property="buyerName"/>
+		<result column="PROVINCE" property="province"/>
+		<result column="SEX" property="sex"/>
+		<result column="AGE_RANGE" property="ageRange"/>		
+		<result column="AGE" property="age"/>
+		<result column="OCCUPATION" property="occupation"/>
+		<result column="BIRTHDAY" property="birthday"/>		
+		<result column="QQ" property="qq"/>
+		<result column="WECHAT" property="wechat"/>
+		<result column="PHONE" property="phone"/>
+		<result column="PHONE_RANGE" property="phoneRange"/>
+		<result column="EMAIL" property="email"/>
+		<result column="EMAIL_TYPE" property="emailType"/>
+		<result column="REGISTER_DATE" property="registerDate"/>
+		<result column="SCORE" property="score"/>
+		<result column="minTradeTime" property="minTradeTime"/>
+		<result column="maxTradeTime" property="maxTradeTime"/>
+		<result column="maxTradeNum" property="maxTradeNum"/>
+		<result column="minTradeNum" property="minTradeNum"/>
+		<result column="minAccumulatedAmount" property="minAccumulatedAmount"/>
+		<result column="maxAccumulatedAmount" property="maxAccumulatedAmount"/>
+		<result column="maxAveragePrice" property="maxAveragePrice"/>
+		<result column="minAveragePrice" property="minAveragePrice"/>
+		<result column="memberGrade" property="memberGrade"/>
+		<result column="userId" property="userId"/>
+		<result column="tradeTimeStatus" property="tradeTimeStatus"/>
+		<result column="tradeDays" property="tradeDays"/>
+		<result column="tradeType" property="tradeType"/>
+		<result column="REMARKS" property="remarks"/>
+		<result column="createdBy" property="createdBy"/>
+		<result column="createdDate" property="createdDate"/>
+		<result column="lastModifiedBy" property="lastModifiedBy"/>
+		<result column="lastModifiedDate" property="lastModifiedDate"/>
+	</resultMap>		
+    <!-- 添加会员分组 -->
+    <insert id="addSellerGroupRule"  useGeneratedKeys="true" keyProperty="id" parameterType="s2jh.biz.shop.crm.seller.entity.SellerGroupRule">
+    	 insert into CRM_GROUPS_RULE
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="userId != null" >
+	        userId,
+	      </if>
+	      <if test="groupId != null" >
+	        group_id,
+	      </if>
+	      <if test="buyerNickname != null" >
+	        BUYER_NICKNAME,
+	      </if>	      
+	      <if test="buyerName != null" >
+	        BUYER_NAME,
+	      </if>
+	      <if test="province != null" >
+	        province,
+	      </if>
+	      <if test="sex != null" >
+	        sex,
+	      </if>
+	      <if test="ageRange != null" >
+	        AGE_RANGE,
+	      </if>
+	      <if test="age != null" >
+	        age,
+	      </if>
+	      <if test="occupation != null" >
+	        occupation,
+	      </if>
+	      <if test="birthday != null" >
+	        birthday,
+	      </if>
+	      <if test="qq != null" >
+	        QQ,
+	      </if>
+	      <if test="wechat != null" >
+	        WECHAT,
+	      </if>
+	      <if test="phone != null" >
+	        PHONE,
+	      </if>
+	      <if test="phoneRange != null" >
+	        PHONE_RANGE,
+	      </if>
+	      <if test="email != null" >
+	        EMAIL,
+	      </if>
+	      <if test="emailType != null" >
+	        EMAIL_TYPE,
+	      </if>
+	      <if test="registerDate != null" >
+	        REGISTER_DATE,
+	      </if>
+	      <if test="score != null" >
+	        score,
+	      </if>
+	      <if test="remarks != null" >
+	        remarks,
+	      </if>	     
+	      <if test="maxTradeNum != null" >
+	        maxTradeNum,
+	      </if>
+	      <if test="minTradeNum != null" >
+	        minTradeNum,
+	      </if>
+	      <if test="minAccumulatedAmount != null" >
+	        minAccumulatedAmount,
+	      </if>
+	      <if test="maxAccumulatedAmount != null" >
+	        maxAccumulatedAmount,
+	      </if>
+	      <if test="maxAveragePrice != null" >
+	        maxAveragePrice,
+	      </if>
+	      <if test="minAveragePrice != null" >
+	        minAveragePrice,
+	      </if>
+	      <if test="memberGrade != null" >
+	        memberGrade,
+	      </if>
+	      <if test="createdDate != null" >
+	        createdDate,
+	      </if>
+	      <if test="tradeTimeStatus != null" >
+	        tradeTimeStatus,
+	      </if>	 
+	      <if test="itemIds != null" >
+	        itemIds,
+	      </if>
+	      <if test="tradeDays != null">
+	      	tradeDays,
+	      </if>
+	      <if test="tradeType != null">
+	      	tradeType,
+	      </if>   
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="userId != null" >
+	         #{userId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="groupId != null" >
+	     	 #{groupId,jdbcType=BIGINT},
+	      </if>
+	      <if test="buyerNickname != null" >
+	         #{buyerNickname,jdbcType=VARCHAR},
+	      </if>	      
+	      <if test="buyerName != null" >
+	         #{buyerName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="province != null" >
+	         #{province,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sex != null" >
+	         #{sex,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ageRange != null" >
+	        #{ageRange,jdbcType=VARCHAR},
+	      </if>
+	      <if test="age != null" >
+	        #{age,jdbcType=INTEGER},
+	      </if>
+	      <if test="occupation != null" >
+	        #{occupation,jdbcType=VARCHAR},
+	      </if>
+	      <if test="birthday != null" >
+	        #{birthday,jdbcType=VARCHAR},
+	      </if>
+	      <if test="qq != null" >
+	        #{qq,jdbcType=VARCHAR},
+	      </if>
+	      <if test="wechat != null" >
+	        #{wechat,jdbcType=VARCHAR},
+	      </if>
+	      <if test="phone != null" >
+	        #{phone,jdbcType=VARCHAR},
+	      </if>
+	      <if test="phoneRange != null" >
+	        #{phoneRange,jdbcType=CHAR},
+	      </if>
+	      <if test="email != null" >
+	        #{email,jdbcType=VARCHAR},
+	      </if>
+	      <if test="emailType != null" >
+	        #{emailType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="registerDate != null" >
+	        #{registerDate,jdbcType=DATE},
+	      </if>
+	      <if test="score != null" >
+	        #{score,jdbcType=VARCHAR},
+	      </if>
+	      <if test="remarks != null" >
+	        #{remarks,jdbcType=VARCHAR},
+	      </if>	            
+	      <if test="maxTradeNum != null" >
+	        #{maxTradeNum,jdbcType=INTEGER},
+	      </if>
+	      <if test="minTradeNum != null" >
+	        #{minTradeNum,jdbcType=INTEGER},
+	      </if>
+	      <if test="minAccumulatedAmount != null" >
+	        #{minAccumulatedAmount,jdbcType=VARCHAR},
+	      </if>
+	      <if test="maxAccumulatedAmount != null" >
+	        #{maxAccumulatedAmount,jdbcType=VARCHAR},
+	      </if>
+	      <if test="maxAveragePrice != null" >
+	        #{maxAveragePrice,jdbcType=VARCHAR},
+	      </if>
+	      <if test="minAveragePrice != null" >
+	        #{minAveragePrice,jdbcType=VARCHAR},
+	      </if>
+	      <if test="memberGrade != null" >
+	        #{memberGrade,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createdDate != null" >
+	        #{createdDate,jdbcType=DATE},
+	      </if>
+	      <if test="tradeTimeStatus != null" >
+	        #{tradeTimeStatus,jdbcType=VARCHAR},
+	      </if>
+	      <if test="itemIds != null" >
+	        #{itemIds,jdbcType=VARCHAR},
+	      </if>
+	      <if test="tradeDays != null" >
+	        #{tradeDays,jdbcType=INTEGER},
+	      </if>
+	      <if test="tradeType != null" >
+	        #{tradeType,jdbcType=VARCHAR},
+	      </if>
+	    </trim>	   
+    </insert>
+    
+    <!--根据ruleId查询数据  -->
+    <select id="querySellerGroup" resultMap="sellerGroupRule">
+     select *
+     from CRM_GROUPS_RULE
+     where 1=1
+     <if test="id!=null">
+     	and id=#{id,jdbcType=BIGINT}
+     </if>
+    </select>
+    <!-- 根据分组groupId查询数据 -->
+     <select id="findSellerGroupRule" resultMap="sellerGroupRule">
+     select *
+     from CRM_GROUPS_RULE
+     where group_id=#{groupId}
+    </select>
+    <!-- 修改分组规则值可为空 -->
+    <update id="updateSellerGroupRule" parameterType="s2jh.biz.shop.crm.seller.entity.SellerGroupRule">
+    	update CRM_GROUPS_RULE
+    	set 		  
+         	userId=#{userId},	    
+	     	GROUP_ID=#{groupId},
+	        BUYER_NICKNAME=#{buyerNickname},
+	        BUYER_NAME=#{buyerName},
+	        PROVINCE=#{province},
+	        SEX=#{sex},
+	        AGE_RANGE=#{ageRange},
+	        age=#{age},
+	        occupation=#{occupation},
+	        birthday=#{birthday},
+	        qq=#{qq},
+	        wechat=#{wechat},
+	        phone=#{phone},
+	        PHONE_RANGE=#{phoneRange},
+	        email=#{email},
+	        email_type=#{emailType},
+	        register_date=#{registerDate},
+	        score=#{score},
+	        remarks=#{remarks},
+	        minTradeTime=#{minTradeTime},
+	        maxTradeTime=#{maxTradeTime},
+	        maxTradeNum=#{maxTradeNum},
+	        minTradeNum=#{minTradeNum},
+	        tradeDays=#{tradeDays},
+	        tradeType=#{tradeType},
+	        minAccumulatedAmount=#{minAccumulatedAmount},
+	        maxAccumulatedAmount=#{maxAccumulatedAmount},
+	        maxAveragePrice=#{maxAveragePrice},
+	        minAveragePrice=#{minAveragePrice},
+	        memberGrade=#{memberGrade},	        
+	        tradeTimeStatus=#{tradeTimeStatus},
+	        lastModifiedDate=#{lastModifiedDate},
+	        itemIds=#{itemIds}
+    	where id = #{id}
+    </update>
+    <!-- 根据userId查询分组规则 -->
+     <select id="querySellerGroupByUserId" resultMap="sellerGroupRule" parameterType="string">
+     select *
+     from CRM_GROUPS_RULE
+     where userId=#{userId}
+    </select>
+    
+    <!-- 根据主键id删除对应数据 -->
+    <delete id="delSellerGroupRule" >
+    	delete from crm_groups_rule
+    	where id = #{ruleId}
+    </delete>
+</mapper>
