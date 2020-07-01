@@ -35,7 +35,7 @@
 		<mybatis.version>3.3.1</mybatis.version>
 		<spring-data-jpa.version>1.7.1.RELEASE</spring-data-jpa.version>
 		<spring-data-redis.version>1.4.1.RELEASE</spring-data-redis.version>
-		<quartz.version>2.2.1</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 		<ehcache.version>2.6.2</ehcache.version>
 		<spymemcached.version>2.8.9</spymemcached.version>
 		<hibernate-validator.version>4.3.1.Final</hibernate-validator.version>
@@ -900,7 +900,7 @@
 		<dependency>
 		<groupId>org.quartz-scheduler</groupId>
 		<artifactId>quartz</artifactId>
-		<version>2.2.3</version> 
+		<version>2.3.2</version> 
 	    </dependency>   
 	
 	    <dependency>
