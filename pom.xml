@@ -773,7 +773,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.0.7</version>
+			<version>1.2.0</version>
 		</dependency>
 
 		<!-- common-logging 实际调用slf4j -->
