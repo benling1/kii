@@ -33,7 +33,7 @@
 		<hibernate.version>4.3.5.Final</hibernate.version>
 		<hibernate-search.version>5.3.0.Final</hibernate-search.version>
 		<mybatis.version>3.3.1</mybatis.version>
-		<spring-data-jpa.version>1.7.1.RELEASE</spring-data-jpa.version>
+		<spring-data-jpa.version>1.11.23.RELEASE</spring-data-jpa.version>
 		<spring-data-redis.version>1.4.1.RELEASE</spring-data-redis.version>
 		<quartz.version>2.2.1</quartz.version>
 		<ehcache.version>2.6.2</ehcache.version>
